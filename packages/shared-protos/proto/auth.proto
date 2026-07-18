@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package auth.v1;
+
+service AuthService {
+  rpc SignInWithGoogle (SignInWithGoogleRequest)
+      returns (SignInWithGoogleResponse);
+}
+
+message SignInWithGoogleRequest {
+  string google_token = 1;
+}
+
+message SignInWithGoogleResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  string user_auth_id = 3;
+}
