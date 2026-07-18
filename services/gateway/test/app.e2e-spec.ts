@@ -4,7 +4,7 @@ import request from "supertest";
 import { App } from "supertest/types";
 import { AppModule } from "../src/app.module";
 
-describe("AppController (e2e)", () => {
+describe("Health", () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
@@ -13,14 +13,37 @@ describe("AppController (e2e)", () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.setGlobalPrefix("/api");
+
     await app.init();
   });
 
-  it("/ (GET)", () => {
+  it("/health/live (GET)", () => {
     return request(app.getHttpServer())
-      .get("/")
+      .get("/api/health/live")
       .expect(200)
-      .expect("Hello World!");
+      .expect({
+        status: "ok",
+        service: "KinVue gateway service",
+      });
+  });
+
+  it("/health/ready (GET)", () => {
+    return request(app.getHttpServer())
+      .get("/api/health/ready")
+      .expect(200)
+      .expect({
+        status: "ok",
+        checks: {
+          gatewayService: "true",
+          authService: "false",
+          chatService: "false",
+          movieService: "false",
+          notificationService: "false",
+          roomService: "false",
+          userService: "false",
+        },
+      });
   });
 
   afterEach(async () => {
