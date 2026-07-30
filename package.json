@@ -12,16 +12,26 @@
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "build:contracts": "pnpm --filter @kinvue/contracts build",
-    "typecheck:contracts": "pnpm build:contracts && pnpm typecheck"
+    "typecheck:contracts": "pnpm build:contracts && pnpm typecheck",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    ".{.js,ts}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   },
   "packageManager": "pnpm@10.34.4",
   "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
     "@eslint/js": "^10.0.1",
     "@types/jest": "^30.0.0",
     "eslint": "^10.7.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.7.0",
+    "husky": "^9.1.7",
     "jest": "^30.4.2",
+    "lint-staged": "^17.2.0",
     "prettier": "^3.9.5",
     "ts-jest": "^29.4.11",
     "typescript-eslint": "^8.64.0"
