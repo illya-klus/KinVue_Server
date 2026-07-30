@@ -4,7 +4,7 @@ import { GrpcMethod } from "@nestjs/microservices";
 import {
   SignInWithGoogleRequest,
   SignInWithGoogleResponse,
-} from "../../../../../packages/shared-protos/dist";
+} from "@kinvue/contracts";
 
 @Controller()
 export class AuthController {
