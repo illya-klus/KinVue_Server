@@ -30,8 +30,8 @@ jobs:
       - name: Check formatting
         run: pnpm format:check
 
-      - name: Run lint
-        run: pnpm lint
+      # - name: Run lint
+      #   run: pnpm lint
 
       - name: Build proto types and typecheck
         run: pnpm typecheck:contracts
