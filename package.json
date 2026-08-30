@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev:gateway": "pnpm  --filter @kinvue/gateway run start:dev",
+    "dev:auth": "pnpm  --filter @kinvue/auth run start:dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
