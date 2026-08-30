@@ -1,7 +1,12 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { MicroserviceOptions, Transport } from "@nestjs/microservices";
+import {
+  GrpcExceptionFilter,
+  MicroserviceOptions,
+  Transport,
+} from "@nestjs/microservices";
 import { join } from "node:path";
+import { GrcpLoggingInterceptor } from "./common/interseptors/logger.interseptor";
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -18,6 +23,8 @@ async function bootstrap() {
       },
     },
   );
+  app.useGlobalInterceptors(new GrcpLoggingInterceptor());
+  app.useGlobalFilters(new GrpcExceptionFilter());
 
   await app.listen();
 }

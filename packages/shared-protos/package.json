@@ -13,15 +13,15 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "@types/node": "^24.13.3",
+    "@types/node": "^26.4.0",
     "grpc-tools": "^1.13.1",
-    "protobufjs": "^8.7.1",
-    "ts-proto": "^2.12.0"
+    "protobufjs": "^8.8.0",
+    "ts-proto": "^2.12.1"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^2.12.1",
+    "@bufbuild/protobuf": "^2.14.0",
     "@grpc/grpc-js": "^1.14.4",
-    "@nestjs/microservices": "^11.1.28",
+    "@nestjs/microservices": "^12.0.1",
     "rxjs": "^7.8.2"
   }
 }

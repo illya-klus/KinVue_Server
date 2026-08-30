@@ -1,10 +1,11 @@
 import { Controller } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { GrpcMethod } from "@nestjs/microservices";
+import { GrpcMethod, RpcException } from "@nestjs/microservices";
 import {
   SignInWithGoogleRequest,
   SignInWithGoogleResponse,
 } from "@kinvue/contracts";
+import { status } from "@grpc/grpc-js";
 
 @Controller()
 export class AuthController {
@@ -14,11 +15,15 @@ export class AuthController {
   public signInWithGoogle(
     request: SignInWithGoogleRequest,
   ): SignInWithGoogleResponse {
-    console.log(request.googleToken);
+    throw new RpcException({
+      code: status.NOT_FOUND,
+      message: "User not found",
+    });
+
     return {
       accessToken: "fake-access-token",
       refreshToken: "fake-refresh-token",
-      userAuthId: "fake-user-id",
+      userAuthId: request.googleToken,
     };
   }
 }

@@ -1,10 +1,8 @@
-import { Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import {
-  SignInWithGoogleRequest,
-  SignInWithGoogleResponse,
-} from "@kinvue/contracts";
+import { SignInWithGoogleResponse } from "@kinvue/contracts";
 import { Observable } from "rxjs";
+import { SignInWithGoogleDto } from "./dtos/sign-in-with-google.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -12,7 +10,7 @@ export class AuthController {
 
   @Post("/google")
   public register(
-    request: SignInWithGoogleRequest,
+    @Body() request: SignInWithGoogleDto,
   ): Observable<SignInWithGoogleResponse> {
     return this.authService.signInWithGoogle(request.googleToken);
   }
