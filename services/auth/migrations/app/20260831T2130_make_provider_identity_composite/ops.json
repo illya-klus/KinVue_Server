@@ -1,0 +1,86 @@
+[
+  {
+    "id": "dropConstraint.authUser.authUser_providerUserId_key",
+    "label": "Drop constraint \"authUser_providerUserId_key\" on \"authUser\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "authUser_providerUserId_key",
+        "table": "authUser"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"authUser_providerUserId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authUser_providerUserId_key",
+          "public",
+          "\"public\".\"authUser\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"authUser_providerUserId_key\"",
+        "sql": "ALTER TABLE \"public\".\"authUser\" DROP CONSTRAINT \"authUser_providerUserId_key\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"authUser_providerUserId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authUser_providerUserId_key",
+          "public",
+          "\"public\".\"authUser\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.authUser.authUser_provider_providerUserId_key",
+    "label": "Add unique constraint on \"authUser\" (provider, providerUserId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "authUser_provider_providerUserId_key",
+        "table": "authUser"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"authUser_provider_providerUserId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authUser_provider_providerUserId_key",
+          "public",
+          "\"public\".\"authUser\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"authUser_provider_providerUserId_key\"",
+        "sql": "ALTER TABLE \"public\".\"authUser\" ADD CONSTRAINT \"authUser_provider_providerUserId_key\" UNIQUE (\"provider\", \"providerUserId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"authUser_provider_providerUserId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "authUser_provider_providerUserId_key",
+          "public",
+          "\"public\".\"authUser\""
+        ]
+      }
+    ]
+  }
+]
