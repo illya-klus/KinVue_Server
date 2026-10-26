@@ -1,0 +1,17 @@
+## Goal
+Define Auth PostgreSQL schema for identities, refresh sessions, and outbox events.
+
+## Scope
+Migrations for `auth_identities`, `refresh_sessions`, `auth_outbox_events` plus migration tests.
+
+## Out of scope
+Do not implement login/register HTTP handlers in this epic.
+
+## Suggested order
+1. KIN-101: Add Auth DB migrations: `auth_identities`, status constraint, unique email
+2. KIN-102: Add `refresh_sessions` table with indexes
+3. KIN-103: Add `auth_outbox_events` table
+4. KIN-104: Write migration test that applies schema to empty test DB
+
+## References
+- 28_JIRA_BACKLOG.md

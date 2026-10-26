@@ -1,0 +1,122 @@
+[
+  {
+    "key": "KIN-21",
+    "type": "Epic",
+    "summary": "[Epic] Room Web Experience",
+    "description": "## Goal\nComplete watch-room UI: create/join rooms, HLS player synced to playback state, chat, reactions, reconnect.\n\n## Scope\nRoom creation from movie detail, public list, invites, player, chat panel, 2-browser E2E test.\n\n## Out of scope\nDo not implement notifications bell or admin upload in this epic.\n\n## Suggested order\n1. KIN-441: Create room UI from movie detail (solo/private/public)\n2. KIN-442: Public rooms list + join flow\n3. KIN-443: Invite friend UI + copy invite URL\n4. KIN-444: Participants list + owner permission controls\n5. KIN-445: HLS player integrated with room playback state (owner/controller vs viewer)\n6. KIN-446: Chat panel + reaction buttons in room page\n7. KIN-447: Reconnect banner + wait for `room.state_sync` before local controls\n8. KIN-448: E2E: 2-browser play/pause/seek/chat/reaction/reconnect test\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-22",
+    "type": "Epic",
+    "summary": "[Epic] Notifications Service",
+    "description": "## Goal\nReliable in-app notifications from RabbitMQ friendship and room-invite events with dedup and DLQ.\n\n## Scope\nQueue topology, consumer with manual ACK, dedup store, read API, Gateway routes, bell UI, tests.\n\n## Out of scope\nDo not implement push notifications or email in v1.\n\n## Suggested order\n1. KIN-501: RabbitMQ topology: exchange, queue, DLQ, bindings for friendship + room invite events\n2. KIN-502: Consumer with manual ACK, 2 retries, DLQ on exhaustion\n3. KIN-503: Dedup by `eventId` + in-app notifications store\n4. KIN-504: `GET /notifications` + mark-as-read endpoint\n5. KIN-505: Gateway routes + web notification bell UI\n6. KIN-506: Tests: ACK timing, retry, DLQ, duplicate suppression\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-23",
+    "type": "Epic",
+    "summary": "[Epic] Admin Media Upload",
+    "description": "## Goal\nLet admins upload large video files directly to MinIO via presigned multipart URLs, then enqueue transcode.\n\n## Scope\nUpload init/complete endpoints, abandoned cleanup, admin upload UI, tests.\n\n## Out of scope\nDo not implement FFmpeg transcoding or signed playback in this epic.\n\n## Suggested order\n1. KIN-511: `POST /admin/movies/:id/upload/init` — metadata first, presigned multipart URLs\n2. KIN-512: `POST /admin/movies/:id/upload/complete` — finalize multipart, set PROCESSING, enqueue transcode\n3. KIN-513: Abandoned upload cleanup job (24h)\n4. KIN-514: Admin upload UI with direct-to-MinIO multipart + failed-part retry\n5. KIN-515: Tests: metadata-first, presigned URLs, complete flow, abandoned cleanup\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-24",
+    "type": "Epic",
+    "summary": "[Epic] Signed Media Playback",
+    "description": "## Goal\nServe HLS only through short-lived signed URLs — never proxy video bytes through app services.\n\n## Scope\n`POST /movies/:id/media-access`, web player integration, security tests.\n\n## Out of scope\nDo not add DRM, multi-CDN, or a separate streaming service.\n\n## Suggested order\n1. KIN-531: `POST /movies/:id/media-access` — auth required, READY/PUBLISHED only, 10 min signed URL\n2. KIN-532: Web player requests media-access before HLS load\n3. KIN-533: Tests: unauthorized, expired URL, wrong state, successful playback\n4. KIN-534: Verify app services never proxy video bytes\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-25",
+    "type": "Epic",
+    "summary": "[Epic] CI/CD Pipeline",
+    "description": "## Goal\nAutomated quality gate on every PR: lint, typecheck, unit/integration tests, Playwright smoke.\n\n## Scope\nGitHub Actions workflow, Docker Compose in CI, artifact upload on failure.\n\n## Out of scope\nDo not deploy to production in this epic — CI only.\n\n## Suggested order\n1. KIN-631: GitHub Actions: install, lint, typecheck, unit tests\n2. KIN-632: CI: Docker Compose integration tests + Playwright smoke\n3. KIN-633: Upload test artifacts on CI failure\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-26",
+    "type": "Epic",
+    "summary": "[Epic] Observability",
+    "description": "## Goal\nMake KinVue operable with Prometheus metrics on every service and Grafana dashboards.\n\n## Scope\nHTTP + WS metrics, Prometheus scrape config, Overview/Rooms/Media dashboards, observability runbook.\n\n## Out of scope\nDo not change business logic — instrumentation and dashboards only.\n\n## Suggested order\n1. KIN-611: Prometheus metrics for all services (HTTP + Rooms WS metrics)\n2. KIN-612: Grafana dashboards: Overview, Rooms, Media\n3. KIN-613: Write `docs/runbooks/observability.md`\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-27",
+    "type": "Epic",
+    "summary": "[Epic] Security Hardening",
+    "description": "## Goal\nHarden KinVue against common attacks: validation, CORS, rate limits, CI scanning, security tests.\n\n## Scope\nBody limits, CORS allowlist, secret/dependency scanning, security test suite, security runbook.\n\n## Out of scope\nDo not add new features — hardening only.\n\n## Suggested order\n1. KIN-621: Input validation + body size limits on all external endpoints\n2. KIN-622: CORS allowlist, secret scanning, dependency scanning in CI\n3. KIN-623: Security tests: private room denial, viewer playback denial, admin guard, expired JWT, upload type denial\n4. KIN-624: Write `docs/runbooks/security.md`\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-28",
+    "type": "Epic",
+    "summary": "[Epic] Transcoding Worker",
+    "description": "## Goal\nConvert uploaded originals to multi-bitrate HLS in MinIO via FFmpeg and update movie status.\n\n## Scope\nQueue `media.transcode`, FFmpeg worker, internal callbacks, retry logic, fixture test.\n\n## Out of scope\nDo not build upload UI or signed URL playback in this epic.\n\n## Suggested order\n1. KIN-521: RabbitMQ queue `media.transcode` + job schema\n2. KIN-522: FFmpeg worker: download original, generate HLS 1080p/720p/480p, upload to MinIO\n3. KIN-523: Internal callbacks: transcode-complete → READY, transcode-failed → PROCESSING_FAILED\n4. KIN-524: Retry up to 3 attempts before failure\n5. KIN-525: Fixture video test: verify playable HLS output\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-29",
+    "type": "Epic",
+    "summary": "[Epic] Scheduled Watch Rooms",
+    "description": "## Goal\nLet users schedule future watch sessions that auto-open Redis rooms and notify invitees.\n\n## Scope\n`scheduled_rooms` table, CRUD, scheduler, web UI, tests.\n\n## Out of scope\nDo not redesign room WebSocket protocol in this epic.\n\n## Suggested order\n1. KIN-601: `scheduled_rooms` table + CRUD endpoints\n2. KIN-602: Scheduler opens Redis room when due + emits invites\n3. KIN-603: Schedule watch UI on movie detail + scheduled rooms page\n4. KIN-604: Tests: create, cancel, due open, invitee notification\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-30",
+    "type": "Epic",
+    "summary": "[Epic] End-to-End Test Suite",
+    "description": "## Goal\nComprehensive automated coverage of user journeys, failure modes, and load baselines.\n\n## Scope\n20 E2E journeys, failure tests, load scripts, capacity documentation.\n\n## Out of scope\nDo not change production architecture — test and measure only.\n\n## Suggested order\n1. KIN-701: E2E suite: all 20 user journeys from implementation plan Phase 29\n2. KIN-702: Failure tests: Gateway/Auth/Users/Rooms/Redis/Meilisearch/RabbitMQ/transcode scenarios\n3. KIN-703: Load test scripts: Gateway, search, Rooms WS, chat, notifications, media\n4. KIN-704: Document capacity results in `docs/runbooks/capacity-results.md`\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-31",
+    "type": "Epic",
+    "summary": "[Epic] MVP Deployment",
+    "description": "## Goal\nDeploy KinVue MVP to production within <= $300/month with smoke-tested Gateway, WS, and media.\n\n## Scope\nProduction Dockerfiles, infra provisioning, deploy, migrations, deployment runbook.\n\n## Out of scope\nDo not target 100k concurrent users — MVP scale only.\n\n## Suggested order\n1. KIN-711: Production Dockerfiles + env documentation\n2. KIN-712: Provision MVP infra (DBs, Redis, RabbitMQ, object storage, CDN) within <= $300/month budget\n3. KIN-713: Deploy services + run migrations + smoke tests\n4. KIN-714: Write `docs/runbooks/deployment.md`\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-32",
+    "type": "Epic",
+    "summary": "[Epic] Documentation Refresh & Release",
+    "description": "## Goal\nFinalize docs, run acceptance checklist, and tag `v0.1.0-mvp` release.\n\n## Scope\nREADME/plan updates, Phase 34 checklist, git tag.\n\n## Out of scope\nDo not start v2 features — documentation and release only.\n\n## Suggested order\n1. KIN-721: Update README, implementation plan references, open questions, data models\n2. KIN-722: Final acceptance checklist (Phase 34) — all FR/NFR verified\n3. KIN-723: Tag release `v0.1.0-mvp`\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-33",
+    "type": "Epic",
+    "summary": "[Epic] Transcoding Worker",
+    "description": "## Goal\nConvert uploaded originals to multi-bitrate HLS in MinIO via FFmpeg and update movie status.\n\n## Scope\nQueue `media.transcode`, FFmpeg worker, internal callbacks, retry logic, fixture test.\n\n## Out of scope\nDo not build upload UI or signed URL playback in this epic.\n\n## Suggested order\n1. KIN-521: RabbitMQ queue `media.transcode` + job schema\n2. KIN-522: FFmpeg worker: download original, generate HLS 1080p/720p/480p, upload to MinIO\n3. KIN-523: Internal callbacks: transcode-complete → READY, transcode-failed → PROCESSING_FAILED\n4. KIN-524: Retry up to 3 attempts before failure\n5. KIN-525: Fixture video test: verify playable HLS output\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-34",
+    "type": "Epic",
+    "summary": "[Epic] Signed Media Playback",
+    "description": "## Goal\nServe HLS only through short-lived signed URLs — never proxy video bytes through app services.\n\n## Scope\n`POST /movies/:id/media-access`, web player integration, security tests.\n\n## Out of scope\nDo not add DRM, multi-CDN, or a separate streaming service.\n\n## Suggested order\n1. KIN-531: `POST /movies/:id/media-access` — auth required, READY/PUBLISHED only, 10 min signed URL\n2. KIN-532: Web player requests media-access before HLS load\n3. KIN-533: Tests: unauthorized, expired URL, wrong state, successful playback\n4. KIN-534: Verify app services never proxy video bytes\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-35",
+    "type": "Epic",
+    "summary": "[Epic] Scheduled Watch Rooms",
+    "description": "## Goal\nLet users schedule future watch sessions that auto-open Redis rooms and notify invitees.\n\n## Scope\n`scheduled_rooms` table, CRUD, scheduler, web UI, tests.\n\n## Out of scope\nDo not redesign room WebSocket protocol in this epic.\n\n## Suggested order\n1. KIN-601: `scheduled_rooms` table + CRUD endpoints\n2. KIN-602: Scheduler opens Redis room when due + emits invites\n3. KIN-603: Schedule watch UI on movie detail + scheduled rooms page\n4. KIN-604: Tests: create, cancel, due open, invitee notification\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-36",
+    "type": "Epic",
+    "summary": "[Epic] Observability",
+    "description": "## Goal\nMake KinVue operable with Prometheus metrics on every service and Grafana dashboards.\n\n## Scope\nHTTP + WS metrics, Prometheus scrape config, Overview/Rooms/Media dashboards, observability runbook.\n\n## Out of scope\nDo not change business logic — instrumentation and dashboards only.\n\n## Suggested order\n1. KIN-611: Prometheus metrics for all services (HTTP + Rooms WS metrics)\n2. KIN-612: Grafana dashboards: Overview, Rooms, Media\n3. KIN-613: Write `docs/runbooks/observability.md`\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-37",
+    "type": "Epic",
+    "summary": "[Epic] Security Hardening",
+    "description": "## Goal\nHarden KinVue against common attacks: validation, CORS, rate limits, CI scanning, security tests.\n\n## Scope\nBody limits, CORS allowlist, secret/dependency scanning, security test suite, security runbook.\n\n## Out of scope\nDo not add new features — hardening only.\n\n## Suggested order\n1. KIN-621: Input validation + body size limits on all external endpoints\n2. KIN-622: CORS allowlist, secret scanning, dependency scanning in CI\n3. KIN-623: Security tests: private room denial, viewer playback denial, admin guard, expired JWT, upload type denial\n4. KIN-624: Write `docs/runbooks/security.md`\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-38",
+    "type": "Task",
+    "summary": "Initialize git repo, add .gitignore, commit docs pack",
+    "description": "## What to do\nInitialize the KinVue git repository at the project root: create `.gitignore`, commit the existing documentation pack, and push to `main`. This preserves the architecture docs and implementation plan before any application code lands.\n\n## Technical notes\n- Commands: `git init`, `git branch -M main`, commit docs pack before app code\n- See Phase 0 in `27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md`\n- Labels: docs\n\n## Story points\n1\n\n## Depends on\nKIN-1\n\n## Acceptance criteria\n- Git repo initialized on `main` branch\n- `.gitignore` covers node_modules, dist, .env, coverage\n- Documentation pack committed\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-39",
+    "type": "Story",
+    "summary": "Bootstrap pnpm + Turbo monorepo with root scripts",
+    "description": "## What to do\nSet up the pnpm + Turbo monorepo skeleton at the repo root with workspace scripts `dev`, `build`, `test`, `lint`, and `typecheck`. Every KinVue app and package will live inside this workspace, so getting the structure right now prevents rework later.\n\n## Technical notes\n- Root scripts: `dev`, `build`, `test`, `lint`, `typecheck`, `infra:up`\n- Files: `package.json`, `pnpm-workspace.yaml`, `turbo.json`\n- Labels: infra\n\n## Story points\n2\n\n## Depends on\nKIN-2\n\n## Acceptance criteria\n- `pnpm install` succeeds\n- `pnpm build` runs (even if apps are empty stubs)\n- Workspace includes `apps/*`, `packages/*`, `tests/*`\n- Root scripts: dev, build, test, lint, typecheck\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-40",
+    "type": "Story",
+    "summary": "Add strict root TypeScript + Prettier config",
+    "description": "## What to do\nAdd strict shared TypeScript and Prettier configuration at the monorepo root (`tsconfig.base.json`, `.prettierrc`). All services and packages inherit these settings for consistent type-checking and formatting.\n\n## Technical notes\n- Files: `tsconfig.base.json`, `.prettierrc` at repo root\n- Labels: infra\n\n## Story points\n1\n\n## Depends on\nKIN-3\n\n## Acceptance criteria\n- `tsconfig.base.json` with strict TypeScript settings\n- `.prettierrc` configured\n- `pnpm typecheck` passes\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  }
+]

@@ -1,0 +1,437 @@
+{
+  "cloudId": "42bf3060-77dc-4f97-9b96-cdfa523fe9c7",
+  "projectKey": "KIN",
+  "existingEpics": {
+    "EPIC-0": "KIN-1"
+  },
+  "epics": [
+    {
+      "id": "EPIC-10",
+      "summary": "[Epic] Local Infrastructure (Docker Compose)",
+      "labels": ["infra", "blocked-by-infra"],
+      "description": "Sprint 0. Docker Compose for all local dependencies.\n\nReference: 28_JIRA_BACKLOG.md"
+    },
+    {
+      "id": "EPIC-20",
+      "summary": "[Epic] Shared Packages",
+      "labels": ["backend"],
+      "description": "Sprint 0. Shared config, logger, errors, jwt, contracts, testing packages."
+    },
+    {
+      "id": "EPIC-30",
+      "summary": "[Epic] Service Skeletons",
+      "labels": ["backend", "infra"],
+      "description": "Sprint 0. Scaffold all KinVue microservices with health/metrics."
+    },
+    {
+      "id": "EPIC-100",
+      "summary": "[Epic] Auth Data Model",
+      "labels": ["backend", "auth"],
+      "description": "Sprint 1. Auth PostgreSQL schema and migrations."
+    },
+    {
+      "id": "EPIC-110",
+      "summary": "[Epic] Users Data Model",
+      "labels": ["backend", "users"],
+      "description": "Sprint 1. MongoDB users and friendships schema."
+    },
+    {
+      "id": "EPIC-120",
+      "summary": "[Epic] Auth Service API",
+      "labels": ["backend", "auth", "security"],
+      "description": "Sprint 1. Registration Saga, login, refresh, logout, JWKS."
+    },
+    {
+      "id": "EPIC-130",
+      "summary": "[Epic] Users Service API",
+      "labels": ["backend", "users", "notifications"],
+      "description": "Sprint 1. Profiles, search, friendships, outbox events."
+    },
+    {
+      "id": "EPIC-200",
+      "summary": "[Epic] API Gateway",
+      "labels": ["backend", "gateway", "security"],
+      "description": "Sprint 2. HTTP edge, JWT validation, routing, rate limits."
+    },
+    {
+      "id": "EPIC-210",
+      "summary": "[Epic] Web App Foundation",
+      "labels": ["frontend"],
+      "description": "Sprint 2. Vite React shell, API client, auth state, routing."
+    },
+    {
+      "id": "EPIC-220",
+      "summary": "[Epic] Auth UI Vertical Slice",
+      "labels": ["frontend", "auth"],
+      "description": "Sprint 2. Register and login pages with E2E tests."
+    },
+    {
+      "id": "EPIC-230",
+      "summary": "[Epic] Social UI Vertical Slice",
+      "labels": ["frontend", "users"],
+      "description": "Sprint 2. Profile, user search, friend requests, friends list."
+    },
+    {
+      "id": "EPIC-300",
+      "summary": "[Epic] Movie Data Model",
+      "labels": ["backend", "movies"],
+      "description": "Sprint 3. Movie PostgreSQL schema."
+    },
+    {
+      "id": "EPIC-310",
+      "summary": "[Epic] Movie Service API",
+      "labels": ["backend", "movies"],
+      "description": "Sprint 3. Catalog, search, watchlist, Meilisearch indexing."
+    },
+    {
+      "id": "EPIC-320",
+      "summary": "[Epic] Movie UI",
+      "labels": ["frontend", "movies"],
+      "description": "Sprint 3. Admin movies, search, detail, watchlist pages."
+    },
+    {
+      "id": "EPIC-400",
+      "summary": "[Epic] Rooms HTTP Control API",
+      "labels": ["backend", "rooms"],
+      "description": "Sprint 4. Room create, invite, permissions, close."
+    },
+    {
+      "id": "EPIC-410",
+      "summary": "[Epic] Rooms WebSocket + Presence",
+      "labels": ["backend", "rooms", "security"],
+      "description": "Sprint 4. WS handshake, access checks, heartbeat, presence."
+    },
+    {
+      "id": "EPIC-420",
+      "summary": "[Epic] Playback Synchronization",
+      "labels": ["backend", "rooms"],
+      "description": "Sprint 4. Play/pause/seek, Redis Pub/Sub, cross-instance sync."
+    },
+    {
+      "id": "EPIC-430",
+      "summary": "[Epic] Room Chat & Reactions",
+      "labels": ["backend", "rooms"],
+      "description": "Sprint 4. Ephemeral chat and reactions over WebSocket."
+    },
+    {
+      "id": "EPIC-440",
+      "summary": "[Epic] Room Web Experience",
+      "labels": ["frontend", "rooms", "media"],
+      "description": "Sprint 4. Watch room UI, HLS player, chat, E2E tests."
+    },
+    {
+      "id": "EPIC-500",
+      "summary": "[Epic] Notifications Service",
+      "labels": ["backend", "notifications"],
+      "description": "Sprint 5. RabbitMQ consumer, dedup, in-app notifications."
+    },
+    {
+      "id": "EPIC-510",
+      "summary": "[Epic] Admin Media Upload",
+      "labels": ["backend", "movies", "media"],
+      "description": "Sprint 5. Presigned multipart upload to MinIO/S3."
+    },
+    {
+      "id": "EPIC-520",
+      "summary": "[Epic] Transcoding Worker",
+      "labels": ["backend", "media"],
+      "description": "Sprint 5. FFmpeg HLS transcoding pipeline."
+    },
+    {
+      "id": "EPIC-530",
+      "summary": "[Epic] Signed Media Playback",
+      "labels": ["backend", "movies", "media", "security"],
+      "description": "Sprint 5. Signed URL media access and player integration."
+    },
+    {
+      "id": "EPIC-600",
+      "summary": "[Epic] Scheduled Watch Rooms",
+      "labels": ["backend", "rooms", "movies"],
+      "description": "Sprint 6. Schedule future watch sessions."
+    },
+    {
+      "id": "EPIC-610",
+      "summary": "[Epic] Observability",
+      "labels": ["backend", "observability"],
+      "description": "Sprint 6. Prometheus metrics and Grafana dashboards."
+    },
+    {
+      "id": "EPIC-620",
+      "summary": "[Epic] Security Hardening",
+      "labels": ["backend", "security", "testing"],
+      "description": "Sprint 6. Validation, CORS, security tests, runbooks."
+    },
+    {
+      "id": "EPIC-630",
+      "summary": "[Epic] CI/CD Pipeline",
+      "labels": ["infra", "testing"],
+      "description": "Sprint 6. GitHub Actions CI pipeline."
+    },
+    {
+      "id": "EPIC-700",
+      "summary": "[Epic] End-to-End Test Suite",
+      "labels": ["testing"],
+      "description": "Sprint 7. E2E, failure, and load tests."
+    },
+    {
+      "id": "EPIC-710",
+      "summary": "[Epic] MVP Deployment",
+      "labels": ["infra"],
+      "description": "Sprint 7. Production deployment within budget."
+    },
+    {
+      "id": "EPIC-720",
+      "summary": "[Epic] Documentation Refresh & Release",
+      "labels": ["docs", "infra"],
+      "description": "Sprint 7. Docs update and v0.1.0-mvp release."
+    }
+  ],
+  "issues": [
+    {
+      "epic": "EPIC-0",
+      "type": "Task",
+      "summary": "Initialize git repo, add .gitignore, commit docs pack",
+      "sp": 1,
+      "labels": ["docs"],
+      "depends": ["BL-1"],
+      "acceptance": "Git repo initialized on main branch. Docs pack committed."
+    },
+    {
+      "epic": "EPIC-0",
+      "type": "Story",
+      "summary": "Bootstrap pnpm + Turbo monorepo with root scripts",
+      "sp": 2,
+      "labels": ["infra"],
+      "depends": ["BL-2"],
+      "acceptance": "pnpm install succeeds. pnpm build runs. Workspace includes apps/*, packages/*, tests/*."
+    },
+    {
+      "epic": "EPIC-0",
+      "type": "Story",
+      "summary": "Add strict root TypeScript + Prettier config",
+      "sp": 1,
+      "labels": ["infra"],
+      "depends": ["BL-3"],
+      "acceptance": "tsconfig.base.json strict mode. Prettier configured."
+    },
+    {
+      "epic": "EPIC-0",
+      "type": "Story",
+      "summary": "Create target folder structure (apps/, packages/, infra/, tests/, scripts/, docs/)",
+      "sp": 1,
+      "labels": ["infra"],
+      "depends": ["BL-3"],
+      "acceptance": "All top-level folders exist per implementation plan."
+    },
+
+    {
+      "epic": "EPIC-10",
+      "type": "Story",
+      "summary": "Create infra/docker-compose.yml with Auth PostgreSQL (5433) and Movie PostgreSQL (5434)",
+      "sp": 2,
+      "labels": ["infra", "blocked-by-infra"],
+      "depends": ["BL-5"],
+      "acceptance": "Both postgres services start and accept connections."
+    },
+    {
+      "epic": "EPIC-10",
+      "type": "Story",
+      "summary": "Add MongoDB, Redis, RabbitMQ, Meilisearch, MinIO to Docker Compose",
+      "sp": 3,
+      "labels": ["infra"],
+      "depends": ["BL-11"],
+      "acceptance": "pnpm infra:up starts all containers. RabbitMQ UI at :15672. MinIO at :9001. Meilisearch /health OK."
+    },
+    {
+      "epic": "EPIC-10",
+      "type": "Story",
+      "summary": "Add MinIO bucket init service for kinvue-media",
+      "sp": 2,
+      "labels": ["infra", "media"],
+      "depends": ["BL-12"],
+      "acceptance": "kinvue-media bucket created on startup."
+    },
+    {
+      "epic": "EPIC-10",
+      "type": "Story",
+      "summary": "Add Prometheus + Grafana to Docker Compose",
+      "sp": 2,
+      "labels": ["infra", "observability"],
+      "depends": ["BL-12"],
+      "acceptance": "Prometheus :9090 and Grafana :3001 reachable."
+    },
+    {
+      "epic": "EPIC-10",
+      "type": "Task",
+      "summary": "Create .env.example with all required env vars and document port map",
+      "sp": 1,
+      "labels": ["infra", "docs"],
+      "depends": ["BL-12"],
+      "acceptance": ".env.example contains all vars from implementation plan."
+    },
+    {
+      "epic": "EPIC-10",
+      "type": "Task",
+      "summary": "Verify all infra containers healthy",
+      "sp": 1,
+      "labels": ["infra", "testing"],
+      "depends": ["BL-13", "BL-14", "BL-15"],
+      "acceptance": "docker compose ps shows all healthy. Manual UI checks pass."
+    },
+
+    {
+      "epic": "EPIC-20",
+      "type": "Story",
+      "summary": "Create packages/config with Zod-validated env loading per service",
+      "sp": 3,
+      "labels": ["backend"],
+      "depends": ["BL-5"],
+      "acceptance": "Missing env vars fail at startup with clear errors."
+    },
+    {
+      "epic": "EPIC-20",
+      "type": "Story",
+      "summary": "Create packages/logger with structured JSON logs",
+      "sp": 2,
+      "labels": ["backend", "observability"],
+      "depends": ["BL-21"],
+      "acceptance": "Logs include service, requestId, userId, route, durationMs, error."
+    },
+    {
+      "epic": "EPIC-20",
+      "type": "Story",
+      "summary": "Create packages/errors with shared error codes and HTTP mapping",
+      "sp": 2,
+      "labels": ["backend"],
+      "depends": ["BL-21"],
+      "acceptance": "All standard error codes defined and mapped to HTTP status."
+    },
+    {
+      "epic": "EPIC-20",
+      "type": "Story",
+      "summary": "Create packages/jwt with RS256 JWKS verification helper",
+      "sp": 3,
+      "labels": ["backend", "auth", "security"],
+      "depends": ["BL-21"],
+      "acceptance": "Validates iss, aud, exp, signature via JWKS."
+    },
+    {
+      "epic": "EPIC-20",
+      "type": "Story",
+      "summary": "Create packages/contracts with shared DTOs and domain event types",
+      "sp": 3,
+      "labels": ["backend"],
+      "depends": ["BL-23"],
+      "acceptance": "DTOs for Auth, Users, Movies, Rooms, Notifications exported."
+    },
+    {
+      "epic": "EPIC-20",
+      "type": "Story",
+      "summary": "Create packages/testing with DB/Redis/Mongo cleanup helpers",
+      "sp": 3,
+      "labels": ["backend", "testing"],
+      "depends": ["BL-21"],
+      "acceptance": "Test helpers for HTTP, users, movies, cleanup available."
+    },
+    {
+      "epic": "EPIC-20",
+      "type": "Task",
+      "summary": "Add unit tests for config, errors, logger, JWT validation failures",
+      "sp": 2,
+      "labels": ["testing"],
+      "depends": ["BL-21", "BL-22", "BL-23", "BL-24", "BL-25", "BL-26"],
+      "acceptance": "pnpm test passes for all shared packages."
+    },
+
+    {
+      "epic": "EPIC-30",
+      "type": "Story",
+      "summary": "Scaffold apps/gateway with health, readiness, metrics, shared error format",
+      "sp": 3,
+      "labels": ["backend", "gateway"],
+      "depends": ["BL-22", "BL-23", "BL-24", "BL-25", "BL-26"],
+      "acceptance": "GET /health/live, /health/ready, /metrics work."
+    },
+    {
+      "epic": "EPIC-30",
+      "type": "Story",
+      "summary": "Scaffold apps/auth-service with health, readiness, metrics",
+      "sp": 2,
+      "labels": ["backend", "auth"],
+      "depends": ["BL-22", "BL-23", "BL-24", "BL-25", "BL-26"],
+      "acceptance": "Health and metrics endpoints respond."
+    },
+    {
+      "epic": "EPIC-30",
+      "type": "Story",
+      "summary": "Scaffold apps/users-service with health, readiness, metrics",
+      "sp": 2,
+      "labels": ["backend", "users"],
+      "depends": ["BL-22", "BL-23", "BL-24", "BL-25", "BL-26"],
+      "acceptance": "Health and metrics endpoints respond."
+    },
+    {
+      "epic": "EPIC-30",
+      "type": "Story",
+      "summary": "Scaffold apps/movie-service with health, readiness, metrics",
+      "sp": 2,
+      "labels": ["backend", "movies"],
+      "depends": ["BL-22", "BL-23", "BL-24", "BL-25", "BL-26"],
+      "acceptance": "Health and metrics endpoints respond."
+    },
+    {
+      "epic": "EPIC-30",
+      "type": "Story",
+      "summary": "Scaffold apps/rooms-service with HTTP health + WS port placeholder",
+      "sp": 3,
+      "labels": ["backend", "rooms"],
+      "depends": ["BL-22", "BL-23", "BL-24", "BL-25", "BL-26"],
+      "acceptance": "HTTP :4004 and WS :4014 ports configured."
+    },
+    {
+      "epic": "EPIC-30",
+      "type": "Story",
+      "summary": "Scaffold apps/notifications-service with health, readiness, metrics",
+      "sp": 2,
+      "labels": ["backend", "notifications"],
+      "depends": ["BL-22", "BL-23", "BL-24", "BL-25", "BL-26"],
+      "acceptance": "Health and metrics endpoints respond."
+    },
+    {
+      "epic": "EPIC-30",
+      "type": "Story",
+      "summary": "Scaffold apps/transcode-worker with health + queue consumer stub",
+      "sp": 2,
+      "labels": ["backend", "media"],
+      "depends": ["BL-22", "BL-23", "BL-24", "BL-25", "BL-26"],
+      "acceptance": "Worker starts and exposes health endpoint."
+    },
+    {
+      "epic": "EPIC-30",
+      "type": "Task",
+      "summary": "Add Dockerfile for each app and wire all services into docker-compose.yml",
+      "sp": 3,
+      "labels": ["infra"],
+      "depends": [
+        "BL-31",
+        "BL-32",
+        "BL-33",
+        "BL-34",
+        "BL-35",
+        "BL-36",
+        "BL-37",
+        "BL-16"
+      ],
+      "acceptance": "All services build and start via docker compose."
+    },
+    {
+      "epic": "EPIC-30",
+      "type": "Task",
+      "summary": "Verify all service health endpoints on ports 4000-4005",
+      "sp": 1,
+      "labels": ["testing"],
+      "depends": ["BL-38"],
+      "acceptance": "curl health checks pass for all 6 HTTP services."
+    }
+  ]
+}

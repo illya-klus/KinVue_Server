@@ -1,0 +1,122 @@
+[
+  {
+    "key": "KIN-41",
+    "type": "Story",
+    "summary": "Create target folder structure (apps/, packages/, infra/, tests/, scripts/, docs/)",
+    "description": "## What to do\nCreate the target folder layout: `apps/`, `packages/`, `infra/`, `tests/`, `scripts/`, and `docs/`. This mirrors the architecture in `27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md` and tells every future task where code belongs.\n\n## Technical notes\n- Create: `apps/`, `packages/`, `infra/`, `tests/`, `scripts/`, `docs/`\n- File: `infra/docker-compose.yml`; start with `pnpm infra:up`\n- Labels: infra\n\n## Story points\n1\n\n## Depends on\nKIN-3\n\n## Acceptance criteria\n- All top-level folders exist per implementation plan\n- Folder structure matches 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-42",
+    "type": "Story",
+    "summary": "Create infra/docker-compose.yml with Auth PostgreSQL (5433) and Movie PostgreSQL (5434)",
+    "description": "## What to do\nCreate `infra/docker-compose.yml` with Auth PostgreSQL on port 5433 and Movie PostgreSQL on port 5434. These databases back auth-service and movie-service; local services cannot start without them.\n\n## Technical notes\n- File: `infra/docker-compose.yml`; start with `pnpm infra:up`\n- Labels: infra, blocked-by-infra\n\n## Story points\n2\n\n## Depends on\nKIN-5\n\n## Acceptance criteria\n- `auth-postgres` service on port 5433\n- `movie-postgres` service on port 5434\n- Both accept connections after `pnpm infra:up`\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-43",
+    "type": "Story",
+    "summary": "Add MongoDB, Redis, RabbitMQ, Meilisearch, MinIO to Docker Compose",
+    "description": "## What to do\nExtend `infra/docker-compose.yml` with MongoDB (27017), Redis (6379), RabbitMQ (5672/15672), Meilisearch (7700), and MinIO (9000/9001). KinVue depends on all of these for users, rooms, search, messaging, and media.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Service: `apps/rooms-service` HTTP 4004, WS ws://localhost:4014/rooms; Redis `redis://localhost:6379`\n- Service: `apps/notifications-service` port 4005; RabbitMQ amqp://localhost:5672, management UI localhost:15672\n- Object storage: MinIO localhost:9000, bucket `kinvue-media`, console localhost:9001\n- Labels: infra\n\n## Story points\n3\n\n## Depends on\nKIN-11\n\n## Acceptance criteria\n- `pnpm infra:up` starts all containers\n- RabbitMQ UI at localhost:15672\n- MinIO console at localhost:9001\n- Meilisearch /health returns OK\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-44",
+    "type": "Story",
+    "summary": "Add MinIO bucket init service for kinvue-media",
+    "description": "## What to do\nAdd a MinIO bucket-init sidecar in Docker Compose that creates the `kinvue-media` bucket on startup. Admin uploads and transcoded HLS output will land in this bucket.\n\n## Technical notes\n- Object storage: MinIO localhost:9000, bucket `kinvue-media`, console localhost:9001\n- Labels: infra, media\n\n## Story points\n2\n\n## Depends on\nKIN-12\n\n## Acceptance criteria\n- `kinvue-media` bucket created on startup\n- Bucket init runs automatically with docker compose\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-45",
+    "type": "Story",
+    "summary": "Add Prometheus + Grafana to Docker Compose",
+    "description": "## What to do\nAdd Prometheus (9090) and Grafana (3001) services to `infra/docker-compose.yml`. These give the team local metrics and dashboards before production observability is wired up.\n\n## Technical notes\n- Prometheus localhost:9090; Grafana localhost:3001\n- Labels: infra, observability\n\n## Story points\n2\n\n## Depends on\nKIN-12\n\n## Acceptance criteria\n- Prometheus reachable at localhost:9090\n- Grafana reachable at localhost:3001\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-46",
+    "type": "Task",
+    "summary": "Create .env.example with all required env vars and document port map",
+    "description": "## What to do\nCreate `.env.example` listing every required environment variable and document the port map (Gateway 4000, Auth 4001, etc.). Juniors copy this to `.env` to run services locally without guessing config.\n\n## Technical notes\n- Labels: infra, docs\n\n## Story points\n1\n\n## Depends on\nKIN-12\n\n## Acceptance criteria\n- `.env.example` contains all variables from implementation plan\n- Port map documented\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-47",
+    "type": "Task",
+    "summary": "Verify all infra containers healthy",
+    "description": "## What to do\nStart the full Docker Compose stack with `pnpm infra:up` and verify every container is healthy — RabbitMQ UI, MinIO console, Meilisearch `/health`, and both PostgreSQL instances. Block downstream service work until infra is green.\n\n## Technical notes\n- Labels: infra, testing\n\n## Story points\n1\n\n## Depends on\nKIN-13, KIN-14, KIN-15\n\n## Acceptance criteria\n- `docker compose ps` shows all healthy\n- RabbitMQ UI, MinIO console, Meilisearch health verified manually\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-48",
+    "type": "Epic",
+    "summary": "[Epic] CI/CD Pipeline",
+    "description": "## Goal\nAutomated quality gate on every PR: lint, typecheck, unit/integration tests, Playwright smoke.\n\n## Scope\nGitHub Actions workflow, Docker Compose in CI, artifact upload on failure.\n\n## Out of scope\nDo not deploy to production in this epic — CI only.\n\n## Suggested order\n1. KIN-631: GitHub Actions: install, lint, typecheck, unit tests\n2. KIN-632: CI: Docker Compose integration tests + Playwright smoke\n3. KIN-633: Upload test artifacts on CI failure\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-49",
+    "type": "Epic",
+    "summary": "[Epic] End-to-End Test Suite",
+    "description": "## Goal\nComprehensive automated coverage of user journeys, failure modes, and load baselines.\n\n## Scope\n20 E2E journeys, failure tests, load scripts, capacity documentation.\n\n## Out of scope\nDo not change production architecture — test and measure only.\n\n## Suggested order\n1. KIN-701: E2E suite: all 20 user journeys from implementation plan Phase 29\n2. KIN-702: Failure tests: Gateway/Auth/Users/Rooms/Redis/Meilisearch/RabbitMQ/transcode scenarios\n3. KIN-703: Load test scripts: Gateway, search, Rooms WS, chat, notifications, media\n4. KIN-704: Document capacity results in `docs/runbooks/capacity-results.md`\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-50",
+    "type": "Epic",
+    "summary": "[Epic] MVP Deployment",
+    "description": "## Goal\nDeploy KinVue MVP to production within <= $300/month with smoke-tested Gateway, WS, and media.\n\n## Scope\nProduction Dockerfiles, infra provisioning, deploy, migrations, deployment runbook.\n\n## Out of scope\nDo not target 100k concurrent users — MVP scale only.\n\n## Suggested order\n1. KIN-711: Production Dockerfiles + env documentation\n2. KIN-712: Provision MVP infra (DBs, Redis, RabbitMQ, object storage, CDN) within <= $300/month budget\n3. KIN-713: Deploy services + run migrations + smoke tests\n4. KIN-714: Write `docs/runbooks/deployment.md`\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-51",
+    "type": "Epic",
+    "summary": "[Epic] Documentation Refresh & Release",
+    "description": "## Goal\nFinalize docs, run acceptance checklist, and tag `v0.1.0-mvp` release.\n\n## Scope\nREADME/plan updates, Phase 34 checklist, git tag.\n\n## Out of scope\nDo not start v2 features — documentation and release only.\n\n## Suggested order\n1. KIN-721: Update README, implementation plan references, open questions, data models\n2. KIN-722: Final acceptance checklist (Phase 34) — all FR/NFR verified\n3. KIN-723: Tag release `v0.1.0-mvp`\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-52",
+    "type": "Story",
+    "summary": "Create packages/config with Zod-validated env loading per service",
+    "description": "## What to do\nCreate `packages/config` with Zod-validated environment loading — one schema per service so missing vars fail fast at startup. Every KinVue microservice imports this package instead of reading `process.env` directly.\n\n## Technical notes\n- Package: `packages/config`; use Zod schemas per service\n- Labels: backend\n\n## Story points\n3\n\n## Depends on\nKIN-5\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-53",
+    "type": "Story",
+    "summary": "Create packages/logger with structured JSON logs",
+    "description": "## What to do\nCreate `packages/logger` emitting structured JSON logs with fields `service`, `requestId`, `userId`, `route`, `durationMs`, and `error`. Consistent logs are required for debugging distributed flows like registration Saga and room sync.\n\n## Technical notes\n- Log fields: `service`, `requestId`, `userId`, `route`, `durationMs`, `error`\n- Labels: backend, observability\n\n## Story points\n2\n\n## Depends on\nKIN-21\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-54",
+    "type": "Story",
+    "summary": "Create packages/errors with shared error codes and HTTP mapping",
+    "description": "## What to do\nCreate `packages/errors` with shared error codes (`UNAUTHENTICATED`, `FORBIDDEN`, `VALIDATION_FAILED`, etc.) and HTTP status mapping. Gateway and all services return the same JSON error shape to the web client.\n\n## Technical notes\n- Labels: backend\n\n## Story points\n2\n\n## Depends on\nKIN-21\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-55",
+    "type": "Story",
+    "summary": "Create packages/jwt with RS256 JWKS verification helper",
+    "description": "## What to do\nCreate `packages/jwt` with an RS256 JWKS verification helper checking issuer, audience, expiration, and scopes. Gateway and rooms-service use this for local JWT validation without calling auth on every request.\n\n## Technical notes\n- RS256 verification; issuer `kinvue-auth`, audience `kinvue`\n- Labels: backend, auth, security\n\n## Story points\n3\n\n## Depends on\nKIN-21\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-56",
+    "type": "Story",
+    "summary": "Create packages/contracts with shared DTOs and domain event types",
+    "description": "## What to do\nCreate `packages/contracts` with shared DTOs and domain event types for Auth, Users, Movies, Rooms, and Notifications. Keeps request/response shapes consistent across service boundaries.\n\n## Technical notes\n- Labels: backend\n\n## Story points\n3\n\n## Depends on\nKIN-23\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-57",
+    "type": "Story",
+    "summary": "Create packages/testing with DB/Redis/Mongo cleanup helpers and HTTP test utilities",
+    "description": "## What to do\nCreate `packages/testing` with helpers to clean PostgreSQL, MongoDB, and Redis between tests plus HTTP request utilities. Integration tests across services depend on this package.\n\n## Technical notes\n- Labels: backend, testing\n\n## Story points\n3\n\n## Depends on\nKIN-21\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-58",
+    "type": "Task",
+    "summary": "Add unit tests for config, errors, logger, JWT validation failures",
+    "description": "## What to do\nWrite unit tests for `packages/config`, `packages/errors`, `packages/logger`, and JWT validation failure cases. Catch misconfiguration and auth edge cases before services consume these packages.\n\n## Technical notes\n- Labels: testing\n\n## Story points\n2\n\n## Depends on\nKIN-21–KIN-26\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-59",
+    "type": "Story",
+    "summary": "Scaffold apps/gateway with health, readiness, metrics, shared error format",
+    "description": "## What to do\nScaffold `apps/gateway` on port 4000 with `GET /health/live`, `GET /health/ready`, `GET /metrics`, and shared JSON error responses. Gateway is the only HTTP entry point for the web app.\n\n## Technical notes\n- Service: `apps/gateway` port 4000; sole HTTP entry for web client\n- Labels: backend, gateway\n\n## Story points\n3\n\n## Depends on\nKIN-22–KIN-26\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-60",
+    "type": "Story",
+    "summary": "Scaffold apps/auth-service with health, readiness, metrics",
+    "description": "## What to do\nScaffold `apps/auth-service` on port 4001 with health, readiness, and Prometheus metrics endpoints. Auth owns identity, credentials, refresh sessions, and JWKS.\n\n## Technical notes\n- Service: `apps/auth-service` port 4001; DB `AUTH_DATABASE_URL` postgresql://localhost:5433\n- Labels: backend, auth\n\n## Story points\n2\n\n## Depends on\nKIN-22–KIN-26\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  }
+]

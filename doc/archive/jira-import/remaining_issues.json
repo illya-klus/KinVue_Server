@@ -1,0 +1,1005 @@
+{
+  "count": 125,
+  "issues": [
+    {
+      "backlog_key": "KIN-127",
+      "issueTypeName": "Task",
+      "summary": "Unit tests: hashing, token claims, refresh rotation, inactive login, duplicate email",
+      "description": "## Backlog Reference\nKIN-127\n\n## Story Points\n3\n\n## Depends On\nKIN-123–KIN-126\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "auth"],
+      "parent": "KIN-8"
+    },
+    {
+      "backlog_key": "KIN-128",
+      "issueTypeName": "Task",
+      "summary": "Integration tests: successful Saga, Users unavailable retry, compensation path",
+      "description": "## Backlog Reference\nKIN-128\n\n## Story Points\n5\n\n## Depends On\nKIN-126\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "auth"],
+      "parent": "KIN-8"
+    },
+    {
+      "backlog_key": "KIN-131",
+      "issueTypeName": "Story",
+      "summary": "Implement idempotent POST /internal/users/profiles",
+      "description": "## Backlog Reference\nKIN-131\n\n## Story Points\n3\n\n## Depends On\nKIN-111\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "users"],
+      "parent": "KIN-9"
+    },
+    {
+      "backlog_key": "KIN-132",
+      "issueTypeName": "Story",
+      "summary": "Implement GET /users/me and PATCH /users/me",
+      "description": "## Backlog Reference\nKIN-132\n\n## Story Points\n3\n\n## Depends On\nKIN-131\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "users"],
+      "parent": "KIN-9"
+    },
+    {
+      "backlog_key": "KIN-133",
+      "issueTypeName": "Story",
+      "summary": "Implement GET /users/search (min 2 chars, cursor pagination)",
+      "description": "## Backlog Reference\nKIN-133\n\n## Story Points\n3\n\n## Depends On\nKIN-131\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "users"],
+      "parent": "KIN-9"
+    },
+    {
+      "backlog_key": "KIN-134",
+      "issueTypeName": "Story",
+      "summary": "Implement friend requests: create, incoming, outgoing, accept, reject",
+      "description": "## Backlog Reference\nKIN-134\n\n## Story Points\n5\n\n## Depends On\nKIN-112\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "users"],
+      "parent": "KIN-9"
+    },
+    {
+      "backlog_key": "KIN-135",
+      "issueTypeName": "Story",
+      "summary": "Implement GET /friends",
+      "description": "## Backlog Reference\nKIN-135\n\n## Story Points\n2\n\n## Depends On\nKIN-134\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "users"],
+      "parent": "KIN-9"
+    },
+    {
+      "backlog_key": "KIN-136",
+      "issueTypeName": "Story",
+      "summary": "Emit FRIEND_REQUEST_CREATED and FRIEND_REQUEST_ACCEPTED via Mongo outbox",
+      "description": "## Backlog Reference\nKIN-136\n\n## Story Points\n3\n\n## Depends On\nKIN-134\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "users", "notifications"],
+      "parent": "KIN-9"
+    },
+    {
+      "backlog_key": "KIN-137",
+      "issueTypeName": "Story",
+      "summary": "Build outbox publisher to RabbitMQ for friendship events",
+      "description": "## Backlog Reference\nKIN-137\n\n## Story Points\n3\n\n## Depends On\nKIN-136, KIN-12\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "users", "notifications"],
+      "parent": "KIN-9"
+    },
+    {
+      "backlog_key": "KIN-138",
+      "issueTypeName": "Task",
+      "summary": "Tests: idempotent profile, pair normalization, authz on accept/reject, outbox creation",
+      "description": "## Backlog Reference\nKIN-138\n\n## Story Points\n3\n\n## Depends On\nKIN-131–KIN-137\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "users"],
+      "parent": "KIN-9"
+    },
+    {
+      "backlog_key": "KIN-201",
+      "issueTypeName": "Story",
+      "summary": "Add request ID middleware and forward x-request-id, x-user-id, x-user-scopes",
+      "description": "## Backlog Reference\nKIN-201\n\n## Story Points\n2\n\n## Depends On\nKIN-31\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "gateway"],
+      "parent": "KIN-10"
+    },
+    {
+      "backlog_key": "KIN-202",
+      "issueTypeName": "Story",
+      "summary": "Implement public routes (register, login, refresh, JWKS, movie search/detail)",
+      "description": "## Backlog Reference\nKIN-202\n\n## Story Points\n3\n\n## Depends On\nKIN-201, KIN-122\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "gateway"],
+      "parent": "KIN-10"
+    },
+    {
+      "backlog_key": "KIN-203",
+      "issueTypeName": "Story",
+      "summary": "Implement JWT middleware with JWKS cache (5 min) + unknown kid refresh",
+      "description": "## Backlog Reference\nKIN-203\n\n## Story Points\n3\n\n## Depends On\nKIN-24, KIN-122\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "gateway", "security"],
+      "parent": "KIN-10"
+    },
+    {
+      "backlog_key": "KIN-204",
+      "issueTypeName": "Story",
+      "summary": "Implement authenticated user routes (users, friends, watchlist, rooms control, media-access)",
+      "description": "## Backlog Reference\nKIN-204\n\n## Story Points\n5\n\n## Depends On\nKIN-203\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "gateway"],
+      "parent": "KIN-10"
+    },
+    {
+      "backlog_key": "KIN-205",
+      "issueTypeName": "Story",
+      "summary": "Implement admin routes with admin scope guard",
+      "description": "## Backlog Reference\nKIN-205\n\n## Story Points\n3\n\n## Depends On\nKIN-203\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "gateway", "security"],
+      "parent": "KIN-10"
+    },
+    {
+      "backlog_key": "KIN-206",
+      "issueTypeName": "Story",
+      "summary": "Add rate limits per endpoint group",
+      "description": "## Backlog Reference\nKIN-206\n\n## Story Points\n3\n\n## Depends On\nKIN-202–KIN-205\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "gateway", "security"],
+      "parent": "KIN-10"
+    },
+    {
+      "backlog_key": "KIN-207",
+      "issueTypeName": "Task",
+      "summary": "Gateway tests: expired JWT 401, bad signature 401, missing scope 403, upstream 503, request ID forwarding",
+      "description": "## Backlog Reference\nKIN-207\n\n## Story Points\n3\n\n## Depends On\nKIN-204–KIN-206\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "gateway"],
+      "parent": "KIN-10"
+    },
+    {
+      "backlog_key": "KIN-211",
+      "issueTypeName": "Story",
+      "summary": "Create Vite React TS app with routing shell",
+      "description": "## Backlog Reference\nKIN-211\n\n## Story Points\n3\n\n## Depends On\nKIN-3\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend"],
+      "parent": "KIN-11"
+    },
+    {
+      "backlog_key": "KIN-212",
+      "issueTypeName": "Story",
+      "summary": "Build API client (Gateway-only HTTP) + auth state store",
+      "description": "## Backlog Reference\nKIN-212\n\n## Story Points\n3\n\n## Depends On\nKIN-211\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend"],
+      "parent": "KIN-11"
+    },
+    {
+      "backlog_key": "KIN-213",
+      "issueTypeName": "Story",
+      "summary": "Implement auto refresh on 401 + logout flow",
+      "description": "## Backlog Reference\nKIN-213\n\n## Story Points\n3\n\n## Depends On\nKIN-212\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "auth"],
+      "parent": "KIN-11"
+    },
+    {
+      "backlog_key": "KIN-214",
+      "issueTypeName": "Story",
+      "summary": "Add protected and admin route wrappers",
+      "description": "## Backlog Reference\nKIN-214\n\n## Story Points\n2\n\n## Depends On\nKIN-213\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "security"],
+      "parent": "KIN-11"
+    },
+    {
+      "backlog_key": "KIN-215",
+      "issueTypeName": "Story",
+      "summary": "Add shared UI states: loading, empty, error, unauthorized, forbidden",
+      "description": "## Backlog Reference\nKIN-215\n\n## Story Points\n2\n\n## Depends On\nKIN-211\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend"],
+      "parent": "KIN-11"
+    },
+    {
+      "backlog_key": "KIN-216",
+      "issueTypeName": "Task",
+      "summary": "Playwright smoke test: homepage loads",
+      "description": "## Backlog Reference\nKIN-216\n\n## Story Points\n1\n\n## Depends On\nKIN-211\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "testing"],
+      "parent": "KIN-11"
+    },
+    {
+      "backlog_key": "KIN-221",
+      "issueTypeName": "Story",
+      "summary": "Build register page with validation (password min 12 chars)",
+      "description": "## Backlog Reference\nKIN-221\n\n## Story Points\n3\n\n## Depends On\nKIN-212, KIN-126\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "auth"],
+      "parent": "KIN-12"
+    },
+    {
+      "backlog_key": "KIN-222",
+      "issueTypeName": "Story",
+      "summary": "Build login page + redirect to movie search",
+      "description": "## Backlog Reference\nKIN-222\n\n## Story Points\n2\n\n## Depends On\nKIN-212, KIN-123\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "auth"],
+      "parent": "KIN-12"
+    },
+    {
+      "backlog_key": "KIN-223",
+      "issueTypeName": "Story",
+      "summary": "Handle duplicate email/username error messages",
+      "description": "## Backlog Reference\nKIN-223\n\n## Story Points\n2\n\n## Depends On\nKIN-221\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "auth"],
+      "parent": "KIN-12"
+    },
+    {
+      "backlog_key": "KIN-224",
+      "issueTypeName": "Task",
+      "summary": "E2E: register → login → profile loads",
+      "description": "## Backlog Reference\nKIN-224\n\n## Story Points\n3\n\n## Depends On\nKIN-221, KIN-222, KIN-132\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "auth"],
+      "parent": "KIN-12"
+    },
+    {
+      "backlog_key": "KIN-225",
+      "issueTypeName": "Task",
+      "summary": "Manual failure test: kill Users during registration, verify no false success",
+      "description": "## Backlog Reference\nKIN-225\n\n## Story Points\n2\n\n## Depends On\nKIN-224\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "auth"],
+      "parent": "KIN-12"
+    },
+    {
+      "backlog_key": "KIN-231",
+      "issueTypeName": "Story",
+      "summary": "Build profile view + edit form",
+      "description": "## Backlog Reference\nKIN-231\n\n## Story Points\n3\n\n## Depends On\nKIN-132, KIN-214\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "users"],
+      "parent": "KIN-13"
+    },
+    {
+      "backlog_key": "KIN-232",
+      "issueTypeName": "Story",
+      "summary": "Build user search page (min 2 chars)",
+      "description": "## Backlog Reference\nKIN-232\n\n## Story Points\n2\n\n## Depends On\nKIN-133\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "users"],
+      "parent": "KIN-13"
+    },
+    {
+      "backlog_key": "KIN-233",
+      "issueTypeName": "Story",
+      "summary": "Build friend requests UI (send, incoming, outgoing, accept, reject)",
+      "description": "## Backlog Reference\nKIN-233\n\n## Story Points\n5\n\n## Depends On\nKIN-134\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "users"],
+      "parent": "KIN-13"
+    },
+    {
+      "backlog_key": "KIN-234",
+      "issueTypeName": "Story",
+      "summary": "Build friends list page",
+      "description": "## Backlog Reference\nKIN-234\n\n## Story Points\n2\n\n## Depends On\nKIN-135\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "users"],
+      "parent": "KIN-13"
+    },
+    {
+      "backlog_key": "KIN-235",
+      "issueTypeName": "Task",
+      "summary": "E2E: user A finds user B, sends request, B accepts, both see friendship",
+      "description": "## Backlog Reference\nKIN-235\n\n## Story Points\n3\n\n## Depends On\nKIN-233, KIN-234\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "users"],
+      "parent": "KIN-13"
+    },
+    {
+      "backlog_key": "KIN-301",
+      "issueTypeName": "Story",
+      "summary": "Add Movie DB migrations: movies, status constraint, indexes",
+      "description": "## Backlog Reference\nKIN-301\n\n## Story Points\n3\n\n## Depends On\nKIN-34, KIN-16\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies"],
+      "parent": "KIN-14"
+    },
+    {
+      "backlog_key": "KIN-302",
+      "issueTypeName": "Story",
+      "summary": "Add movie_uploads, watchlist_items, movie_index_sync_state, movie_outbox_events",
+      "description": "## Backlog Reference\nKIN-302\n\n## Story Points\n3\n\n## Depends On\nKIN-301\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies"],
+      "parent": "KIN-14"
+    },
+    {
+      "backlog_key": "KIN-311",
+      "issueTypeName": "Story",
+      "summary": "Admin: POST /admin/movies, PATCH /admin/movies/:id (DRAFT status)",
+      "description": "## Backlog Reference\nKIN-311\n\n## Story Points\n3\n\n## Depends On\nKIN-301\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies"],
+      "parent": "KIN-15"
+    },
+    {
+      "backlog_key": "KIN-312",
+      "issueTypeName": "Story",
+      "summary": "Admin: publish now + schedule publish endpoints",
+      "description": "## Backlog Reference\nKIN-312\n\n## Story Points\n3\n\n## Depends On\nKIN-311\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies"],
+      "parent": "KIN-15"
+    },
+    {
+      "backlog_key": "KIN-313",
+      "issueTypeName": "Story",
+      "summary": "Public: GET /movies/:id, GET /movies/search (PUBLISHED only)",
+      "description": "## Backlog Reference\nKIN-313\n\n## Story Points\n3\n\n## Depends On\nKIN-311\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies"],
+      "parent": "KIN-15"
+    },
+    {
+      "backlog_key": "KIN-314",
+      "issueTypeName": "Story",
+      "summary": "Watchlist: add, remove, list",
+      "description": "## Backlog Reference\nKIN-314\n\n## Story Points\n3\n\n## Depends On\nKIN-302\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies"],
+      "parent": "KIN-15"
+    },
+    {
+      "backlog_key": "KIN-315",
+      "issueTypeName": "Story",
+      "summary": "Meilisearch index setup + upsert on publish",
+      "description": "## Backlog Reference\nKIN-315\n\n## Story Points\n3\n\n## Depends On\nKIN-312, KIN-12\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies"],
+      "parent": "KIN-15"
+    },
+    {
+      "backlog_key": "KIN-316",
+      "issueTypeName": "Story",
+      "summary": "Scheduled publish worker (every 60s)",
+      "description": "## Backlog Reference\nKIN-316\n\n## Story Points\n3\n\n## Depends On\nKIN-312\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies"],
+      "parent": "KIN-15"
+    },
+    {
+      "backlog_key": "KIN-317",
+      "issueTypeName": "Story",
+      "summary": "Search reconciliation job (every 5 min, 24h overlap, safe checkpoint)",
+      "description": "## Backlog Reference\nKIN-317\n\n## Story Points\n5\n\n## Depends On\nKIN-315\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies"],
+      "parent": "KIN-15"
+    },
+    {
+      "backlog_key": "KIN-318",
+      "issueTypeName": "Task",
+      "summary": "CLI search:rebuild for full Meilisearch rebuild",
+      "description": "## Backlog Reference\nKIN-318\n\n## Story Points\n2\n\n## Depends On\nKIN-315\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies"],
+      "parent": "KIN-15"
+    },
+    {
+      "backlog_key": "KIN-319",
+      "issueTypeName": "Task",
+      "summary": "Tests: publish, schedule, Meilisearch failure recovery, watchlist, search filters",
+      "description": "## Backlog Reference\nKIN-319\n\n## Story Points\n5\n\n## Depends On\nKIN-313–KIN-318\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "movies"],
+      "parent": "KIN-15"
+    },
+    {
+      "backlog_key": "KIN-321",
+      "issueTypeName": "Story",
+      "summary": "Admin movie create/edit pages",
+      "description": "## Backlog Reference\nKIN-321\n\n## Story Points\n3\n\n## Depends On\nKIN-311, KIN-214\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "movies"],
+      "parent": "KIN-16"
+    },
+    {
+      "backlog_key": "KIN-322",
+      "issueTypeName": "Story",
+      "summary": "Admin publish now + schedule publish UI",
+      "description": "## Backlog Reference\nKIN-322\n\n## Story Points\n2\n\n## Depends On\nKIN-312\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "movies"],
+      "parent": "KIN-16"
+    },
+    {
+      "backlog_key": "KIN-323",
+      "issueTypeName": "Story",
+      "summary": "Movie search page with 300ms debounce + min 2 chars",
+      "description": "## Backlog Reference\nKIN-323\n\n## Story Points\n3\n\n## Depends On\nKIN-313\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "movies"],
+      "parent": "KIN-16"
+    },
+    {
+      "backlog_key": "KIN-324",
+      "issueTypeName": "Story",
+      "summary": "Movie detail page + watchlist add/remove",
+      "description": "## Backlog Reference\nKIN-324\n\n## Story Points\n3\n\n## Depends On\nKIN-314\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "movies"],
+      "parent": "KIN-16"
+    },
+    {
+      "backlog_key": "KIN-325",
+      "issueTypeName": "Story",
+      "summary": "Watchlist page",
+      "description": "## Backlog Reference\nKIN-325\n\n## Story Points\n2\n\n## Depends On\nKIN-314\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "movies"],
+      "parent": "KIN-16"
+    },
+    {
+      "backlog_key": "KIN-326",
+      "issueTypeName": "Task",
+      "summary": "E2E: admin publishes movie → user searches → saves to watchlist",
+      "description": "## Backlog Reference\nKIN-326\n\n## Story Points\n3\n\n## Depends On\nKIN-321–KIN-325\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "movies"],
+      "parent": "KIN-16"
+    },
+    {
+      "backlog_key": "KIN-401",
+      "issueTypeName": "Story",
+      "summary": "Redis key helpers and room state/member schemas",
+      "description": "## Backlog Reference\nKIN-401\n\n## Story Points\n3\n\n## Depends On\nKIN-35, KIN-16\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-17"
+    },
+    {
+      "backlog_key": "KIN-402",
+      "issueTypeName": "Story",
+      "summary": "POST /rooms (private/public, capacity 20, 6h TTL)",
+      "description": "## Backlog Reference\nKIN-402\n\n## Story Points\n3\n\n## Depends On\nKIN-401\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-17"
+    },
+    {
+      "backlog_key": "KIN-403",
+      "issueTypeName": "Story",
+      "summary": "GET /rooms/public",
+      "description": "## Backlog Reference\nKIN-403\n\n## Story Points\n2\n\n## Depends On\nKIN-402\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-17"
+    },
+    {
+      "backlog_key": "KIN-404",
+      "issueTypeName": "Story",
+      "summary": "POST /rooms/:id/invites (owner only, default VIEWER) + ROOM_INVITED outbox event",
+      "description": "## Backlog Reference\nKIN-404\n\n## Story Points\n3\n\n## Depends On\nKIN-402\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms", "notifications"],
+      "parent": "KIN-17"
+    },
+    {
+      "backlog_key": "KIN-405",
+      "issueTypeName": "Story",
+      "summary": "POST /rooms/:id/permissions (owner grants CONTROLLER)",
+      "description": "## Backlog Reference\nKIN-405\n\n## Story Points\n3\n\n## Depends On\nKIN-402\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-17"
+    },
+    {
+      "backlog_key": "KIN-406",
+      "issueTypeName": "Story",
+      "summary": "POST /rooms/:id/close (owner only, 15 min cleanup TTL)",
+      "description": "## Backlog Reference\nKIN-406\n\n## Story Points\n2\n\n## Depends On\nKIN-402\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-17"
+    },
+    {
+      "backlog_key": "KIN-407",
+      "issueTypeName": "Task",
+      "summary": "Tests: create, invite authz, permission changes, close, TTL, capacity",
+      "description": "## Backlog Reference\nKIN-407\n\n## Story Points\n3\n\n## Depends On\nKIN-402–KIN-406\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "rooms"],
+      "parent": "KIN-17"
+    },
+    {
+      "backlog_key": "KIN-411",
+      "issueTypeName": "Story",
+      "summary": "WebSocket endpoint ws://localhost:4014/rooms with JWT handshake",
+      "description": "## Backlog Reference\nKIN-411\n\n## Story Points\n5\n\n## Depends On\nKIN-401, KIN-24\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms", "security"],
+      "parent": "KIN-18"
+    },
+    {
+      "backlog_key": "KIN-412",
+      "issueTypeName": "Story",
+      "summary": "Room access checks (public/private, closed, capacity, invite list)",
+      "description": "## Backlog Reference\nKIN-412\n\n## Story Points\n3\n\n## Depends On\nKIN-411\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-18"
+    },
+    {
+      "backlog_key": "KIN-413",
+      "issueTypeName": "Story",
+      "summary": "Send room.state_sync on connect",
+      "description": "## Backlog Reference\nKIN-413\n\n## Story Points\n2\n\n## Depends On\nKIN-411\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-18"
+    },
+    {
+      "backlog_key": "KIN-414",
+      "issueTypeName": "Story",
+      "summary": "Heartbeat every 30s, stale after 75s, presence ONLINE/DISCONNECTED/LEFT",
+      "description": "## Backlog Reference\nKIN-414\n\n## Story Points\n3\n\n## Depends On\nKIN-411\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-18"
+    },
+    {
+      "backlog_key": "KIN-415",
+      "issueTypeName": "Task",
+      "summary": "Tests: valid handshake, invalid JWT, private access denial, reconnect sync",
+      "description": "## Backlog Reference\nKIN-415\n\n## Story Points\n3\n\n## Depends On\nKIN-411–KIN-414\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "rooms"],
+      "parent": "KIN-18"
+    },
+    {
+      "backlog_key": "KIN-421",
+      "issueTypeName": "Story",
+      "summary": "Handle room.play, room.pause, room.seek with permission checks",
+      "description": "## Backlog Reference\nKIN-421\n\n## Story Points\n5\n\n## Depends On\nKIN-414\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-19"
+    },
+    {
+      "backlog_key": "KIN-422",
+      "issueTypeName": "Story",
+      "summary": "Store sync point in Redis (status, position, updatedAt, version)",
+      "description": "## Backlog Reference\nKIN-422\n\n## Story Points\n3\n\n## Depends On\nKIN-421\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-19"
+    },
+    {
+      "backlog_key": "KIN-423",
+      "issueTypeName": "Story",
+      "summary": "Redis Pub/Sub fan-out across Rooms instances (subscribe only active rooms)",
+      "description": "## Backlog Reference\nKIN-423\n\n## Story Points\n5\n\n## Depends On\nKIN-422\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-19"
+    },
+    {
+      "backlog_key": "KIN-424",
+      "issueTypeName": "Story",
+      "summary": "Broadcast room.playback_state_changed with monotonic version",
+      "description": "## Backlog Reference\nKIN-424\n\n## Story Points\n3\n\n## Depends On\nKIN-423\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-19"
+    },
+    {
+      "backlog_key": "KIN-425",
+      "issueTypeName": "Task",
+      "summary": "Multi-instance test: user A pauses on instance 1, user B receives on instance 2",
+      "description": "## Backlog Reference\nKIN-425\n\n## Story Points\n5\n\n## Depends On\nKIN-424\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "rooms"],
+      "parent": "KIN-19"
+    },
+    {
+      "backlog_key": "KIN-426",
+      "issueTypeName": "Task",
+      "summary": "Reconnect test: client receives authoritative Redis state without Pub/Sub replay",
+      "description": "## Backlog Reference\nKIN-426\n\n## Story Points\n3\n\n## Depends On\nKIN-424\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "rooms"],
+      "parent": "KIN-19"
+    },
+    {
+      "backlog_key": "KIN-431",
+      "issueTypeName": "Story",
+      "summary": "chat.message with client messageId, 1000 char limit, Redis TTL 24h",
+      "description": "## Backlog Reference\nKIN-431\n\n## Story Points\n3\n\n## Depends On\nKIN-414\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-20"
+    },
+    {
+      "backlog_key": "KIN-432",
+      "issueTypeName": "Story",
+      "summary": "Idempotent chat retry using seenMessageIds set",
+      "description": "## Backlog Reference\nKIN-432\n\n## Story Points\n3\n\n## Depends On\nKIN-431\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-20"
+    },
+    {
+      "backlog_key": "KIN-433",
+      "issueTypeName": "Story",
+      "summary": "chat.reaction with allowed emoji set",
+      "description": "## Backlog Reference\nKIN-433\n\n## Story Points\n2\n\n## Depends On\nKIN-431\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-20"
+    },
+    {
+      "backlog_key": "KIN-434",
+      "issueTypeName": "Task",
+      "summary": "Tests: validation, duplicate messageId, cross-instance delivery",
+      "description": "## Backlog Reference\nKIN-434\n\n## Story Points\n3\n\n## Depends On\nKIN-431–KIN-433\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "rooms"],
+      "parent": "KIN-20"
+    },
+    {
+      "backlog_key": "KIN-441",
+      "issueTypeName": "Story",
+      "summary": "Create room UI from movie detail (solo/private/public)",
+      "description": "## Backlog Reference\nKIN-441\n\n## Story Points\n3\n\n## Depends On\nKIN-402, KIN-324\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "rooms"],
+      "parent": "KIN-21"
+    },
+    {
+      "backlog_key": "KIN-442",
+      "issueTypeName": "Story",
+      "summary": "Public rooms list + join flow",
+      "description": "## Backlog Reference\nKIN-442\n\n## Story Points\n3\n\n## Depends On\nKIN-403\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "rooms"],
+      "parent": "KIN-21"
+    },
+    {
+      "backlog_key": "KIN-443",
+      "issueTypeName": "Story",
+      "summary": "Invite friend UI + copy invite URL",
+      "description": "## Backlog Reference\nKIN-443\n\n## Story Points\n2\n\n## Depends On\nKIN-404\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "rooms"],
+      "parent": "KIN-21"
+    },
+    {
+      "backlog_key": "KIN-444",
+      "issueTypeName": "Story",
+      "summary": "Participants list + owner permission controls",
+      "description": "## Backlog Reference\nKIN-444\n\n## Story Points\n3\n\n## Depends On\nKIN-405\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "rooms"],
+      "parent": "KIN-21"
+    },
+    {
+      "backlog_key": "KIN-445",
+      "issueTypeName": "Story",
+      "summary": "HLS player integrated with room playback state (owner/controller vs viewer)",
+      "description": "## Backlog Reference\nKIN-445\n\n## Story Points\n5\n\n## Depends On\nKIN-424\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "rooms", "media"],
+      "parent": "KIN-21"
+    },
+    {
+      "backlog_key": "KIN-446",
+      "issueTypeName": "Story",
+      "summary": "Chat panel + reaction buttons in room page",
+      "description": "## Backlog Reference\nKIN-446\n\n## Story Points\n3\n\n## Depends On\nKIN-431–KIN-433\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "rooms"],
+      "parent": "KIN-21"
+    },
+    {
+      "backlog_key": "KIN-447",
+      "issueTypeName": "Story",
+      "summary": "Reconnect banner + wait for room.state_sync before local controls",
+      "description": "## Backlog Reference\nKIN-447\n\n## Story Points\n2\n\n## Depends On\nKIN-445\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "rooms"],
+      "parent": "KIN-21"
+    },
+    {
+      "backlog_key": "KIN-448",
+      "issueTypeName": "Task",
+      "summary": "E2E: 2-browser play/pause/seek/chat/reaction/reconnect test",
+      "description": "## Backlog Reference\nKIN-448\n\n## Story Points\n5\n\n## Depends On\nKIN-441–KIN-447\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "rooms"],
+      "parent": "KIN-21"
+    },
+    {
+      "backlog_key": "KIN-501",
+      "issueTypeName": "Story",
+      "summary": "RabbitMQ topology: exchange, queue, DLQ, bindings for friendship + room invite events",
+      "description": "## Backlog Reference\nKIN-501\n\n## Story Points\n3\n\n## Depends On\nKIN-12\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "notifications"],
+      "parent": "KIN-22"
+    },
+    {
+      "backlog_key": "KIN-502",
+      "issueTypeName": "Story",
+      "summary": "Consumer with manual ACK, 2 retries, DLQ on exhaustion",
+      "description": "## Backlog Reference\nKIN-502\n\n## Story Points\n3\n\n## Depends On\nKIN-501\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "notifications"],
+      "parent": "KIN-22"
+    },
+    {
+      "backlog_key": "KIN-503",
+      "issueTypeName": "Story",
+      "summary": "Dedup by eventId + in-app notifications store",
+      "description": "## Backlog Reference\nKIN-503\n\n## Story Points\n3\n\n## Depends On\nKIN-502\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "notifications"],
+      "parent": "KIN-22"
+    },
+    {
+      "backlog_key": "KIN-504",
+      "issueTypeName": "Story",
+      "summary": "GET /notifications + mark-as-read endpoint",
+      "description": "## Backlog Reference\nKIN-504\n\n## Story Points\n2\n\n## Depends On\nKIN-503\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "notifications"],
+      "parent": "KIN-22"
+    },
+    {
+      "backlog_key": "KIN-505",
+      "issueTypeName": "Story",
+      "summary": "Gateway routes + web notification bell UI",
+      "description": "## Backlog Reference\nKIN-505\n\n## Story Points\n3\n\n## Depends On\nKIN-504, KIN-204\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "notifications"],
+      "parent": "KIN-22"
+    },
+    {
+      "backlog_key": "KIN-506",
+      "issueTypeName": "Task",
+      "summary": "Tests: ACK timing, retry, DLQ, duplicate suppression",
+      "description": "## Backlog Reference\nKIN-506\n\n## Story Points\n3\n\n## Depends On\nKIN-502–KIN-504\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "notifications"],
+      "parent": "KIN-22"
+    },
+    {
+      "backlog_key": "KIN-511",
+      "issueTypeName": "Story",
+      "summary": "POST /admin/movies/:id/upload/init — metadata first, presigned multipart URLs",
+      "description": "## Backlog Reference\nKIN-511\n\n## Story Points\n5\n\n## Depends On\nKIN-302, KIN-13\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies", "media"],
+      "parent": "KIN-23"
+    },
+    {
+      "backlog_key": "KIN-512",
+      "issueTypeName": "Story",
+      "summary": "POST /admin/movies/:id/upload/complete — finalize multipart, set PROCESSING, enqueue transcode",
+      "description": "## Backlog Reference\nKIN-512\n\n## Story Points\n3\n\n## Depends On\nKIN-511\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies", "media"],
+      "parent": "KIN-23"
+    },
+    {
+      "backlog_key": "KIN-513",
+      "issueTypeName": "Story",
+      "summary": "Abandoned upload cleanup job (24h)",
+      "description": "## Backlog Reference\nKIN-513\n\n## Story Points\n3\n\n## Depends On\nKIN-511\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies", "media"],
+      "parent": "KIN-23"
+    },
+    {
+      "backlog_key": "KIN-514",
+      "issueTypeName": "Story",
+      "summary": "Admin upload UI with direct-to-MinIO multipart + failed-part retry",
+      "description": "## Backlog Reference\nKIN-514\n\n## Story Points\n5\n\n## Depends On\nKIN-511\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "media"],
+      "parent": "KIN-23"
+    },
+    {
+      "backlog_key": "KIN-515",
+      "issueTypeName": "Task",
+      "summary": "Tests: metadata-first, presigned URLs, complete flow, abandoned cleanup",
+      "description": "## Backlog Reference\nKIN-515\n\n## Story Points\n3\n\n## Depends On\nKIN-511–KIN-513\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "media"],
+      "parent": "KIN-23"
+    },
+    {
+      "backlog_key": "KIN-521",
+      "issueTypeName": "Story",
+      "summary": "RabbitMQ queue media.transcode + job schema",
+      "description": "## Backlog Reference\nKIN-521\n\n## Story Points\n2\n\n## Depends On\nKIN-512\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "media"],
+      "parent": "KIN-28"
+    },
+    {
+      "backlog_key": "KIN-522",
+      "issueTypeName": "Story",
+      "summary": "FFmpeg worker: download original, generate HLS 1080p/720p/480p, upload to MinIO",
+      "description": "## Backlog Reference\nKIN-522\n\n## Story Points\n8\n\n## Depends On\nKIN-521\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "media"],
+      "parent": "KIN-28"
+    },
+    {
+      "backlog_key": "KIN-523",
+      "issueTypeName": "Story",
+      "summary": "Internal callbacks: transcode-complete → READY, transcode-failed → PROCESSING_FAILED",
+      "description": "## Backlog Reference\nKIN-523\n\n## Story Points\n3\n\n## Depends On\nKIN-522\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "media"],
+      "parent": "KIN-28"
+    },
+    {
+      "backlog_key": "KIN-524",
+      "issueTypeName": "Story",
+      "summary": "Retry up to 3 attempts before failure",
+      "description": "## Backlog Reference\nKIN-524\n\n## Story Points\n2\n\n## Depends On\nKIN-522\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "media"],
+      "parent": "KIN-28"
+    },
+    {
+      "backlog_key": "KIN-525",
+      "issueTypeName": "Task",
+      "summary": "Fixture video test: verify playable HLS output",
+      "description": "## Backlog Reference\nKIN-525\n\n## Story Points\n3\n\n## Depends On\nKIN-522–KIN-524\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "media"],
+      "parent": "KIN-28"
+    },
+    {
+      "backlog_key": "KIN-531",
+      "issueTypeName": "Story",
+      "summary": "POST /movies/:id/media-access — auth required, READY/PUBLISHED only, 10 min signed URL",
+      "description": "## Backlog Reference\nKIN-531\n\n## Story Points\n3\n\n## Depends On\nKIN-523\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "movies", "media", "security"],
+      "parent": "KIN-24"
+    },
+    {
+      "backlog_key": "KIN-532",
+      "issueTypeName": "Story",
+      "summary": "Web player requests media-access before HLS load",
+      "description": "## Backlog Reference\nKIN-532\n\n## Story Points\n2\n\n## Depends On\nKIN-531, KIN-445\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "media"],
+      "parent": "KIN-24"
+    },
+    {
+      "backlog_key": "KIN-533",
+      "issueTypeName": "Task",
+      "summary": "Tests: unauthorized, expired URL, wrong state, successful playback",
+      "description": "## Backlog Reference\nKIN-533\n\n## Story Points\n3\n\n## Depends On\nKIN-531–KIN-532\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "media"],
+      "parent": "KIN-24"
+    },
+    {
+      "backlog_key": "KIN-534",
+      "issueTypeName": "Task",
+      "summary": "Verify app services never proxy video bytes",
+      "description": "## Backlog Reference\nKIN-534\n\n## Story Points\n1\n\n## Depends On\nKIN-532\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "media", "security"],
+      "parent": "KIN-24"
+    },
+    {
+      "backlog_key": "KIN-601",
+      "issueTypeName": "Story",
+      "summary": "scheduled_rooms table + CRUD endpoints",
+      "description": "## Backlog Reference\nKIN-601\n\n## Story Points\n3\n\n## Depends On\nKIN-302, KIN-402\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms", "movies"],
+      "parent": "KIN-29"
+    },
+    {
+      "backlog_key": "KIN-602",
+      "issueTypeName": "Story",
+      "summary": "Scheduler opens Redis room when due + emits invites",
+      "description": "## Backlog Reference\nKIN-602\n\n## Story Points\n3\n\n## Depends On\nKIN-601\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "rooms"],
+      "parent": "KIN-29"
+    },
+    {
+      "backlog_key": "KIN-603",
+      "issueTypeName": "Story",
+      "summary": "Schedule watch UI on movie detail + scheduled rooms page",
+      "description": "## Backlog Reference\nKIN-603\n\n## Story Points\n3\n\n## Depends On\nKIN-601\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["frontend", "rooms"],
+      "parent": "KIN-29"
+    },
+    {
+      "backlog_key": "KIN-604",
+      "issueTypeName": "Task",
+      "summary": "Tests: create, cancel, due open, invitee notification",
+      "description": "## Backlog Reference\nKIN-604\n\n## Story Points\n3\n\n## Depends On\nKIN-602, KIN-503\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "rooms"],
+      "parent": "KIN-29"
+    },
+    {
+      "backlog_key": "KIN-611",
+      "issueTypeName": "Story",
+      "summary": "Prometheus metrics for all services (HTTP + Rooms WS metrics)",
+      "description": "## Backlog Reference\nKIN-611\n\n## Story Points\n5\n\n## Depends On\nKIN-39\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "observability"],
+      "parent": "KIN-26"
+    },
+    {
+      "backlog_key": "KIN-612",
+      "issueTypeName": "Story",
+      "summary": "Grafana dashboards: Overview, Rooms, Media",
+      "description": "## Backlog Reference\nKIN-612\n\n## Story Points\n3\n\n## Depends On\nKIN-611, KIN-14\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["observability"],
+      "parent": "KIN-26"
+    },
+    {
+      "backlog_key": "KIN-613",
+      "issueTypeName": "Task",
+      "summary": "Write docs/runbooks/observability.md",
+      "description": "## Backlog Reference\nKIN-613\n\n## Story Points\n1\n\n## Depends On\nKIN-612\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["docs", "observability"],
+      "parent": "KIN-26"
+    },
+    {
+      "backlog_key": "KIN-621",
+      "issueTypeName": "Story",
+      "summary": "Input validation + body size limits on all external endpoints",
+      "description": "## Backlog Reference\nKIN-621\n\n## Story Points\n3\n\n## Depends On\nKIN-204\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["backend", "security"],
+      "parent": "KIN-27"
+    },
+    {
+      "backlog_key": "KIN-622",
+      "issueTypeName": "Story",
+      "summary": "CORS allowlist, secret scanning, dependency scanning in CI",
+      "description": "## Backlog Reference\nKIN-622\n\n## Story Points\n3\n\n## Depends On\nKIN-28\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["security", "infra"],
+      "parent": "KIN-27"
+    },
+    {
+      "backlog_key": "KIN-623",
+      "issueTypeName": "Story",
+      "summary": "Security tests: private room denial, viewer playback denial, admin guard, expired JWT, upload type denial",
+      "description": "## Backlog Reference\nKIN-623\n\n## Story Points\n5\n\n## Depends On\nKIN-448, KIN-514\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "security"],
+      "parent": "KIN-27"
+    },
+    {
+      "backlog_key": "KIN-624",
+      "issueTypeName": "Task",
+      "summary": "Write docs/runbooks/security.md",
+      "description": "## Backlog Reference\nKIN-624\n\n## Story Points\n1\n\n## Depends On\nKIN-623\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["docs", "security"],
+      "parent": "KIN-27"
+    },
+    {
+      "backlog_key": "KIN-631",
+      "issueTypeName": "Story",
+      "summary": "GitHub Actions: install, lint, typecheck, unit tests",
+      "description": "## Backlog Reference\nKIN-631\n\n## Story Points\n3\n\n## Depends On\nKIN-27\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["infra", "testing"],
+      "parent": "KIN-25"
+    },
+    {
+      "backlog_key": "KIN-632",
+      "issueTypeName": "Story",
+      "summary": "CI: Docker Compose integration tests + Playwright smoke",
+      "description": "## Backlog Reference\nKIN-632\n\n## Story Points\n5\n\n## Depends On\nKIN-631, KIN-16\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["infra", "testing"],
+      "parent": "KIN-25"
+    },
+    {
+      "backlog_key": "KIN-633",
+      "issueTypeName": "Task",
+      "summary": "Upload test artifacts on CI failure",
+      "description": "## Backlog Reference\nKIN-633\n\n## Story Points\n1\n\n## Depends On\nKIN-632\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["infra", "testing"],
+      "parent": "KIN-25"
+    },
+    {
+      "backlog_key": "KIN-701",
+      "issueTypeName": "Story",
+      "summary": "E2E suite: all 20 user journeys from implementation plan Phase 29",
+      "description": "## Backlog Reference\nKIN-701\n\n## Story Points\n8\n\n## Depends On\nKIN-448, KIN-326, KIN-235, KIN-505, KIN-532, KIN-604\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing"],
+      "parent": "KIN-30"
+    },
+    {
+      "backlog_key": "KIN-702",
+      "issueTypeName": "Story",
+      "summary": "Failure tests: Gateway/Auth/Users/Rooms/Redis/Meilisearch/RabbitMQ/transcode scenarios",
+      "description": "## Backlog Reference\nKIN-702\n\n## Story Points\n8\n\n## Depends On\nKIN-701\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing"],
+      "parent": "KIN-30"
+    },
+    {
+      "backlog_key": "KIN-703",
+      "issueTypeName": "Story",
+      "summary": "Load test scripts: Gateway, search, Rooms WS, chat, notifications, media",
+      "description": "## Backlog Reference\nKIN-703\n\n## Story Points\n5\n\n## Depends On\nKIN-611\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing"],
+      "parent": "KIN-30"
+    },
+    {
+      "backlog_key": "KIN-704",
+      "issueTypeName": "Task",
+      "summary": "Document capacity results in docs/runbooks/capacity-results.md",
+      "description": "## Backlog Reference\nKIN-704\n\n## Story Points\n2\n\n## Depends On\nKIN-703\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["docs", "testing"],
+      "parent": "KIN-30"
+    },
+    {
+      "backlog_key": "KIN-711",
+      "issueTypeName": "Story",
+      "summary": "Production Dockerfiles + env documentation",
+      "description": "## Backlog Reference\nKIN-711\n\n## Story Points\n3\n\n## Depends On\nKIN-38\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["infra"],
+      "parent": "KIN-31"
+    },
+    {
+      "backlog_key": "KIN-712",
+      "issueTypeName": "Story",
+      "summary": "Provision MVP infra (DBs, Redis, RabbitMQ, object storage, CDN) within <= $300/month budget",
+      "description": "## Backlog Reference\nKIN-712\n\n## Story Points\n5\n\n## Depends On\nKIN-711\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["infra"],
+      "parent": "KIN-31"
+    },
+    {
+      "backlog_key": "KIN-713",
+      "issueTypeName": "Story",
+      "summary": "Deploy services + run migrations + smoke tests",
+      "description": "## Backlog Reference\nKIN-713\n\n## Story Points\n5\n\n## Depends On\nKIN-712\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["infra"],
+      "parent": "KIN-31"
+    },
+    {
+      "backlog_key": "KIN-714",
+      "issueTypeName": "Task",
+      "summary": "Write docs/runbooks/deployment.md",
+      "description": "## Backlog Reference\nKIN-714\n\n## Story Points\n1\n\n## Depends On\nKIN-713\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["docs", "infra"],
+      "parent": "KIN-31"
+    },
+    {
+      "backlog_key": "KIN-721",
+      "issueTypeName": "Task",
+      "summary": "Update README, implementation plan references, open questions, data models",
+      "description": "## Backlog Reference\nKIN-721\n\n## Story Points\n2\n\n## Depends On\nKIN-713\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["docs"],
+      "parent": "KIN-32"
+    },
+    {
+      "backlog_key": "KIN-722",
+      "issueTypeName": "Task",
+      "summary": "Final acceptance checklist (Phase 34) — all FR/NFR verified",
+      "description": "## Backlog Reference\nKIN-722\n\n## Story Points\n3\n\n## Depends On\nKIN-701, KIN-702\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["testing", "docs"],
+      "parent": "KIN-32"
+    },
+    {
+      "backlog_key": "KIN-723",
+      "issueTypeName": "Task",
+      "summary": "Tag release v0.1.0-mvp",
+      "description": "## Backlog Reference\nKIN-723\n\n## Story Points\n1\n\n## Depends On\nKIN-722\n\n## Source\n28_JIRA_BACKLOG.md",
+      "labels": ["infra"],
+      "parent": "KIN-32"
+    }
+  ]
+}

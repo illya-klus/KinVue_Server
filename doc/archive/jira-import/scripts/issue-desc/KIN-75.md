@@ -1,0 +1,25 @@
+## What to do
+
+Write tests proving duplicate friendship pairs cannot be inserted in either direction. Validates the normalization helper before friend-request APIs ship.
+
+## Technical notes
+
+- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users
+- Labels: testing, users
+
+## Story points
+
+2
+
+## Depends on
+
+KIN-112
+
+## Acceptance criteria
+
+- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)
+
+## References
+
+- 28_JIRA_BACKLOG.md
+- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md

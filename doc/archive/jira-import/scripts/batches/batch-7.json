@@ -1,0 +1,110 @@
+[
+  {
+    "key": "KIN-141",
+    "type": "Story",
+    "summary": "Emit FRIEND_REQUEST_CREATED and FRIEND_REQUEST_ACCEPTED via Mongo outbox",
+    "description": "## What to do\nEmit `FRIEND_REQUEST_CREATED` and `FRIEND_REQUEST_ACCEPTED` events to MongoDB `outbox_events` after friendship actions. Notifications-service consumes these via RabbitMQ.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users, notifications\n\n## Story points\n3\n\n## Depends on\nKIN-134\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-142",
+    "type": "Story",
+    "summary": "Build outbox publisher to RabbitMQ for friendship events",
+    "description": "## What to do\nBuild an outbox publisher in users-service that sends pending friendship events to RabbitMQ exchange `kinvue.domain`. Requires RabbitMQ from Docker Compose (port 5672).\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Service: `apps/notifications-service` port 4005; RabbitMQ amqp://localhost:5672, management UI localhost:15672\n- Labels: backend, users, notifications\n\n## Story points\n3\n\n## Depends on\nKIN-136, KIN-12\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-143",
+    "type": "Task",
+    "summary": "Tests: idempotent profile, pair normalization, authz on accept/reject, outbox creation",
+    "description": "## What to do\nAdd users-service tests for idempotent profile create, pair normalization, accept/reject authorization, and outbox event creation.\n\n## Technical notes\n- Labels: testing, users\n\n## Story points\n3\n\n## Depends on\nKIN-131–KIN-137\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-144",
+    "type": "Story",
+    "summary": "Admin publish now + schedule publish UI",
+    "description": "## What to do\nBuild admin publish-now and schedule-publish UI actions on the movie admin pages.\n\n## Technical notes\n- Labels: frontend, movies\n\n## Story points\n2\n\n## Depends on\nKIN-312\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-145",
+    "type": "Story",
+    "summary": "Movie search page with 300ms debounce + min 2 chars",
+    "description": "## What to do\nBuild movie search page with 300 ms debounce and minimum 2 characters before querying Gateway `GET /movies/search`.\n\n## Technical notes\n- App: `apps/web` port 3000; HTTP calls go to Gateway only\n- Labels: frontend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-313\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-146",
+    "type": "Story",
+    "summary": "Movie detail page + watchlist add/remove",
+    "description": "## What to do\nBuild movie detail page with watchlist add/remove actions via Gateway watchlist endpoints.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- App: `apps/web` port 3000; HTTP calls go to Gateway only\n- Labels: frontend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-314\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-147",
+    "type": "Story",
+    "summary": "Watchlist page",
+    "description": "## What to do\nBuild watchlist page listing saved movies for the logged-in user.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- App: `apps/web` port 3000; HTTP calls go to Gateway only\n- Labels: frontend, movies\n\n## Story points\n2\n\n## Depends on\nKIN-314\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-148",
+    "type": "Task",
+    "summary": "E2E: admin publishes movie → user searches → saves to watchlist",
+    "description": "## What to do\nE2E test: admin publishes movie → user searches → saves to watchlist.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Tests live in `tests/e2e/`; run with `pnpm test:e2e`\n- Labels: testing, movies\n\n## Story points\n3\n\n## Depends on\nKIN-321–KIN-325\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-149",
+    "type": "Story",
+    "summary": "Redis key helpers and room state/member schemas",
+    "description": "## What to do\nImplement Redis key helpers and room state/member schemas in rooms-service. Keys: `room:{roomId}:state`, `:members`, `:messages`, `:seenMessageIds`, `:events`.\n\n## Technical notes\n- Service: `apps/rooms-service` HTTP 4004, WS ws://localhost:4014/rooms; Redis `redis://localhost:6379`\n- Labels: backend, rooms\n\n## Story points\n3\n\n## Depends on\nKIN-35, KIN-16\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-150",
+    "type": "Story",
+    "summary": "`POST /rooms` (private/public, capacity 20, 6h TTL)",
+    "description": "## What to do\nImplement `POST /rooms` in rooms-service — private/public visibility, capacity 20, 6-hour Redis TTL. Owner stored as first member with role `OWNER`.\n\n## Technical notes\n- Service: `apps/rooms-service` HTTP 4004, WS ws://localhost:4014/rooms; Redis `redis://localhost:6379`\n- Labels: backend, rooms\n\n## Story points\n3\n\n## Depends on\nKIN-401\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-151",
+    "type": "Story",
+    "summary": "`GET /rooms/public`",
+    "description": "## What to do\nImplement `GET /rooms/public` listing open public rooms from Redis.\n\n## Technical notes\n- Service: `apps/rooms-service` HTTP 4004, WS ws://localhost:4014/rooms; Redis `redis://localhost:6379`\n- Labels: backend, rooms\n\n## Story points\n2\n\n## Depends on\nKIN-402\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-152",
+    "type": "Story",
+    "summary": "`POST /rooms/:id/invites` (owner only, default VIEWER) + `ROOM_INVITED` outbox event",
+    "description": "## What to do\nImplement `POST /rooms/:id/invites` (owner only, default `VIEWER` role) and emit `ROOM_INVITED` outbox event for notifications.\n\n## Technical notes\n- Service: `apps/rooms-service` HTTP 4004, WS ws://localhost:4014/rooms; Redis `redis://localhost:6379`\n- App: `apps/web` port 3000; HTTP calls go to Gateway only\n- Labels: backend, rooms, notifications\n\n## Story points\n3\n\n## Depends on\nKIN-402\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-153",
+    "type": "Story",
+    "summary": "`POST /rooms/:id/permissions` (owner grants CONTROLLER)",
+    "description": "## What to do\nImplement `POST /rooms/:id/permissions` allowing owner to grant `CONTROLLER` role to participants.\n\n## Technical notes\n- Service: `apps/rooms-service` HTTP 4004, WS ws://localhost:4014/rooms; Redis `redis://localhost:6379`\n- Labels: backend, rooms\n\n## Story points\n3\n\n## Depends on\nKIN-402\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-154",
+    "type": "Story",
+    "summary": "`POST /rooms/:id/close` (owner only, 15 min cleanup TTL)",
+    "description": "## What to do\nImplement `POST /rooms/:id/close` (owner only) setting `closed=true` and shortening Redis TTL to 15 minutes.\n\n## Technical notes\n- Service: `apps/rooms-service` HTTP 4004, WS ws://localhost:4014/rooms; Redis `redis://localhost:6379`\n- Labels: backend, rooms\n\n## Story points\n2\n\n## Depends on\nKIN-402\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-155",
+    "type": "Task",
+    "summary": "Tests: create, invite authz, permission changes, close, TTL, capacity",
+    "description": "## What to do\nAdd rooms-service HTTP tests: create, invite authz, permission changes, close, TTL, capacity limits.\n\n## Technical notes\n- App: `apps/web` port 3000; HTTP calls go to Gateway only\n- Labels: testing, rooms\n\n## Story points\n3\n\n## Depends on\nKIN-402–KIN-406\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-156",
+    "type": "Story",
+    "summary": "WebSocket endpoint `ws://localhost:4014/rooms` with JWT handshake",
+    "description": "## What to do\nExpose WebSocket endpoint `ws://localhost:4014/rooms` in rooms-service with JWT handshake using `packages/jwt`. Client sends `accessToken` and `roomId`.\n\n## Technical notes\n- Service: `apps/rooms-service` HTTP 4004, WS ws://localhost:4014/rooms; Redis `redis://localhost:6379`\n- Labels: backend, rooms, security\n\n## Story points\n5\n\n## Depends on\nKIN-401, KIN-24\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-157",
+    "type": "Story",
+    "summary": "Room access checks (public/private, closed, capacity, invite list)",
+    "description": "## What to do\nImplement room access checks on WebSocket connect: public/private, closed state, capacity 20, invite list for private rooms.\n\n## Technical notes\n- App: `apps/web` port 3000; HTTP calls go to Gateway only\n- Labels: backend, rooms\n\n## Story points\n3\n\n## Depends on\nKIN-411\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-158",
+    "type": "Story",
+    "summary": "Send `room.state_sync` on connect",
+    "description": "## What to do\nSend `room.state_sync` to the client immediately after successful WebSocket connect with authoritative Redis playback state.\n\n## Technical notes\n- Labels: backend, rooms\n\n## Story points\n2\n\n## Depends on\nKIN-411\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  }
+]

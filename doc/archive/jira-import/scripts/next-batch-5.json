@@ -1,0 +1,62 @@
+[
+  {
+    "key": "KIN-96",
+    "description": "## What to do\nEmit `FRIEND_REQUEST_CREATED` and `FRIEND_REQUEST_ACCEPTED` events to MongoDB `outbox_events` after friendship actions. Notifications-service consumes these via RabbitMQ.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users, notifications\n\n## Story points\n3\n\n## Depends on\nKIN-134\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-97",
+    "description": "## What to do\nBuild an outbox publisher in users-service that sends pending friendship events to RabbitMQ exchange `kinvue.domain`. Requires RabbitMQ from Docker Compose (port 5672).\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Service: `apps/notifications-service` port 4005; RabbitMQ amqp://localhost:5672, management UI localhost:15672\n- Labels: backend, users, notifications\n\n## Story points\n3\n\n## Depends on\nKIN-136, KIN-12\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-98",
+    "description": "## What to do\nAdd users-service tests for idempotent profile create, pair normalization, accept/reject authorization, and outbox event creation.\n\n## Technical notes\n- Labels: testing, users\n\n## Story points\n3\n\n## Depends on\nKIN-131–KIN-137\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-99",
+    "description": "## What to do\nAdd request-ID middleware in `apps/gateway` and forward `x-request-id`, `x-user-id`, and `x-user-scopes` to upstream services. Enables distributed tracing across KinVue.\n\n## Technical notes\n- Labels: backend, gateway\n\n## Story points\n2\n\n## Depends on\nKIN-31\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-100",
+    "description": "## What to do\nImplement Gateway public routes (no JWT): register, login, refresh, JWKS, movie search/detail. Proxy to auth-service (4001) and movie-service (4003).\n\n## Technical notes\n- Labels: backend, gateway\n\n## Story points\n3\n\n## Depends on\nKIN-201, KIN-122\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-101",
+    "description": "## What to do\nImplement Gateway JWT middleware using `packages/jwt` with 5-minute JWKS cache and immediate refresh on unknown `kid`. Validates issuer `kinvue-auth`, audience `kinvue`.\n\n## Technical notes\n- Labels: backend, gateway, security\n\n## Story points\n3\n\n## Depends on\nKIN-24, KIN-122\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-102",
+    "description": "## What to do\nImplement Gateway authenticated routes for users, friends, watchlist, rooms control, and media-access. Proxy to users-service (4002), movie-service (4003), rooms-service (4004).\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Service: `apps/rooms-service` HTTP 4004, WS ws://localhost:4014/rooms; Redis `redis://localhost:6379`\n- Labels: backend, gateway\n\n## Story points\n5\n\n## Depends on\nKIN-203\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-103",
+    "description": "## What to do\nImplement Gateway admin routes with `admin` scope guard for movie CRUD, upload, and publish endpoints.\n\n## Technical notes\n- Labels: backend, gateway, security\n\n## Story points\n3\n\n## Depends on\nKIN-203\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-104",
+    "description": "## What to do\nAdd Gateway rate limits: login 5/min/IP, register 3/min/IP, search 60/min/user, rooms 30/min/user, default 300/min/user.\n\n## Technical notes\n- Labels: backend, gateway, security\n\n## Story points\n3\n\n## Depends on\nKIN-202–KIN-205\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-105",
+    "description": "## What to do\nAdd Gateway tests: expired JWT → 401, bad signature → 401, missing scope → 403, upstream 503 mapping, request-ID forwarding.\n\n## Technical notes\n- Service: `apps/gateway` port 4000; sole HTTP entry for web client\n- Labels: testing, gateway\n\n## Story points\n3\n\n## Depends on\nKIN-204–KIN-206\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-106",
+    "description": "## What to do\nCreate the Vite React TypeScript app in `apps/web` (port 3000) with routing shell for register, login, search, profile, friends, rooms, and admin pages.\n\n## Technical notes\n- App: `apps/web` port 3000; HTTP calls go to Gateway only\n- Labels: frontend\n\n## Story points\n3\n\n## Depends on\nKIN-3\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-107",
+    "description": "## What to do\nBuild the web API client talking only to Gateway (port 4000) plus an auth state store for access tokens. Web must never call microservices directly.\n\n## Technical notes\n- Service: `apps/gateway` port 4000; sole HTTP entry for web client\n- Labels: frontend\n\n## Story points\n3\n\n## Depends on\nKIN-211\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-108",
+    "description": "## What to do\nImplement automatic access-token refresh on HTTP 401 and a logout flow calling Gateway `POST /auth/logout`. Keeps users signed in without manual re-login.\n\n## Technical notes\n- Labels: frontend, auth\n\n## Story points\n3\n\n## Depends on\nKIN-212\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-109",
+    "description": "## What to do\nAdd protected and admin route wrappers in `apps/web` checking auth state and `admin` scope. Unauthenticated users redirect to login; non-admins cannot reach admin pages.\n\n## Technical notes\n- Labels: frontend, security\n\n## Story points\n2\n\n## Depends on\nKIN-213\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-110",
+    "description": "## What to do\nAdd shared UI states in `apps/web`: loading, empty, error, unauthorized, and forbidden. Every page uses these for consistent UX.\n\n## Technical notes\n- Labels: frontend\n\n## Story points\n2\n\n## Depends on\nKIN-211\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "key": "KIN-140",
+    "type": "Story",
+    "summary": "Implement GET /friends",
+    "description": "## What to do\nImplement `GET /friends` in users-service returning accepted friendships for the authenticated user.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users\n\n## Story points\n2\n\n## Depends on\nKIN-134\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-141",
+    "type": "Story",
+    "summary": "Emit FRIEND_REQUEST_CREATED and FRIEND_REQUEST_ACCEPTED via Mongo outbox",
+    "description": "## What to do\nEmit `FRIEND_REQUEST_CREATED` and `FRIEND_REQUEST_ACCEPTED` events to MongoDB `outbox_events` after friendship actions. Notifications-service consumes these via RabbitMQ.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users, notifications\n\n## Story points\n3\n\n## Depends on\nKIN-134\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-142",
+    "type": "Story",
+    "summary": "Build outbox publisher to RabbitMQ for friendship events",
+    "description": "## What to do\nBuild an outbox publisher in users-service that sends pending friendship events to RabbitMQ exchange `kinvue.domain`. Requires RabbitMQ from Docker Compose (port 5672).\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Service: `apps/notifications-service` port 4005; RabbitMQ amqp://localhost:5672, management UI localhost:15672\n- Labels: backend, users, notifications\n\n## Story points\n3\n\n## Depends on\nKIN-136, KIN-12\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-143",
+    "type": "Task",
+    "summary": "Tests: idempotent profile, pair normalization, authz on accept/reject, outbox creation",
+    "description": "## What to do\nAdd users-service tests for idempotent profile create, pair normalization, accept/reject authorization, and outbox event creation.\n\n## Technical notes\n- Labels: testing, users\n\n## Story points\n3\n\n## Depends on\nKIN-131–KIN-137\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-144",
+    "type": "Story",
+    "summary": "Admin publish now + schedule publish UI",
+    "description": "## What to do\nBuild admin publish-now and schedule-publish UI actions on the movie admin pages.\n\n## Technical notes\n- Labels: frontend, movies\n\n## Story points\n2\n\n## Depends on\nKIN-312\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-145",
+    "type": "Story",
+    "summary": "Movie search page with 300ms debounce + min 2 chars",
+    "description": "## What to do\nBuild movie search page with 300 ms debounce and minimum 2 characters before querying Gateway `GET /movies/search`.\n\n## Technical notes\n- App: `apps/web` port 3000; HTTP calls go to Gateway only\n- Labels: frontend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-313\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-146",
+    "type": "Story",
+    "summary": "Movie detail page + watchlist add/remove",
+    "description": "## What to do\nBuild movie detail page with watchlist add/remove actions via Gateway watchlist endpoints.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- App: `apps/web` port 3000; HTTP calls go to Gateway only\n- Labels: frontend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-314\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-147",
+    "type": "Story",
+    "summary": "Watchlist page",
+    "description": "## What to do\nBuild watchlist page listing saved movies for the logged-in user.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- App: `apps/web` port 3000; HTTP calls go to Gateway only\n- Labels: frontend, movies\n\n## Story points\n2\n\n## Depends on\nKIN-314\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  }
+]

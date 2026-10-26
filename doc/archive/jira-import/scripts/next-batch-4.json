@@ -1,0 +1,62 @@
+[
+  {
+    "key": "KIN-81",
+    "description": "## What to do\nImplement the registration Saga in `POST /auth/register`: generate `userId`, write Auth identity (`PENDING` → `PROFILE_CREATING` → `ACTIVE`), call users-service `POST /internal/users/profiles` idempotently, retry 3× on failure, compensate with 503. This is the most critical cross-service flow in KinVue.\n\n## Technical notes\n- Service: `apps/auth-service` port 4001; DB `AUTH_DATABASE_URL` postgresql://localhost:5433\n- Labels: backend, auth\n\n## Story points\n5\n\n## Depends on\nKIN-101, KIN-111\n\n## Acceptance criteria\n- Generates global userId before DB write\n- Status flow: PENDING → PROFILE_CREATING → ACTIVE\n- Calls POST /internal/users/profiles idempotently\n- Returns 201 only when Auth + Users both exist\n- Retries Users 3x, then compensates with 503\n- Duplicate email returns 409\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-82",
+    "description": "## What to do\nCreate `packages/config` with Zod-validated environment loading — one schema per service so missing vars fail fast at startup. Every KinVue microservice imports this package instead of reading `process.env` directly.\n\n## Technical notes\n- Package: `packages/config`; use Zod schemas per service\n- Labels: backend\n\n## Story points\n3\n\n## Depends on\nKIN-5\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-83",
+    "description": "## What to do\nCreate `packages/logger` emitting structured JSON logs with fields `service`, `requestId`, `userId`, `route`, `durationMs`, and `error`. Consistent logs are required for debugging distributed flows like registration Saga and room sync.\n\n## Technical notes\n- Log fields: `service`, `requestId`, `userId`, `route`, `durationMs`, `error`\n- Labels: backend, observability\n\n## Story points\n2\n\n## Depends on\nKIN-21\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-84",
+    "description": "## What to do\nCreate `packages/errors` with shared error codes (`UNAUTHENTICATED`, `FORBIDDEN`, `VALIDATION_FAILED`, etc.) and HTTP status mapping. Gateway and all services return the same JSON error shape to the web client.\n\n## Technical notes\n- Labels: backend\n\n## Story points\n2\n\n## Depends on\nKIN-21\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-85",
+    "description": "## What to do\nCreate `packages/jwt` with an RS256 JWKS verification helper checking issuer, audience, expiration, and scopes. Gateway and rooms-service use this for local JWT validation without calling auth on every request.\n\n## Technical notes\n- RS256 verification; issuer `kinvue-auth`, audience `kinvue`\n- Labels: backend, auth, security\n\n## Story points\n3\n\n## Depends on\nKIN-21\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-86",
+    "description": "## What to do\nCreate `packages/contracts` with shared DTOs and domain event types for Auth, Users, Movies, Rooms, and Notifications. Keeps request/response shapes consistent across service boundaries.\n\n## Technical notes\n- Labels: backend\n\n## Story points\n3\n\n## Depends on\nKIN-23\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-87",
+    "description": "## What to do\nCreate `packages/testing` with helpers to clean PostgreSQL, MongoDB, and Redis between tests plus HTTP request utilities. Integration tests across services depend on this package.\n\n## Technical notes\n- Labels: backend, testing\n\n## Story points\n3\n\n## Depends on\nKIN-21\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-88",
+    "description": "## What to do\nWrite unit tests for `packages/config`, `packages/errors`, `packages/logger`, and JWT validation failure cases. Catch misconfiguration and auth edge cases before services consume these packages.\n\n## Technical notes\n- Labels: testing\n\n## Story points\n2\n\n## Depends on\nKIN-21–KIN-26\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-89",
+    "description": "## What to do\nAdd auth-service unit tests for hashing, token claims, refresh rotation, inactive login rejection, and duplicate email (409).\n\n## Technical notes\n- Labels: testing, auth\n\n## Story points\n3\n\n## Depends on\nKIN-123–KIN-126\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-90",
+    "description": "## What to do\nAdd auth-service integration tests for successful registration Saga, Users unavailable retry, and compensation path. Proves the Saga does not return false success.\n\n## Technical notes\n- Labels: testing, auth\n\n## Story points\n5\n\n## Depends on\nKIN-126\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-91",
+    "description": "## What to do\nImplement idempotent `POST /internal/users/profiles` in users-service — same `userId` returns 200 with existing profile. Called by Auth during registration Saga.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users\n\n## Story points\n3\n\n## Depends on\nKIN-111\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-92",
+    "description": "## What to do\nImplement `GET /users/me` and `PATCH /users/me` in users-service. Gateway forwards these with `x-user-id` header after JWT validation.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users\n\n## Story points\n3\n\n## Depends on\nKIN-131\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-93",
+    "description": "## What to do\nImplement `GET /users/search?query=&limit=&cursor=` in users-service — minimum 2 characters, cursor pagination on MongoDB username/displayName.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users\n\n## Story points\n3\n\n## Depends on\nKIN-131\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-94",
+    "description": "## What to do\nImplement friend request endpoints in users-service: create, incoming, outgoing, accept, reject. Uses normalized friendship pairs and rejects self-requests.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users\n\n## Story points\n5\n\n## Depends on\nKIN-112\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-95",
+    "description": "## What to do\nImplement `GET /friends` in users-service returning accepted friendships for the authenticated user.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users\n\n## Story points\n2\n\n## Depends on\nKIN-134\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  }
+]
