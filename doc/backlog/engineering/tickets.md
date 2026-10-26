@@ -976,7 +976,7 @@ Install the tools named by the implementation plan.
 - **Estimated effort:** 1 hour
 - **Complexity:** XS
 - **Execution phase:** Stage 1 — Foundation
-- **Status:** Missing
+- **Status:** Rejected (KIN-131, decision 0010 keeps Node 24)
 - **Confidence:** Confirmed
 - **Service / module:** workstation
 - **MVP class:** MVP
@@ -1011,7 +1011,7 @@ Install Node.js 20 LTS on the developer workstation and record the version comma
 - **Estimated effort:** 1 hour
 - **Complexity:** XS
 - **Execution phase:** Stage 1 — Foundation
-- **Status:** Missing
+- **Status:** Rejected (KIN-135; pnpm 10.34.4 already recorded in 0001)
 - **Confidence:** Proposed
 - **Service / module:** workstation
 - **MVP class:** MVP
@@ -1046,7 +1046,7 @@ Install the pnpm version accepted with the stack decision.
 - **Estimated effort:** 1 hour
 - **Complexity:** XS
 - **Execution phase:** Stage 1 — Foundation
-- **Status:** Missing
+- **Status:** Rejected (KIN-137; Docker Compose already runs local Postgres)
 - **Confidence:** Confirmed
 - **Service / module:** workstation
 - **MVP class:** MVP
@@ -1081,7 +1081,7 @@ Install Docker with Compose support for the local infrastructure.
 - **Estimated effort:** 1 hour
 - **Complexity:** XS
 - **Execution phase:** Stage 1 — Foundation
-- **Status:** Missing
+- **Status:** Rejected (KIN-140, decision 0017: no host FFmpeg)
 - **Confidence:** Proposed
 - **Service / module:** workstation
 - **MVP class:** MVP
@@ -1120,7 +1120,7 @@ Ignore secrets and build output before application code starts.
 - **Estimated effort:** 1 hour
 - **Complexity:** XS
 - **Execution phase:** Stage 1 — Foundation
-- **Status:** Missing
+- **Status:** Done (KIN-144; root .gitignore)
 - **Confidence:** Confirmed
 - **Service / module:** repo
 - **MVP class:** MVP
