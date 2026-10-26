@@ -4,11 +4,11 @@
 
 ## Ціль, якої ще немає в коді
 
-HTTP API лишається на gateway. WebSocket кімнат іде прямо в Rooms. Відео віддає сховище і CDN, не сервіси. Чат у v1 живе в Rooms, не в `services/chat`. Профіль і друзі — у Users на MongoDB, каталог — у Movie на PostgreSQL, живий стан кімнати — у Redis. Див. [0008](decisions/0008-target-ingress-and-plan.md).
+HTTP API лишається на gateway. WebSocket кімнат іде прямо в Rooms. Відео віддає сховище і CDN, не сервіси. Чат у v1 живе в Rooms, не в `services/chat`. Профіль і друзі — у Users на MongoDB, каталог — у Movie на PostgreSQL, живий стан кімнати — у Redis. Пошук і картка опублікованого фільму — анонімні. Див. [0008](decisions/0008-target-ingress-and-plan.md) і [0011](decisions/0011-anonymous-published-movie-reads.md).
 
 ## Форма репозиторію
 
-Монорепозиторій pnpm. Пакети: `services/*` і `packages/*`. Менеджер пакетів зафіксований у кореневому `package.json` (`pnpm@10.34.4`). Див. [0001](decisions/0001-pnpm-monorepo.md).
+Це бекенд. Фронтенд — окремий репозиторій. Монорепозиторій pnpm на Node 24. Пакети: `services/*` і `packages/*`. Менеджер пакетів зафіксований у кореневому `package.json` (`pnpm@10.34.4`). Turborepo немає. Див. [0001](decisions/0001-pnpm-monorepo.md) і [0010](decisions/0010-v1-stack-backend-repo.md).
 
 ## Публічний край
 
@@ -52,6 +52,6 @@ Auth перевіряє Google ID token (`GOOGLE_CLIENT_ID`), заводить �
 
 Локальна база — Postgres 16 з `docker-compose.yml` (сервіс `postgres`, база `kinvue`, порт 5432). Див. [0006](decisions/0006-postgres-16.md).
 
-CI на pull request і на push у `main` та `dev` ставить залежності з lockfile, ганяє `pnpm format:check` і `pnpm typecheck:contracts`. Крок лінта в workflow закоментований. Husky на коміті запускає lint-staged (Prettier і ESLint для змінених JS/TS) і commitlint.
+CI на pull request і на push у `main` та `dev` ставить Node 24, залежності з lockfile, ганяє `pnpm format:check` і `pnpm typecheck:contracts`. Крок лінта в workflow закоментований. Husky на коміті запускає lint-staged (Prettier і ESLint для змінених JS/TS) і commitlint. Runner у файлі ще `ubuntu-latest`; ціль — зафіксована `ubuntu-24.04`, [0010](decisions/0010-v1-stack-backend-repo.md).
 
 Документообіг описаний у [0007](decisions/0007-document-workflow.md). Здавання змін — гілка від `dev` і pull request, [0009](decisions/0009-pull-request-from-dev.md). CI/CD як шлюз злиття ще не налаштований; наявний workflow лише перевіряє формат і типи контрактів.

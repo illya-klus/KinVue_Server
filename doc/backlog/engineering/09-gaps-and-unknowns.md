@@ -12,6 +12,7 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 - **Decision required:** List the exact activities that are visible, to whom, and whether they are required for MVP.
 - **What it blocks:** No activity-feed implementation ticket exists. Only the decision ticket that records the deferral.
 - **Proposal, not a requirement:** Keep FR-09 out of MVP until a product owner names the activities. Do not build a feed from the one example sentence.
+- **Recorded:** Implementation is forbidden until the product answers. [0014](../../decisions/0014-defer-fr09-activity.md). The product still has not named the activities.
 
 ### G-02 — Admin authority has no provisioning path
 
@@ -66,6 +67,7 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 - **Decision required:** Decide whether anonymous clients may search and open published movies.
 - **What it blocks:** Public Gateway routes and the movie search page's auth behavior.
 - **Proposal, not a requirement:** Allow anonymous read of published movies and search. Keep watchlist, rooms, and media-access authenticated.
+- **Recorded:** Accepted. [0011](../../decisions/0011-anonymous-published-movie-reads.md).
 
 ### G-08 — Refresh token storage in the browser is an unresolved alternative
 

@@ -9,7 +9,7 @@ alwaysApply: true
 
 ## План
 
-Цільова архітектура — `doc/design/`. Що вже зібрано — `doc/architecture.md`. Тікети — `doc/backlog/`, дошка Jira вже є. Дірки з `doc/backlog/engineering/09-gaps-and-unknowns.md` не закривай сам. `doc/archive/` — не вимоги.
+Це бекенд. Фронтенд — окремий репозиторій, веб сюди не додають. Цільова архітектура — `doc/design/`. Що вже зібрано — `doc/architecture.md`. Тікети — `doc/backlog/`, дошка Jira вже є. Дірки з `doc/backlog/engineering/09-gaps-and-unknowns.md` не закривай сам. `doc/archive/` — не вимоги.
 
 ## Перед зміною
 
