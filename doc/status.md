@@ -14,7 +14,7 @@
 - Документообіг у `doc/` і однакові правила для Cursor, Claude та Codex.
 - План розкладений на `doc/design/`, `doc/plan/`, `doc/backlog/`. Імпорт Jira прибраний в `doc/archive/jira-import/`.
 - Правило здачі: гілка від `dev` і pull request. Прямий пуш у `dev` або `main` не є здачею.
-- Стек цього репо: TypeScript, Node 24, pnpm, NestJS, `services/*`. Фронтенд в іншому репозиторії. CI runner — `ubuntu-24.04`.
+- Стек цього репо: TypeScript, Node 24, pnpm, NestJS, `services/*`. Фронтенд в іншому репозиторії. CI має бути `ubuntu-24.04`; у workflow поки `ubuntu-latest`.
 - Анонімний пошук і картка опублікованих фільмів. In-app сповіщення в Postgres Notifications, дедуп за `eventId`, справжній push відкладений.
 - Звіряння пошуку: 5 хв, перекриття 24 год, воркер публікації 60 с.
 - Хостинг MVP: ≤ $300/міс, без Kubernetes. Нецілі v1 записані як заборона.

@@ -18,7 +18,7 @@ KIN-26 просить прийняти стек і структуру з пла�
 - Цільові сервіси v1: gateway, auth, users, movie, rooms, notifications, transcode-worker. Каркас `services/chat` у продукт не розбудовують ([0008](0008-target-ingress-and-plan.md)).
 - Turborepo не ставимо. Поки пакетів мало, кореня вистачає `pnpm -r` і `pnpm --filter`. Turbo можна розглянути окремим тікетом, коли CI почне ганяти зайві пакети або знадобиться віддалений кеш.
 - Карта портів із плану цим записом не приймається і не замінюється.
-- CI runner: зафіксована `ubuntu-24.04`, не `ubuntu-latest`. Версія Node у workflow — 24.
+- CI runner: зафіксована `ubuntu-24.04`, не `ubuntu-latest`. Версія Node у workflow — 24. Сам рядок `runs-on` у `.github/workflows/ci.yml` міняють токеном зі scope `workflow`; доти файл може ще мати `ubuntu-latest`, але нові правки workflow ставлять лише `ubuntu-24.04`.
 
 ## Порушення
 

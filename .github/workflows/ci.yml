@@ -9,7 +9,7 @@ on:
 
 jobs:
   code-quality-check:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout codebase
