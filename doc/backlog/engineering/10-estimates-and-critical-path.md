@@ -78,6 +78,8 @@ Confirmed means the behavior is in the requirements, an ADR, or a sequence diagr
 
 The chain below is the longest dependency path, 85 hours if every other chain is staffed at the same time. It is not a quote for one person. One person follows the 775 hours total.
 
+T-0026, T-0027, T-0028, and T-0029 were rejected on 2026-10-26. T-0030 is done. Those five no longer add hours. The numbered list is the original chain.
+
 1. T-0001 Accept the v1 stack, repository layout, and port map (2h, depends on nothing)
 2. T-0026 Install and verify Node.js 20 LTS (1h, depends on T-0001)
 3. T-0027 Install and verify pnpm (1h, depends on T-0026)
