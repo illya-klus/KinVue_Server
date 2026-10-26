@@ -9,7 +9,7 @@
 - Контракт `packages/shared-protos/proto/auth.proto` і генерація типів у `@kinvue/contracts`.
 - Модель `AuthUser` у Prisma Next, міграції в `services/auth/migrations`.
 - Пара JWT (access 15 хв, refresh 7 днів) без таблиці сесій.
-- Один локальний Compose: кореневий `docker-compose.yml`, [0019](decisions/0019-one-local-compose.md). База auth — сервіс `postgres`, порт 5432. У тому самому файлі каталог, Mongo, Redis, RabbitMQ, Meilisearch, MinIO, Prometheus і Grafana. Інструкція: `doc/runbooks/local-dev.md`. Другої бази auth немає. На цій машині Meilisearch може не зайняти 7700, якщо порт уже тримає інший проєкт.
+- Один локальний Compose: кореневий `docker-compose.yml`, [0019](decisions/0019-one-local-compose.md). База auth — сервіс `postgres`, порт 5432. У тому самому файлі каталог, Mongo, Redis, RabbitMQ, Meilisearch, MinIO, Prometheus і Grafana. Інструкція: `doc/runbooks/local-dev.md`. Другої бази auth немає. Увесь стенд, включно з Meilisearch, піднятий і healthy.
 - CI у файлі workflow: format check, typecheck контрактів і юніт-тести на `ubuntu-24.04`. На коміті lint-staged (Prettier) і `pnpm typecheck`. Повний тест і `nest build` на коміт не йдуть.
 - Документообіг у `doc/` і однакові правила для Cursor, Claude та Codex.
 - План розкладений на `doc/design/`, `doc/plan/`, `doc/backlog/`. Імпорт Jira прибраний в `doc/archive/jira-import/`.

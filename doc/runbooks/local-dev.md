@@ -68,7 +68,7 @@ pnpm infra:down
 | users-mongo    | healthy                                                                                                     |
 | rooms-redis    | healthy                                                                                                     |
 | rabbitmq       | healthy                                                                                                     |
-| meilisearch    | контейнер не стартував: порт 7700 зайнятий `nisha-meilisearch-1`                                            |
+| meilisearch    | healthy, `http://localhost:7700/health` відповідає `available`                                              |
 | minio          | healthy. Init завершився з кодом 0, бакет `kinvue-media` має доступ `private`                               |
 | prometheus     | healthy                                                                                                     |
 | grafana        | healthy                                                                                                     |
