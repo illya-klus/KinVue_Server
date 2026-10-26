@@ -17,7 +17,7 @@ KIN-161 просить один строгий `tsconfig`, який сервіс
 - `exactOptionalPropertyTypes` вимкнено. Поля `prop?: T` у DTO і наявний код присвоюють `undefined`, і цей прапор робить таке присвоєння помилкою.
 - Локальний pre-commit: lint-staged (Prettier на змінених JS/TS) і `pnpm typecheck`. Тести, форматування всього дерева і `nest build` на коміт не ставлять.
 - ESLint на коміт і в CI не вмикаємо, доки `typescript-eslint` не підтримає TypeScript 7. Зараз парсер падає на `ts.Extension`, бо peer дозволяє лише TypeScript нижче 6.1, а в репозиторії стоїть TypeScript 7.
-- Ціль CI на pull request і на push у `main` та `dev`: `ubuntu-24.04`, `pnpm format:check`, `pnpm typecheck:contracts`, `pnpm test`. Окремого кроку `pnpm build` немає. Файл `.github/workflows/ci.yml` цим пушем не змінюється: GitHub відхиляє зміну workflow без scope `workflow` у токена. Щойно пуш можливий, у файл ставлять саме ці кроки.
+- CI на pull request і на push у `main` та `dev`: `ubuntu-24.04`, `pnpm format:check`, `pnpm typecheck:contracts`, `pnpm test`. Окремого кроку `pnpm build` немає. Файл `.github/workflows/ci.yml` уже містить ці кроки.
 - Turborepo не ставимо, KIN-159 відхилено. Це підтверджує [0010](0010-v1-stack-backend-repo.md).
 
 ## Порушення
@@ -26,4 +26,4 @@ KIN-161 просить один строгий `tsconfig`, який сервіс
 
 ## Наслідки
 
-Коміт лишається коротким: тип перевіряється локально, тести і формат усього дерева — у CI, щойно файл workflow можна запушити.
+Коміт лишається коротким: тип перевіряється локально, тести і формат усього дерева йдуть у CI.
