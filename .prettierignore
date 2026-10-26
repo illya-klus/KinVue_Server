@@ -9,7 +9,6 @@ pnpm-lock.yaml
 *.log
 .env
 .env.*
-!.env.example
 
 # One-off Jira import dumps. Some files are UTF-16 and are not source.
 doc/archive/

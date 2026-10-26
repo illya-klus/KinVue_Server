@@ -50,7 +50,9 @@ Auth перевіряє Google ID token (`GOOGLE_CLIENT_ID`), заводить �
 
 ## Дані й перевірка
 
-Локальна база — Postgres 16 з `docker-compose.yml` (сервіс `postgres`, база `kinvue`, порт 5432). Див. [0006](decisions/0006-postgres-16.md).
+Локальна база auth, яку читає код, — Postgres 16 з кореневого `docker-compose.yml` (сервіс `postgres`, база `kinvue`, порт 5432). Див. [0006](decisions/0006-postgres-16.md).
+
+Поруч, окремим файлом, лежить локальний стенд `infra/docker-compose.yml`: два Postgres (5433 і 5434), Mongo, один Redis, RabbitMQ, Meilisearch, MinIO, Prometheus і Grafana. Сервіси Nest до нього не підключені. Порти — приклад із тікетів, не прийнята карта портів. Як дивитись: [runbooks/local-dev.md](runbooks/local-dev.md).
 
 CI на pull request і на push у `main` та `dev` ставить Node 24 на `ubuntu-24.04`, залежності з lockfile, ганяє `pnpm format:check`, `pnpm typecheck:contracts` і `pnpm test`. Окремого кроку `pnpm build` немає. Крок лінта закоментований: `typescript-eslint` 8.x не підтримує TypeScript 7, [0018](decisions/0018-shared-typescript-and-checks.md). Husky на коміті запускає lint-staged (Prettier для змінених JS/TS) і `pnpm typecheck`, потім commitlint. Повний тест і збірка на коміт не йдуть. Сервіси розширюють кореневий `tsconfig.base.json`.
 
