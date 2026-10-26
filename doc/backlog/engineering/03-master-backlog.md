@@ -1164,7 +1164,7 @@ Create the pnpm workspace and Turborepo task graph.
 - **Estimated effort:** 2 hours
 - **Complexity:** S
 - **Execution phase:** Stage 1 — Foundation
-- **Status:** Missing
+- **Status:** Done (KIN-155; root scripts, package stays private)
 - **Confidence:** Proposed
 - **Service / module:** repo
 - **MVP class:** MVP
@@ -1200,7 +1200,7 @@ Add the private kinvue package with the documented dev, build, test, lint, typec
 - **Estimated effort:** 1 hour
 - **Complexity:** XS
 - **Execution phase:** Stage 1 — Foundation
-- **Status:** Missing
+- **Status:** Rejected (KIN-157; workspace is services/* and packages/*, no empty apps/ drafts)
 - **Confidence:** Proposed
 - **Service / module:** repo
 - **MVP class:** MVP
@@ -1235,7 +1235,7 @@ Include apps, packages, and tests in the workspace and create those directories.
 - **Estimated effort:** 2 hours
 - **Complexity:** S
 - **Execution phase:** Stage 1 — Foundation
-- **Status:** Missing
+- **Status:** Rejected (KIN-159, decision 0010)
 - **Confidence:** Proposed
 - **Service / module:** repo
 - **MVP class:** MVP
@@ -1275,7 +1275,7 @@ Share strict TypeScript and formatting, and select a linter because the plan req
 - **Estimated effort:** 2 hours
 - **Complexity:** S
 - **Execution phase:** Stage 1 — Foundation
-- **Status:** Missing
+- **Status:** Done (KIN-161, decision 0018)
 - **Confidence:** Proposed
 - **Service / module:** repo
 - **MVP class:** MVP
