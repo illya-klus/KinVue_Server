@@ -10,11 +10,11 @@
 - Модель `AuthUser` у Prisma Next, міграції в `services/auth/migrations`.
 - Пара JWT (access 15 хв, refresh 7 днів) без таблиці сесій.
 - Локальний Postgres 16 у `docker-compose.yml`.
-- CI: format check, typecheck контрактів і юніт-тести на `ubuntu-24.04`. На коміті lint-staged (Prettier) і `pnpm typecheck`. Повний тест і `nest build` на коміт не йдуть.
+- CI у файлі workflow: format check і typecheck контрактів. На коміті lint-staged (Prettier) і `pnpm typecheck`. Повний тест і `nest build` на коміт не йдуть. Юніт-тести і `ubuntu-24.04` у workflow чекають токен зі scope `workflow`.
 - Документообіг у `doc/` і однакові правила для Cursor, Claude та Codex.
 - План розкладений на `doc/design/`, `doc/plan/`, `doc/backlog/`. Імпорт Jira прибраний в `doc/archive/jira-import/`.
 - Правило здачі: гілка від `dev` і pull request. Прямий пуш у `dev` або `main` не є здачею.
-- Стек цього репо: TypeScript, Node 24, pnpm, NestJS, `services/*`. Фронтенд в іншому репозиторії. CI runner — `ubuntu-24.04`. Сервіси розширюють `tsconfig.base.json`, [0018](decisions/0018-shared-typescript-and-checks.md).
+- Стек цього репо: TypeScript, Node 24, pnpm, NestJS, `services/*`. Фронтенд в іншому репозиторії. CI має бути `ubuntu-24.04`; у workflow поки `ubuntu-latest`, бо пуш файлу потребує scope `workflow`. Сервіси розширюють `tsconfig.base.json`, [0018](decisions/0018-shared-typescript-and-checks.md).
 - Анонімний пошук і картка опублікованих фільмів. In-app сповіщення в Postgres Notifications, дедуп за `eventId`, справжній push відкладений.
 - Звіряння пошуку: 5 хв, перекриття 24 год, воркер публікації 60 с.
 - Хостинг MVP: ≤ $300/міс, без Kubernetes. Нецілі v1 записані як заборона.

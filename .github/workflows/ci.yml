@@ -9,7 +9,7 @@ on:
 
 jobs:
   code-quality-check:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout codebase
@@ -30,13 +30,8 @@ jobs:
       - name: Check formatting
         run: pnpm format:check
 
-      # typescript-eslint 8.x supports TypeScript below 6.1. This repo is on
-      # TypeScript 7, so pnpm lint crashes before it reads files.
       # - name: Run lint
       #   run: pnpm lint
 
       - name: Build proto types and typecheck
         run: pnpm typecheck:contracts
-
-      - name: Run unit tests
-        run: pnpm test
