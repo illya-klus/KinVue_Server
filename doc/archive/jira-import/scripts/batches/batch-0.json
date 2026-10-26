@@ -1,0 +1,122 @@
+[
+  {
+    "key": "KIN-1",
+    "type": "Epic",
+    "summary": "[Epic] Developer Environment & Repo Bootstrap",
+    "description": "## Goal\nGive every developer a working local toolchain, git repo, and pnpm/Turbo monorepo so KinVue application code can be added safely.\n\n## Scope\nToolchain install, git init, monorepo scripts, TypeScript/Prettier config, and root folder structure.\n\n## Out of scope\nDo not add Docker services, microservice code, or feature APIs in this epic.\n\n## Suggested order\n1. KIN-1: Install local toolchain (Node 20, pnpm, Docker, FFmpeg) and verify versions\n2. KIN-2: Initialize git repo, add `.gitignore`, commit docs pack\n3. KIN-3: Bootstrap pnpm + Turbo monorepo with root scripts (`dev`, `build`, `test`, `lint`, `typecheck`)\n4. KIN-4: Add strict root TypeScript + Prettier config\n5. KIN-5: Create target folder structure (`apps/`, `packages/`, `infra/`, `tests/`, `scripts/`, `docs/`)\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-2",
+    "type": "Task",
+    "summary": "Install local toolchain (Node 20, pnpm, Docker, FFmpeg) and verify versions",
+    "description": "## What to do\nInstall Node.js 20 LTS, pnpm, Docker Desktop, and FFmpeg on your workstation, then confirm each tool runs from the terminal. KinVue cannot be built until this baseline toolchain is in place. No repository code is touched in this task — only your local environment.\n\n## Technical notes\n- Run: `node --version`, `pnpm --version`, `docker --version`, `ffmpeg -version`\n- Install pnpm globally: `npm install -g pnpm`\n- Use Node 20 LTS; Docker Desktop must be running for later infra tasks\n- Labels: infra, junior-friendly\n\n## Story points\n1\n\n## Depends on\n—\n\n## Acceptance criteria\n- Node.js 20 LTS installed\n- pnpm installed globally\n- Docker Desktop installed and running\n- FFmpeg available in PATH\n- All version commands succeed without errors\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-3",
+    "type": "Epic",
+    "summary": "[Epic] Local Infrastructure (Docker Compose)",
+    "description": "## Goal\nProvide all local backing services (databases, cache, messaging, search, object storage, observability) via Docker Compose.\n\n## Scope\nPostgreSQL ×2, MongoDB, Redis, RabbitMQ, Meilisearch, MinIO + bucket init, Prometheus, Grafana, `.env.example`, health verification.\n\n## Out of scope\nDo not implement business logic or HTTP APIs — only infrastructure containers and env documentation.\n\n## Suggested order\n1. KIN-11: Create `infra/docker-compose.yml` with Auth PostgreSQL (5433) and Movie PostgreSQL (5434)\n2. KIN-12: Add MongoDB, Redis, RabbitMQ (with management UI), Meilisearch, MinIO to Docker Compose\n3. KIN-13: Add MinIO bucket init service for `kinvue-media`\n4. KIN-14: Add Prometheus + Grafana to Docker Compose\n5. KIN-15: Create `.env.example` with all required env vars and document port map\n6. KIN-16: Verify all infra containers healthy (`docker compose ps`, RabbitMQ UI, MinIO console, Meilisearch `/health`)\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-4",
+    "type": "Epic",
+    "summary": "[Epic] Shared Packages",
+    "description": "## Goal\nCentralize cross-cutting concerns (config, logging, errors, JWT, contracts, test helpers) used by every KinVue service.\n\n## Scope\n`packages/config`, `logger`, `errors`, `jwt`, `contracts`, `testing` plus unit tests.\n\n## Out of scope\nDo not build HTTP endpoints or UI — packages only.\n\n## Suggested order\n1. KIN-21: Create `packages/config` with Zod-validated env loading per service\n2. KIN-22: Create `packages/logger` with structured JSON logs (`service`, `requestId`, `userId`, `route`, `durationMs`, `error`)\n3. KIN-23: Create `packages/errors` with shared error codes and HTTP mapping\n4. KIN-24: Create `packages/jwt` with RS256 JWKS verification helper\n5. KIN-25: Create `packages/contracts` with shared DTOs and domain event types\n6. KIN-26: Create `packages/testing` with DB/Redis/Mongo cleanup helpers and HTTP test utilities\n7. KIN-27: Add unit tests for config, errors, logger, JWT validation failures\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-5",
+    "type": "Epic",
+    "summary": "[Epic] Service Skeletons",
+    "description": "## Goal\nScaffold every KinVue microservice with health, readiness, metrics, Dockerfiles, and docker-compose wiring.\n\n## Scope\ngateway, auth-service, users-service, movie-service, rooms-service, notifications-service, transcode-worker on ports 4000–4005 (+ WS 4014).\n\n## Out of scope\nDo not implement registration, rooms, movies, or other feature logic — skeleton endpoints only.\n\n## Suggested order\n1. KIN-31: Scaffold `apps/gateway` with health, readiness, metrics, shared error format\n2. KIN-32: Scaffold `apps/auth-service` with health, readiness, metrics\n3. KIN-33: Scaffold `apps/users-service` with health, readiness, metrics\n4. KIN-34: Scaffold `apps/movie-service` with health, readiness, metrics\n5. KIN-35: Scaffold `apps/rooms-service` with HTTP health + separate WS port placeholder\n6. KIN-36: Scaffold `apps/notifications-service` with health, readiness, metrics\n7. KIN-37: Scaffold `apps/transcode-worker` with health + queue consumer stub\n8. KIN-38: Add Dockerfile for each app and wire all services into `docker-compose.yml`\n9. KIN-39: Verify all service health endpoints on ports 4000–4005\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-6",
+    "type": "Epic",
+    "summary": "[Epic] Auth Data Model",
+    "description": "## Goal\nDefine Auth PostgreSQL schema for identities, refresh sessions, and outbox events.\n\n## Scope\nMigrations for `auth_identities`, `refresh_sessions`, `auth_outbox_events` plus migration tests.\n\n## Out of scope\nDo not implement login/register HTTP handlers in this epic.\n\n## Suggested order\n1. KIN-101: Add Auth DB migrations: `auth_identities`, status constraint, unique email\n2. KIN-102: Add `refresh_sessions` table with indexes\n3. KIN-103: Add `auth_outbox_events` table\n4. KIN-104: Write migration test that applies schema to empty test DB\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-7",
+    "type": "Epic",
+    "summary": "[Epic] Users Data Model",
+    "description": "## Goal\nDefine MongoDB schemas for user profiles and friendships with canonical pair normalization.\n\n## Scope\n`users` and `friendships` collections, indexes, duplicate-pair tests.\n\n## Out of scope\nDo not implement profile or friend-request HTTP APIs in this epic.\n\n## Suggested order\n1. KIN-111: Create Mongo `users` collection schema with unique lowercase username\n2. KIN-112: Create Mongo `friendships` collection with canonical pair normalization\n3. KIN-113: Add indexes for username, displayName, user1Id, user2Id, status, createdAt\n4. KIN-114: Test duplicate friendship prevention in both directions\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-8",
+    "type": "Epic",
+    "summary": "[Epic] Auth Service API",
+    "description": "## Goal\nDeliver complete authentication: registration Saga, login, refresh rotation, logout, and JWKS.\n\n## Scope\nArgon2id hashing, RS256 tokens, all `/auth/*` endpoints, unit and integration tests.\n\n## Out of scope\nDo not build Gateway routing or web UI — auth-service only.\n\n## Suggested order\n1. KIN-121: Implement Argon2id password hashing + RS256 key generation\n2. KIN-122: Expose `GET /.well-known/jwks.json`\n3. KIN-123: Implement `POST /auth/login` (ACTIVE users only, returns access + refresh tokens)\n4. KIN-124: Implement `POST /auth/refresh` with refresh token rotation\n5. KIN-125: Implement `POST /auth/logout` (revoke refresh session)\n6. KIN-126: Implement registration Saga in `POST /auth/register`\n7. KIN-127: Unit tests: hashing, token claims, refresh rotation, inactive login, duplicate email\n8. KIN-128: Integration tests: successful Saga, Users unavailable retry, compensation path\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-9",
+    "type": "Epic",
+    "summary": "[Epic] Users Service API",
+    "description": "## Goal\nDeliver profiles, user search, friendships, and RabbitMQ outbox for social notifications.\n\n## Scope\nInternal profile endpoint, `/users/me`, search, friend requests, outbox publisher.\n\n## Out of scope\nDo not build web pages or Gateway routes in this epic.\n\n## Suggested order\n1. KIN-131: Implement idempotent `POST /internal/users/profiles`\n2. KIN-132: Implement `GET /users/me` and `PATCH /users/me`\n3. KIN-133: Implement `GET /users/search` (min 2 chars, cursor pagination)\n4. KIN-134: Implement friend requests: create, incoming, outgoing, accept, reject\n5. KIN-135: Implement `GET /friends`\n6. KIN-136: Emit `FRIEND_REQUEST_CREATED` and `FRIEND_REQUEST_ACCEPTED` via Mongo outbox\n7. KIN-137: Build outbox publisher to RabbitMQ for friendship events\n8. KIN-138: Tests: idempotent profile, pair normalization, authz on accept/reject, outbox creation\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-10",
+    "type": "Epic",
+    "summary": "[Epic] API Gateway",
+    "description": "## Goal\nProvide the single HTTP edge for KinVue: routing, JWT validation, rate limits, and admin scope guards.\n\n## Scope\nPublic, authenticated, and admin route proxies; JWKS cache; request-ID forwarding; Gateway tests.\n\n## Out of scope\nDo not implement business logic in Gateway — proxy and edge concerns only.\n\n## Suggested order\n1. KIN-201: Add request ID middleware and forward `x-request-id`, `x-user-id`, `x-user-scopes`\n2. KIN-202: Implement public routes (register, login, refresh, JWKS, movie search/detail)\n3. KIN-203: Implement JWT middleware with JWKS cache (5 min) + unknown `kid` refresh\n4. KIN-204: Implement authenticated user routes (users, friends, watchlist, rooms control, media-access)\n5. KIN-205: Implement admin routes with `admin` scope guard\n6. KIN-206: Add rate limits per endpoint group\n7. KIN-207: Gateway tests: expired JWT 401, bad signature 401, missing scope 403, upstream 503, request ID forwarding\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-11",
+    "type": "Epic",
+    "summary": "[Epic] Web App Foundation",
+    "description": "## Goal\nScaffold the React/Vite client with routing, Gateway-only API client, auth state, and shared UI patterns.\n\n## Scope\n`apps/web` shell, protected/admin routes, auth refresh, Playwright homepage smoke test.\n\n## Out of scope\nDo not build feature pages (register form, room player) — foundation only.\n\n## Suggested order\n1. KIN-211: Create Vite React TS app with routing shell\n2. KIN-212: Build API client (Gateway-only HTTP) + auth state store\n3. KIN-213: Implement auto refresh on 401 + logout flow\n4. KIN-214: Add protected and admin route wrappers\n5. KIN-215: Add shared UI states: loading, empty, error, unauthorized, forbidden\n6. KIN-216: Playwright smoke test: homepage loads\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-12",
+    "type": "Epic",
+    "summary": "[Epic] Auth UI Vertical Slice",
+    "description": "## Goal\nEnd-to-end register and login flow through Gateway to Auth and Users, with E2E and failure tests.\n\n## Scope\nRegister/login pages, error handling, E2E and Saga failure verification.\n\n## Out of scope\nDo not build profile, movies, or rooms UI in this epic.\n\n## Suggested order\n1. KIN-221: Build register page with validation (password min 12 chars)\n2. KIN-222: Build login page + redirect to movie search\n3. KIN-223: Handle duplicate email/username error messages\n4. KIN-224: E2E: register → login → profile loads\n5. KIN-225: Manual failure test: kill Users during registration, verify no false success\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-13",
+    "type": "Epic",
+    "summary": "[Epic] Social UI Vertical Slice",
+    "description": "## Goal\nLet users view/edit profiles, search users, manage friend requests, and see friends list.\n\n## Scope\nProfile, search, friend request, and friends pages plus social E2E test.\n\n## Out of scope\nDo not build movie search or watch rooms in this epic.\n\n## Suggested order\n1. KIN-231: Build profile view + edit form\n2. KIN-232: Build user search page (min 2 chars)\n3. KIN-233: Build friend requests UI (send, incoming, outgoing, accept, reject)\n4. KIN-234: Build friends list page\n5. KIN-235: E2E: user A finds user B, sends request, B accepts, both see friendship\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-14",
+    "type": "Epic",
+    "summary": "[Epic] Movie Data Model",
+    "description": "## Goal\nDefine Movie PostgreSQL schema for catalog, uploads, watchlist, search sync state, and outbox.\n\n## Scope\nMigrations for `movies`, `movie_uploads`, `watchlist_items`, `movie_index_sync_state`, `movie_outbox_events`.\n\n## Out of scope\nDo not implement search API or admin UI in this epic.\n\n## Suggested order\n1. KIN-301: Add Movie DB migrations: `movies`, status constraint, indexes\n2. KIN-302: Add `movie_uploads`, `watchlist_items`, `movie_index_sync_state`, `movie_outbox_events`\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-15",
+    "type": "Epic",
+    "summary": "[Epic] Movie Service API",
+    "description": "## Goal\nDeliver movie catalog CRUD, publish/schedule, Meilisearch indexing, watchlist, and reconciliation.\n\n## Scope\nAdmin and public movie endpoints, Meilisearch upsert, scheduled publish worker, search rebuild CLI, tests.\n\n## Out of scope\nDo not build web pages or media upload/transcode in this epic.\n\n## Suggested order\n1. KIN-311: Admin: `POST /admin/movies`, `PATCH /admin/movies/:id` (DRAFT status)\n2. KIN-312: Admin: publish now + schedule publish endpoints\n3. KIN-313: Public: `GET /movies/:id`, `GET /movies/search` (PUBLISHED only)\n4. KIN-314: Watchlist: add, remove, list\n5. KIN-315: Meilisearch index setup + upsert on publish\n6. KIN-316: Scheduled publish worker (every 60s)\n7. KIN-317: Search reconciliation job (every 5 min, 24h overlap, safe checkpoint)\n8. KIN-318: CLI `search:rebuild` for full Meilisearch rebuild\n9. KIN-319: Tests: publish, schedule, Meilisearch failure recovery, watchlist, search filters\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-16",
+    "type": "Epic",
+    "summary": "[Epic] Movie UI",
+    "description": "## Goal\nAdmin and user-facing movie pages: create/edit, publish, search, detail, watchlist.\n\n## Scope\nAdmin movie pages, debounced search, detail + watchlist actions, movie E2E test.\n\n## Out of scope\nDo not build watch rooms or media upload UI in this epic.\n\n## Suggested order\n1. KIN-321: Admin movie create/edit pages\n2. KIN-322: Admin publish now + schedule publish UI\n3. KIN-323: Movie search page with 300ms debounce + min 2 chars\n4. KIN-324: Movie detail page + watchlist add/remove\n5. KIN-325: Watchlist page\n6. KIN-326: E2E: admin publishes movie → user searches → saves to watchlist\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-17",
+    "type": "Epic",
+    "summary": "[Epic] Rooms HTTP Control API",
+    "description": "## Goal\nRoom lifecycle over HTTP: create, list public, invite, permissions, close — backed by Redis.\n\n## Scope\nRedis schemas, `POST/GET /rooms*` endpoints, `ROOM_INVITED` outbox, HTTP tests.\n\n## Out of scope\nDo not implement WebSocket, playback sync, or room UI in this epic.\n\n## Suggested order\n1. KIN-401: Redis key helpers and room state/member schemas\n2. KIN-402: `POST /rooms` (private/public, capacity 20, 6h TTL)\n3. KIN-403: `GET /rooms/public`\n4. KIN-404: `POST /rooms/:id/invites` (owner only, default VIEWER) + `ROOM_INVITED` outbox event\n5. KIN-405: `POST /rooms/:id/permissions` (owner grants CONTROLLER)\n6. KIN-406: `POST /rooms/:id/close` (owner only, 15 min cleanup TTL)\n7. KIN-407: Tests: create, invite authz, permission changes, close, TTL, capacity\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-18",
+    "type": "Epic",
+    "summary": "[Epic] Rooms WebSocket + Presence",
+    "description": "## Goal\nWebSocket ingress for watch rooms with JWT auth, access checks, state sync, and presence heartbeat.\n\n## Scope\n`ws://localhost:4014/rooms` handshake, `room.state_sync`, heartbeat/presence, WS tests.\n\n## Out of scope\nDo not implement playback commands, chat, or web room page in this epic.\n\n## Suggested order\n1. KIN-411: WebSocket endpoint `ws://localhost:4014/rooms` with JWT handshake\n2. KIN-412: Room access checks (public/private, closed, capacity, invite list)\n3. KIN-413: Send `room.state_sync` on connect\n4. KIN-414: Heartbeat every 30s, stale after 75s, presence ONLINE/DISCONNECTED/LEFT\n5. KIN-415: Tests: valid handshake, invalid JWT, private access denial, reconnect sync\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-19",
+    "type": "Epic",
+    "summary": "[Epic] Playback Synchronization",
+    "description": "## Goal\nSynchronize play/pause/seek across room participants via Redis state and Pub/Sub fan-out.\n\n## Scope\nPlayback events, Redis sync point, cross-instance Pub/Sub, multi-instance and reconnect tests.\n\n## Out of scope\nDo not build chat, reactions, or HLS player UI in this epic.\n\n## Suggested order\n1. KIN-421: Handle `room.play`, `room.pause`, `room.seek` with permission checks\n2. KIN-422: Store sync point in Redis (`status`, `position`, `updatedAt`, `version`)\n3. KIN-423: Redis Pub/Sub fan-out across Rooms instances (subscribe only active rooms)\n4. KIN-424: Broadcast `room.playback_state_changed` with monotonic version\n5. KIN-425: Multi-instance test: user A pauses on instance 1, user B receives on instance 2\n6. KIN-426: Reconnect test: client receives authoritative Redis state without Pub/Sub replay\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  },
+  {
+    "key": "KIN-20",
+    "type": "Epic",
+    "summary": "[Epic] Room Chat & Reactions",
+    "description": "## Goal\nEphemeral in-room chat and emoji reactions over WebSocket with Redis storage and idempotent retries.\n\n## Scope\n`chat.message`, `chat.reaction`, Redis TTL, duplicate messageId handling, tests.\n\n## Out of scope\nDo not build room page UI or durable chat history in this epic.\n\n## Suggested order\n1. KIN-431: `chat.message` with client `messageId`, 1000 char limit, Redis TTL 24h\n2. KIN-432: Idempotent chat retry using `seenMessageIds` set\n3. KIN-433: `chat.reaction` with allowed emoji set\n4. KIN-434: Tests: validation, duplicate messageId, cross-instance delivery\n\n## References\n- 28_JIRA_BACKLOG.md\n"
+  }
+]

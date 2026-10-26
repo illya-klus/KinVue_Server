@@ -1,0 +1,202 @@
+[
+  {
+    "backlog_key": "KIN-223",
+    "issueTypeName": "Story",
+    "summary": "Handle duplicate email/username error messages",
+    "labels": ["frontend", "auth"],
+    "epic": "KIN-12",
+    "epic_ref": "KIN-220",
+    "priority": "Highest",
+    "description": "**Backlog ID:** BL-223\n**Story Points:** 2\n**Depends On:** KIN-221\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-224",
+    "issueTypeName": "Task",
+    "summary": "E2E: register → login → profile loads",
+    "labels": ["testing", "auth"],
+    "epic": "KIN-12",
+    "epic_ref": "KIN-220",
+    "priority": "Highest",
+    "description": "**Backlog ID:** BL-224\n**Story Points:** 3\n**Depends On:** KIN-221, KIN-222, KIN-132\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-225",
+    "issueTypeName": "Task",
+    "summary": "Manual failure test: kill Users during registration, verify no false success",
+    "labels": ["testing", "auth"],
+    "epic": "KIN-12",
+    "epic_ref": "KIN-220",
+    "priority": "Highest",
+    "description": "**Backlog ID:** BL-225\n**Story Points:** 2\n**Depends On:** KIN-224\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-231",
+    "issueTypeName": "Story",
+    "summary": "Build profile view + edit form",
+    "labels": ["frontend", "users"],
+    "epic": "KIN-13",
+    "epic_ref": "KIN-230",
+    "priority": "Highest",
+    "description": "**Backlog ID:** BL-231\n**Story Points:** 3\n**Depends On:** KIN-132, KIN-214\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-232",
+    "issueTypeName": "Story",
+    "summary": "Build user search page (min 2 chars)",
+    "labels": ["frontend", "users"],
+    "epic": "KIN-13",
+    "epic_ref": "KIN-230",
+    "priority": "Highest",
+    "description": "**Backlog ID:** BL-232\n**Story Points:** 2\n**Depends On:** KIN-133\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-233",
+    "issueTypeName": "Story",
+    "summary": "Build friend requests UI (send, incoming, outgoing, accept, reject)",
+    "labels": ["frontend", "users"],
+    "epic": "KIN-13",
+    "epic_ref": "KIN-230",
+    "priority": "Highest",
+    "description": "**Backlog ID:** BL-233\n**Story Points:** 5\n**Depends On:** KIN-134\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-234",
+    "issueTypeName": "Story",
+    "summary": "Build friends list page",
+    "labels": ["frontend", "users"],
+    "epic": "KIN-13",
+    "epic_ref": "KIN-230",
+    "priority": "Highest",
+    "description": "**Backlog ID:** BL-234\n**Story Points:** 2\n**Depends On:** KIN-135\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-235",
+    "issueTypeName": "Task",
+    "summary": "E2E: user A finds user B, sends request, B accepts, both see friendship",
+    "labels": ["testing", "users"],
+    "epic": "KIN-13",
+    "epic_ref": "KIN-230",
+    "priority": "Highest",
+    "description": "**Backlog ID:** BL-235\n**Story Points:** 3\n**Depends On:** KIN-233, KIN-234\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-301",
+    "issueTypeName": "Story",
+    "summary": "Add Movie DB migrations: `movies`, status constraint, indexes",
+    "labels": ["backend", "movies"],
+    "epic": "KIN-14",
+    "epic_ref": "KIN-300",
+    "priority": "High",
+    "description": "**Backlog ID:** BL-301\n**Story Points:** 3\n**Depends On:** KIN-34, KIN-16\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-302",
+    "issueTypeName": "Story",
+    "summary": "Add `movie_uploads`, `watchlist_items`, `movie_index_sync_state`, `movie_outbox_events`",
+    "labels": ["backend", "movies"],
+    "epic": "KIN-14",
+    "epic_ref": "KIN-300",
+    "priority": "High",
+    "description": "**Backlog ID:** BL-302\n**Story Points:** 3\n**Depends On:** KIN-301\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-311",
+    "issueTypeName": "Story",
+    "summary": "Admin: `POST /admin/movies`, `PATCH /admin/movies/:id` (DRAFT status)",
+    "labels": ["backend", "movies"],
+    "epic": "KIN-15",
+    "epic_ref": "KIN-310",
+    "priority": "High",
+    "description": "**Backlog ID:** BL-311\n**Story Points:** 3\n**Depends On:** KIN-301\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-312",
+    "issueTypeName": "Story",
+    "summary": "Admin: publish now + schedule publish endpoints",
+    "labels": ["backend", "movies"],
+    "epic": "KIN-15",
+    "epic_ref": "KIN-310",
+    "priority": "High",
+    "description": "**Backlog ID:** BL-312\n**Story Points:** 3\n**Depends On:** KIN-311\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-313",
+    "issueTypeName": "Story",
+    "summary": "Public: `GET /movies/:id`, `GET /movies/search` (PUBLISHED only)",
+    "labels": ["backend", "movies"],
+    "epic": "KIN-15",
+    "epic_ref": "KIN-310",
+    "priority": "High",
+    "description": "**Backlog ID:** BL-313\n**Story Points:** 3\n**Depends On:** KIN-311\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-314",
+    "issueTypeName": "Story",
+    "summary": "Watchlist: add, remove, list",
+    "labels": ["backend", "movies"],
+    "epic": "KIN-15",
+    "epic_ref": "KIN-310",
+    "priority": "High",
+    "description": "**Backlog ID:** BL-314\n**Story Points:** 3\n**Depends On:** KIN-302\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-315",
+    "issueTypeName": "Story",
+    "summary": "Meilisearch index setup + upsert on publish",
+    "labels": ["backend", "movies"],
+    "epic": "KIN-15",
+    "epic_ref": "KIN-310",
+    "priority": "High",
+    "description": "**Backlog ID:** BL-315\n**Story Points:** 3\n**Depends On:** KIN-312, KIN-12\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-316",
+    "issueTypeName": "Story",
+    "summary": "Scheduled publish worker (every 60s)",
+    "labels": ["backend", "movies"],
+    "epic": "KIN-15",
+    "epic_ref": "KIN-310",
+    "priority": "High",
+    "description": "**Backlog ID:** BL-316\n**Story Points:** 3\n**Depends On:** KIN-312\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-317",
+    "issueTypeName": "Story",
+    "summary": "Search reconciliation job (every 5 min, 24h overlap, safe checkpoint)",
+    "labels": ["backend", "movies"],
+    "epic": "KIN-15",
+    "epic_ref": "KIN-310",
+    "priority": "High",
+    "description": "**Backlog ID:** BL-317\n**Story Points:** 5\n**Depends On:** KIN-315\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-318",
+    "issueTypeName": "Task",
+    "summary": "CLI `search:rebuild` for full Meilisearch rebuild",
+    "labels": ["backend", "movies"],
+    "epic": "KIN-15",
+    "epic_ref": "KIN-310",
+    "priority": "High",
+    "description": "**Backlog ID:** BL-318\n**Story Points:** 2\n**Depends On:** KIN-315\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-319",
+    "issueTypeName": "Task",
+    "summary": "Tests: publish, schedule, Meilisearch failure recovery, watchlist, search filters",
+    "labels": ["testing", "movies"],
+    "epic": "KIN-15",
+    "epic_ref": "KIN-310",
+    "priority": "High",
+    "description": "**Backlog ID:** BL-319\n**Story Points:** 5\n**Depends On:** KIN-313–KIN-318\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  },
+  {
+    "backlog_key": "KIN-321",
+    "issueTypeName": "Story",
+    "summary": "Admin movie create/edit pages",
+    "labels": ["frontend", "movies"],
+    "epic": "KIN-16",
+    "epic_ref": "KIN-320",
+    "priority": "High",
+    "description": "**Backlog ID:** BL-321\n**Story Points:** 3\n**Depends On:** KIN-311, KIN-214\n\n## Acceptance Criteria\n\n* See Definition of Done in 28_JIRA_BACKLOG.md\n\n**Reference:** 28_JIRA_BACKLOG.md"
+  }
+]

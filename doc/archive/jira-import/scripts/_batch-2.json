@@ -1,0 +1,50 @@
+[
+  {
+    "key": "KIN-116",
+    "type": "Task",
+    "summary": "Manual failure test: kill Users during registration, verify no false success",
+    "description": "## What to do\nManual failure test: kill users-service during registration and verify the UI does not show false success. Proves Saga compensation works end-to-end.\n\n## Technical notes\n- Labels: testing, auth\n\n## Story points\n2\n\n## Depends on\nKIN-224\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-117",
+    "type": "Story",
+    "summary": "Build profile view + edit form",
+    "description": "## What to do\nBuild profile view and edit form in `apps/web` using `GET /users/me` and `PATCH /users/me` via Gateway.\n\n## Technical notes\n- Labels: frontend, users\n\n## Story points\n3\n\n## Depends on\nKIN-132, KIN-214\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-118",
+    "type": "Story",
+    "summary": "Build user search page (min 2 chars)",
+    "description": "## What to do\nBuild user search page with minimum 2 characters before calling `GET /users/search`.\n\n## Technical notes\n- App: `apps/web` port 3000; HTTP calls go to Gateway only\n- Labels: frontend, users\n\n## Story points\n2\n\n## Depends on\nKIN-133\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-119",
+    "type": "Story",
+    "summary": "Build friend requests UI (send, incoming, outgoing, accept, reject)",
+    "description": "## What to do\nBuild friend requests UI: send, incoming list, outgoing list, accept, and reject actions.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: frontend, users\n\n## Story points\n5\n\n## Depends on\nKIN-134\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-120",
+    "type": "Story",
+    "summary": "Build friends list page",
+    "description": "## What to do\nBuild friends list page showing accepted friendships via `GET /friends`.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- App: `apps/web` port 3000; HTTP calls go to Gateway only\n- Labels: frontend, users\n\n## Story points\n2\n\n## Depends on\nKIN-135\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-121",
+    "type": "Task",
+    "summary": "E2E: user A finds user B, sends request, B accepts, both see friendship",
+    "description": "## What to do\nE2E test: user A finds user B, sends request, B accepts, both see friendship in friends list.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Tests live in `tests/e2e/`; run with `pnpm test:e2e`\n- Labels: testing, users\n\n## Story points\n3\n\n## Depends on\nKIN-233, KIN-234\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-122",
+    "type": "Story",
+    "summary": "Add Movie DB migrations: `movies`, status constraint, indexes",
+    "description": "## What to do\nAdd Movie PostgreSQL migrations in movie-service for `movies` table with status constraint and indexes. PostgreSQL is the movie catalog source of truth.\n\n## Technical notes\n- Use service-local migration tooling; test against empty DB in CI\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-34, KIN-16\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-123",
+    "type": "Story",
+    "summary": "Add `movie_uploads`, `watchlist_items`, `movie_index_sync_state`, `movie_outbox_events`",
+    "description": "## What to do\nAdd `movie_uploads`, `watchlist_items`, `movie_index_sync_state`, and `movie_outbox_events` tables in movie-service.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Object storage: MinIO localhost:9000, bucket `kinvue-media`, console localhost:9001\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-301\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  }
+]

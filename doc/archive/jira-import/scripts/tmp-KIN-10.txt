@@ -1,0 +1,20 @@
+## Goal
+Provide the single HTTP edge for KinVue: routing, JWT validation, rate limits, and admin scope guards.
+
+## Scope
+Public, authenticated, and admin route proxies; JWKS cache; request-ID forwarding; Gateway tests.
+
+## Out of scope
+Do not implement business logic in Gateway — proxy and edge concerns only.
+
+## Suggested order
+1. KIN-201: Add request ID middleware and forward `x-request-id`, `x-user-id`, `x-user-scopes`
+2. KIN-202: Implement public routes (register, login, refresh, JWKS, movie search/detail)
+3. KIN-203: Implement JWT middleware with JWKS cache (5 min) + unknown `kid` refresh
+4. KIN-204: Implement authenticated user routes (users, friends, watchlist, rooms control, media-access)
+5. KIN-205: Implement admin routes with `admin` scope guard
+6. KIN-206: Add rate limits per endpoint group
+7. KIN-207: Gateway tests: expired JWT 401, bad signature 401, missing scope 403, upstream 503, request ID forwarding
+
+## References
+- 28_JIRA_BACKLOG.md

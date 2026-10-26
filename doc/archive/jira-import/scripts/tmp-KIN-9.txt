@@ -1,0 +1,21 @@
+## Goal
+Deliver profiles, user search, friendships, and RabbitMQ outbox for social notifications.
+
+## Scope
+Internal profile endpoint, `/users/me`, search, friend requests, outbox publisher.
+
+## Out of scope
+Do not build web pages or Gateway routes in this epic.
+
+## Suggested order
+1. KIN-131: Implement idempotent `POST /internal/users/profiles`
+2. KIN-132: Implement `GET /users/me` and `PATCH /users/me`
+3. KIN-133: Implement `GET /users/search` (min 2 chars, cursor pagination)
+4. KIN-134: Implement friend requests: create, incoming, outgoing, accept, reject
+5. KIN-135: Implement `GET /friends`
+6. KIN-136: Emit `FRIEND_REQUEST_CREATED` and `FRIEND_REQUEST_ACCEPTED` via Mongo outbox
+7. KIN-137: Build outbox publisher to RabbitMQ for friendship events
+8. KIN-138: Tests: idempotent profile, pair normalization, authz on accept/reject, outbox creation
+
+## References
+- 28_JIRA_BACKLOG.md

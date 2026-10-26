@@ -1,0 +1,50 @@
+[
+  {
+    "key": "KIN-124",
+    "type": "Story",
+    "summary": "Admin: `POST /admin/movies`, `PATCH /admin/movies/:id` (DRAFT status)",
+    "description": "## What to do\nImplement admin `POST /admin/movies` and `PATCH /admin/movies/:id` in movie-service — new movies start as `DRAFT`. Gateway admin scope required.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-301\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-125",
+    "type": "Story",
+    "summary": "Admin: publish now + schedule publish endpoints",
+    "description": "## What to do\nImplement admin publish-now and schedule-publish endpoints in movie-service. Publish updates PostgreSQL first, then Meilisearch.\n\n## Technical notes\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-311\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-126",
+    "type": "Story",
+    "summary": "Public: `GET /movies/:id`, `GET /movies/search` (PUBLISHED only)",
+    "description": "## What to do\nImplement public `GET /movies/:id` and `GET /movies/search` returning only `PUBLISHED` movies. Search hits Meilisearch index `movies` (port 7700).\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-311\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-127",
+    "type": "Story",
+    "summary": "Watchlist: add, remove, list",
+    "description": "## What to do\nImplement watchlist add, remove, and list endpoints in movie-service storing `user_id` + `movie_id` rows.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-302\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-128",
+    "type": "Story",
+    "summary": "Meilisearch index setup + upsert on publish",
+    "description": "## What to do\nSet up Meilisearch index `movies` and upsert documents on publish. Searchable: title, description, genres.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-312, KIN-12\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-129",
+    "type": "Story",
+    "summary": "Scheduled publish worker (every 60s)",
+    "description": "## What to do\nImplement scheduled publish worker running every 60 seconds to flip `SCHEDULED` movies to `PUBLISHED`.\n\n## Technical notes\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-312\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-130",
+    "type": "Story",
+    "summary": "Search reconciliation job (every 5 min, 24h overlap, safe checkpoint)",
+    "description": "## What to do\nImplement search reconciliation job every 5 minutes with 24-hour overlap and safe checkpoint in `movie_index_sync_state`.\n\n## Technical notes\n- Labels: backend, movies\n\n## Story points\n5\n\n## Depends on\nKIN-315\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-131",
+    "type": "Task",
+    "summary": "CLI `search:rebuild` for full Meilisearch rebuild",
+    "description": "## What to do\nAdd CLI `pnpm --filter movie-service search:rebuild` for full Meilisearch index rebuild from PostgreSQL.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Labels: backend, movies\n\n## Story points\n2\n\n## Depends on\nKIN-315\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  }
+]

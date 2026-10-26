@@ -1,0 +1,122 @@
+[
+  {
+    "key": "KIN-121",
+    "type": "Task",
+    "summary": "E2E: user A finds user B, sends request, B accepts, both see friendship",
+    "description": "## What to do\nE2E test: user A finds user B, sends request, B accepts, both see friendship in friends list.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Tests live in `tests/e2e/`; run with `pnpm test:e2e`\n- Labels: testing, users\n\n## Story points\n3\n\n## Depends on\nKIN-233, KIN-234\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-122",
+    "type": "Story",
+    "summary": "Add Movie DB migrations: `movies`, status constraint, indexes",
+    "description": "## What to do\nAdd Movie PostgreSQL migrations in movie-service for `movies` table with status constraint and indexes. PostgreSQL is the movie catalog source of truth.\n\n## Technical notes\n- Use service-local migration tooling; test against empty DB in CI\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-34, KIN-16\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-123",
+    "type": "Story",
+    "summary": "Add `movie_uploads`, `watchlist_items`, `movie_index_sync_state`, `movie_outbox_events`",
+    "description": "## What to do\nAdd `movie_uploads`, `watchlist_items`, `movie_index_sync_state`, and `movie_outbox_events` tables in movie-service.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Object storage: MinIO localhost:9000, bucket `kinvue-media`, console localhost:9001\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-301\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-124",
+    "type": "Story",
+    "summary": "Admin: `POST /admin/movies`, `PATCH /admin/movies/:id` (DRAFT status)",
+    "description": "## What to do\nImplement admin `POST /admin/movies` and `PATCH /admin/movies/:id` in movie-service — new movies start as `DRAFT`. Gateway admin scope required.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-301\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-125",
+    "type": "Story",
+    "summary": "Admin: publish now + schedule publish endpoints",
+    "description": "## What to do\nImplement admin publish-now and schedule-publish endpoints in movie-service. Publish updates PostgreSQL first, then Meilisearch.\n\n## Technical notes\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-311\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-126",
+    "type": "Story",
+    "summary": "Public: `GET /movies/:id`, `GET /movies/search` (PUBLISHED only)",
+    "description": "## What to do\nImplement public `GET /movies/:id` and `GET /movies/search` returning only `PUBLISHED` movies. Search hits Meilisearch index `movies` (port 7700).\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-311\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-127",
+    "type": "Story",
+    "summary": "Watchlist: add, remove, list",
+    "description": "## What to do\nImplement watchlist add, remove, and list endpoints in movie-service storing `user_id` + `movie_id` rows.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-302\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-128",
+    "type": "Story",
+    "summary": "Meilisearch index setup + upsert on publish",
+    "description": "## What to do\nSet up Meilisearch index `movies` and upsert documents on publish. Searchable: title, description, genres.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-312, KIN-12\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-129",
+    "type": "Story",
+    "summary": "Scheduled publish worker (every 60s)",
+    "description": "## What to do\nImplement scheduled publish worker running every 60 seconds to flip `SCHEDULED` movies to `PUBLISHED`.\n\n## Technical notes\n- Labels: backend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-312\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-130",
+    "type": "Story",
+    "summary": "Search reconciliation job (every 5 min, 24h overlap, safe checkpoint)",
+    "description": "## What to do\nImplement search reconciliation job every 5 minutes with 24-hour overlap and safe checkpoint in `movie_index_sync_state`.\n\n## Technical notes\n- Labels: backend, movies\n\n## Story points\n5\n\n## Depends on\nKIN-315\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-131",
+    "type": "Task",
+    "summary": "CLI `search:rebuild` for full Meilisearch rebuild",
+    "description": "## What to do\nAdd CLI `pnpm --filter movie-service search:rebuild` for full Meilisearch index rebuild from PostgreSQL.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Labels: backend, movies\n\n## Story points\n2\n\n## Depends on\nKIN-315\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-132",
+    "type": "Task",
+    "summary": "Tests: publish, schedule, Meilisearch failure recovery, watchlist, search filters",
+    "description": "## What to do\nAdd movie-service tests: publish, schedule, Meilisearch failure recovery, watchlist, search filters.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Labels: testing, movies\n\n## Story points\n5\n\n## Depends on\nKIN-313–KIN-318\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-133",
+    "type": "Story",
+    "summary": "Admin movie create/edit pages",
+    "description": "## What to do\nBuild admin movie create/edit pages in `apps/web` calling Gateway admin movie endpoints.\n\n## Technical notes\n- App: `apps/web` port 3000; HTTP calls go to Gateway only\n- Labels: frontend, movies\n\n## Story points\n3\n\n## Depends on\nKIN-311, KIN-214\n\n## Acceptance criteria\n- See Definition of Done in 28_JIRA_BACKLOG.md\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-134",
+    "type": "Task",
+    "summary": "Integration tests: successful Saga, Users unavailable retry, compensation path",
+    "description": "## What to do\nAdd auth-service integration tests for successful registration Saga, Users unavailable retry, and compensation path. Proves the Saga does not return false success.\n\n## Technical notes\n- Labels: testing, auth\n\n## Story points\n5\n\n## Depends on\nKIN-126\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-135",
+    "type": "Task",
+    "summary": "Unit tests: hashing, token claims, refresh rotation, inactive login, duplicate email",
+    "description": "## What to do\nAdd auth-service unit tests for hashing, token claims, refresh rotation, inactive login rejection, and duplicate email (409).\n\n## Technical notes\n- Labels: testing, auth\n\n## Story points\n3\n\n## Depends on\nKIN-123–KIN-126\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-136",
+    "type": "Story",
+    "summary": "Implement idempotent POST /internal/users/profiles",
+    "description": "## What to do\nImplement idempotent `POST /internal/users/profiles` in users-service — same `userId` returns 200 with existing profile. Called by Auth during registration Saga.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users\n\n## Story points\n3\n\n## Depends on\nKIN-111\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-137",
+    "type": "Story",
+    "summary": "Implement GET /users/me and PATCH /users/me",
+    "description": "## What to do\nImplement `GET /users/me` and `PATCH /users/me` in users-service. Gateway forwards these with `x-user-id` header after JWT validation.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users\n\n## Story points\n3\n\n## Depends on\nKIN-131\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-138",
+    "type": "Story",
+    "summary": "Implement GET /users/search (min 2 chars, cursor pagination)",
+    "description": "## What to do\nImplement `GET /users/search?query=&limit=&cursor=` in users-service — minimum 2 characters, cursor pagination on MongoDB username/displayName.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users\n\n## Story points\n3\n\n## Depends on\nKIN-131\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-139",
+    "type": "Story",
+    "summary": "Implement friend requests: create, incoming, outgoing, accept, reject",
+    "description": "## What to do\nImplement friend request endpoints in users-service: create, incoming, outgoing, accept, reject. Uses normalized friendship pairs and rejects self-requests.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users\n\n## Story points\n5\n\n## Depends on\nKIN-112\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-140",
+    "type": "Story",
+    "summary": "Implement GET /friends",
+    "description": "## What to do\nImplement `GET /friends` in users-service returning accepted friendships for the authenticated user.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users\n\n## Story points\n2\n\n## Depends on\nKIN-134\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  }
+]

@@ -1,0 +1,17 @@
+## Goal
+Define MongoDB schemas for user profiles and friendships with canonical pair normalization.
+
+## Scope
+`users` and `friendships` collections, indexes, duplicate-pair tests.
+
+## Out of scope
+Do not implement profile or friend-request HTTP APIs in this epic.
+
+## Suggested order
+1. KIN-111: Create Mongo `users` collection schema with unique lowercase username
+2. KIN-112: Create Mongo `friendships` collection with canonical pair normalization
+3. KIN-113: Add indexes for username, displayName, user1Id, user2Id, status, createdAt
+4. KIN-114: Test duplicate friendship prevention in both directions
+
+## References
+- 28_JIRA_BACKLOG.md

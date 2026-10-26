@@ -1,0 +1,122 @@
+[
+  {
+    "key": "KIN-61",
+    "type": "Story",
+    "summary": "Scaffold apps/users-service with health, readiness, metrics",
+    "description": "## What to do\nScaffold `apps/users-service` on port 4002 with health, readiness, and metrics. Users owns profiles, friendships, and social graph data in MongoDB.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users\n\n## Story points\n2\n\n## Depends on\nKIN-22–KIN-26\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-62",
+    "type": "Story",
+    "summary": "Scaffold apps/movie-service with health, readiness, metrics",
+    "description": "## What to do\nScaffold `apps/movie-service` on port 4003 with health, readiness, and metrics. Movie owns catalog metadata, watchlist, search indexing, and media keys in PostgreSQL.\n\n## Technical notes\n- Service: `apps/movie-service` port 4003; DB postgresql://localhost:5434; Meilisearch http://localhost:7700\n- Labels: backend, movies\n\n## Story points\n2\n\n## Depends on\nKIN-22–KIN-26\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-63",
+    "type": "Story",
+    "summary": "Scaffold apps/rooms-service with HTTP health + separate WS port placeholder",
+    "description": "## What to do\nScaffold `apps/rooms-service` with HTTP on port 4004 and a WebSocket listener placeholder on port 4014. Rooms owns ephemeral watch-together state in Redis.\n\n## Technical notes\n- Service: `apps/rooms-service` HTTP 4004, WS ws://localhost:4014/rooms; Redis `redis://localhost:6379`\n- Labels: backend, rooms\n\n## Story points\n3\n\n## Depends on\nKIN-22–KIN-26\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-64",
+    "type": "Story",
+    "summary": "Scaffold apps/notifications-service with health, readiness, metrics",
+    "description": "## What to do\nScaffold `apps/notifications-service` on port 4005 with health, readiness, and metrics. It consumes RabbitMQ events and stores in-app notifications.\n\n## Technical notes\n- Service: `apps/notifications-service` port 4005; RabbitMQ amqp://localhost:5672, management UI localhost:15672\n- Labels: backend, notifications\n\n## Story points\n2\n\n## Depends on\nKIN-22–KIN-26\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-65",
+    "type": "Story",
+    "summary": "Scaffold apps/transcode-worker with health + queue consumer stub",
+    "description": "## What to do\nScaffold `apps/transcode-worker` with a health endpoint and a stub RabbitMQ consumer for `media.transcode` jobs. FFmpeg HLS transcoding runs here, not in movie-service.\n\n## Technical notes\n- Worker: `apps/transcode-worker`; queue `media.transcode`; FFmpeg HLS 1080p/720p/480p\n- Labels: backend, media\n\n## Story points\n2\n\n## Depends on\nKIN-22–KIN-26\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-66",
+    "type": "Task",
+    "summary": "Add Dockerfile for each app and wire all services into docker-compose.yml",
+    "description": "## What to do\nAdd a Dockerfile for each app under `apps/` and register all services in `infra/docker-compose.yml`. Enables running the full KinVue stack locally with one command.\n\n## Technical notes\n- File: `infra/docker-compose.yml`; start with `pnpm infra:up`\n- Labels: infra\n\n## Story points\n3\n\n## Depends on\nKIN-31–KIN-37, KIN-16\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-67",
+    "type": "Task",
+    "summary": "Verify all service health endpoints on ports 4000-4005",
+    "description": "## What to do\nVerify every service health endpoint responds on ports 4000–4005 after `pnpm infra:up` and `pnpm dev`. Confirms Docker wiring and service skeletons before feature work begins.\n\n## Technical notes\n- Labels: testing\n\n## Story points\n1\n\n## Depends on\nKIN-38\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-68",
+    "type": "Story",
+    "summary": "Add Auth DB migrations: auth_identities, status constraint, unique email",
+    "description": "## What to do\nAdd Auth PostgreSQL migrations in `apps/auth-service` for the `auth_identities` table with status constraint and unique email. Auth is the source of truth for login credentials and registration state.\n\n## Technical notes\n- Use service-local migration tooling; test against empty DB in CI\n- Labels: backend, auth\n\n## Story points\n3\n\n## Depends on\nKIN-32, KIN-16\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-69",
+    "type": "Story",
+    "summary": "Add refresh_sessions table with indexes",
+    "description": "## What to do\nAdd the `refresh_sessions` table with indexes on `user_id` and `expires_at` in auth-service. Supports refresh-token rotation (30-day TTL) used by login and logout.\n\n## Technical notes\n- Labels: backend, auth\n\n## Story points\n2\n\n## Depends on\nKIN-101\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-70",
+    "type": "Story",
+    "summary": "Add auth_outbox_events table",
+    "description": "## What to do\nAdd the `auth_outbox_events` table for durable Auth domain events. Uses the transactional outbox pattern for reliable RabbitMQ publishing later.\n\n## Technical notes\n- Labels: backend, auth\n\n## Story points\n2\n\n## Depends on\nKIN-101\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-71",
+    "type": "Task",
+    "summary": "Write migration test that applies schema to empty test DB",
+    "description": "## What to do\nWrite a migration test that applies the full Auth schema to an empty test database. Ensures migrations are repeatable in CI and fresh environments.\n\n## Technical notes\n- Use service-local migration tooling; test against empty DB in CI\n- Labels: testing, auth\n\n## Story points\n2\n\n## Depends on\nKIN-101–KIN-103\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-72",
+    "type": "Story",
+    "summary": "Create Mongo users collection schema with unique lowercase username",
+    "description": "## What to do\nCreate the MongoDB `users` collection schema in users-service with unique lowercase `username`. Profiles are created during registration Saga after Auth generates global `userId`.\n\n## Technical notes\n- Labels: backend, users\n\n## Story points\n3\n\n## Depends on\nKIN-33, KIN-16\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-73",
+    "type": "Story",
+    "summary": "Create Mongo friendships collection with canonical pair normalization",
+    "description": "## What to do\nCreate the MongoDB `friendships` collection with canonical pair normalization (`user1Id` < `user2Id`). Prevents duplicate friend relationships in either direction.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: backend, users\n\n## Story points\n3\n\n## Depends on\nKIN-111\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-74",
+    "type": "Task",
+    "summary": "Add indexes for username, displayName, user1Id, user2Id, status, createdAt",
+    "description": "## What to do\nAdd MongoDB indexes on `username`, `displayName`, `user1Id`, `user2Id`, `status`, and `createdAt` in users-service. Required for user search and friend request queries at scale.\n\n## Technical notes\n- Labels: backend, users\n\n## Story points\n2\n\n## Depends on\nKIN-112\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-75",
+    "type": "Task",
+    "summary": "Test duplicate friendship prevention in both directions",
+    "description": "## What to do\nWrite tests proving duplicate friendship pairs cannot be inserted in either direction. Validates the normalization helper before friend-request APIs ship.\n\n## Technical notes\n- Service: `apps/users-service` port 4002; MongoDB `USERS_MONGO_URL` mongodb://localhost:27017/kinvue_users\n- Labels: testing, users\n\n## Story points\n2\n\n## Depends on\nKIN-112\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-76",
+    "type": "Story",
+    "summary": "Implement Argon2id password hashing + RS256 key generation",
+    "description": "## What to do\nImplement Argon2id password hashing and RS256 signing key generation in auth-service. Passwords never leave Auth; JWT access tokens expire in 15 minutes.\n\n## Technical notes\n- Labels: backend, auth, security\n\n## Story points\n3\n\n## Depends on\nKIN-101\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-77",
+    "type": "Story",
+    "summary": "Expose GET /.well-known/jwks.json",
+    "description": "## What to do\nExpose `GET /.well-known/jwks.json` from auth-service (port 4001). Gateway and rooms-service cache these public keys for local JWT verification.\n\n## Technical notes\n- Labels: backend, auth\n\n## Story points\n2\n\n## Depends on\nKIN-121\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-78",
+    "type": "Story",
+    "summary": "Implement POST /auth/login (ACTIVE users only, returns access + refresh tokens)",
+    "description": "## What to do\nImplement `POST /auth/login` in auth-service — only `ACTIVE` users, returns access + refresh tokens. Gateway proxies this as a public route.\n\n## Technical notes\n- Service: `apps/auth-service` port 4001; DB `AUTH_DATABASE_URL` postgresql://localhost:5433\n- Labels: backend, auth\n\n## Story points\n3\n\n## Depends on\nKIN-121, KIN-102\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-79",
+    "type": "Story",
+    "summary": "Implement POST /auth/refresh with refresh token rotation",
+    "description": "## What to do\nImplement `POST /auth/refresh` with refresh-token rotation: revoke old session, issue new pair. Prevents refresh-token reuse attacks.\n\n## Technical notes\n- Service: `apps/auth-service` port 4001; DB `AUTH_DATABASE_URL` postgresql://localhost:5433\n- Labels: backend, auth\n\n## Story points\n3\n\n## Depends on\nKIN-123\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  },
+  {
+    "key": "KIN-80",
+    "type": "Story",
+    "summary": "Implement POST /auth/logout (revoke refresh session)",
+    "description": "## What to do\nImplement `POST /auth/logout` to revoke the current refresh session in PostgreSQL. Called through Gateway on authenticated routes.\n\n## Technical notes\n- Service: `apps/auth-service` port 4001; DB `AUTH_DATABASE_URL` postgresql://localhost:5433\n- Labels: backend, auth\n\n## Story points\n2\n\n## Depends on\nKIN-124\n\n## Acceptance criteria\n- Meets Definition of Done for KinVue stories (tests pass, PR reviewed, no secrets committed)\n\n## References\n- 28_JIRA_BACKLOG.md\n- 27_MAIN_STEP_BY_STEP_IMPLEMENTATION_PLAN.md\n"
+  }
+]

@@ -1,0 +1,21 @@
+## Goal
+Deliver complete authentication: registration Saga, login, refresh rotation, logout, and JWKS.
+
+## Scope
+Argon2id hashing, RS256 tokens, all `/auth/*` endpoints, unit and integration tests.
+
+## Out of scope
+Do not build Gateway routing or web UI — auth-service only.
+
+## Suggested order
+1. KIN-121: Implement Argon2id password hashing + RS256 key generation
+2. KIN-122: Expose `GET /.well-known/jwks.json`
+3. KIN-123: Implement `POST /auth/login` (ACTIVE users only, returns access + refresh tokens)
+4. KIN-124: Implement `POST /auth/refresh` with refresh token rotation
+5. KIN-125: Implement `POST /auth/logout` (revoke refresh session)
+6. KIN-126: Implement registration Saga in `POST /auth/register`
+7. KIN-127: Unit tests: hashing, token claims, refresh rotation, inactive login, duplicate email
+8. KIN-128: Integration tests: successful Saga, Users unavailable retry, compensation path
+
+## References
+- 28_JIRA_BACKLOG.md
