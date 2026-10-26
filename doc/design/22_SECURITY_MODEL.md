@@ -17,10 +17,12 @@ Each is protected differently.
 Protected by:
 
 - TLS;
-- JWT validation at Gateway;
+- JWT validation at Gateway for authenticated routes;
 - rate limiting;
 - authorization;
 - validation.
+
+Anonymous clients may call movie search and published movie detail. Watchlist, media access, and admin routes require JWT. See decision 0011.
 
 ---
 

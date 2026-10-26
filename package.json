@@ -2,6 +2,9 @@
   "name": "KinVue_Server",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "24"
+  },
   "scripts": {
     "dev:gateway": "pnpm  --filter @kinvue/gateway run start:dev",
     "dev:auth": "pnpm  --filter @kinvue/auth run start:dev",
