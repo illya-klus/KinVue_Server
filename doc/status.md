@@ -9,8 +9,7 @@
 - Контракт `packages/shared-protos/proto/auth.proto` і генерація типів у `@kinvue/contracts`.
 - Модель `AuthUser` у Prisma Next, міграції в `services/auth/migrations`.
 - Пара JWT (access 15 хв, refresh 7 днів) без таблиці сесій.
-- Локальний Postgres 16 у кореневому `docker-compose.yml` (порт 5432). Це база, яку читає auth.
-- Локальний стенд `infra/docker-compose.yml` і приклад змінних у `.env.example`. Інструкція: `doc/runbooks/local-dev.md`. Код сервісів до стенда не підключений. Порти стенда не є прийнятою картою портів. На цій машині Meilisearch стенда не зайняв 7700: порт уже тримає інший проєкт.
+- Один локальний Compose: кореневий `docker-compose.yml`, [0019](decisions/0019-one-local-compose.md). База auth — сервіс `postgres`, порт 5432. У тому самому файлі каталог, Mongo, Redis, RabbitMQ, Meilisearch, MinIO, Prometheus і Grafana. Інструкція: `doc/runbooks/local-dev.md`. Другої бази auth немає. На цій машині Meilisearch може не зайняти 7700, якщо порт уже тримає інший проєкт.
 - CI у файлі workflow: format check, typecheck контрактів і юніт-тести на `ubuntu-24.04`. На коміті lint-staged (Prettier) і `pnpm typecheck`. Повний тест і `nest build` на коміт не йдуть.
 - Документообіг у `doc/` і однакові правила для Cursor, Claude та Codex.
 - План розкладений на `doc/design/`, `doc/plan/`, `doc/backlog/`. Імпорт Jira прибраний в `doc/archive/jira-import/`.
@@ -35,7 +34,7 @@
 
 - Відкриті дірки плану: `doc/backlog/engineering/09-gaps-and-unknowns.md`. Їх не закривають побіжно. G-07 закрита [0011](decisions/0011-anonymous-published-movie-reads.md). FR-09 не реалізують, доки продукт не відповість, [0014](decisions/0014-defer-fr09-activity.md).
 - Розбіжність термінів JWT: у коді refresh 7 днів без сховища, у плані 30 днів з ротацією.
-- Карта портів як архітектурне рішення. Стенд у `infra/docker-compose.yml` лише приклад із тікетів KIN-171…KIN-214. Auth лишається на порту 5432, [0006](decisions/0006-postgres-16.md).
+- Карта портів як архітектурне рішення. Порти в `docker-compose.yml` — локальний приклад. Auth лишається на порту 5432, [0006](decisions/0006-postgres-16.md).
 - Turborepo. `pnpm -r` вистачає, поки пакетів мало. KIN-159 закрито.
 
 ## Помічено, ще не вирішено
