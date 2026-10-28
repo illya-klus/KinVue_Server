@@ -1,35 +1,29 @@
 # KinVue — Open Questions and Deferred Decisions
 
+## Accepted Sprint 1 policies
+
+Auth TTL, RS256/JWKS verification and refresh rotation/revocation are fixed by [0020](../decisions/0020-auth-password-rs256-and-sessions.md). Password hashing, compensation and admin bootstrap are fixed by [0021](../decisions/0021-auth-policy-gates.md). Room/chat TTL, presence, roles and heartbeat are fixed by [0022](../decisions/0022-room-policy-gates.md). Durable invites and schedules use Rooms PostgreSQL per [0023](../decisions/0023-rooms-durable-storage.md). Username rules are fixed by [0024](../decisions/0024-registration-username-policy.md), browser storage and invite URLs by [0025](../decisions/0025-browser-session-storage.md). These are decisions; implementation is tracked separately.
+
 ## Rooms
 
 - Subscribe each Rooms instance to every room channel or only rooms with locally connected users?
 - Exact Redis HA topology?
 - Do we need room-state version numbers in v1?
-- Exact stale-connection/heartbeat strategy?
-- Room TTL values?
-- Presence semantics?
-- Room permission model details?
 
 ## Chat
 
-- Exact TTL?
-- Should recent chat survive room closure?
 - When/if durable storage is introduced?
 - Message-size limits?
 - Moderation requirements?
 
 ## Auth
 
-- Access-token TTL?
-- Refresh-token rotation policy?
-- Key rotation/JWKS distribution?
+- Full signing-key rotation ceremony and JWKS refresh/distribution timing?
 - Password reset/email verification?
-- Exact session revocation strategy?
 
 ## Users
 
 - User search implementation?
-- Username uniqueness rules?
 - Friendship pagination?
 - Mutual friends?
 - Watch-history ownership/location?

@@ -43,15 +43,16 @@ A direct Rooms endpoint is public but not unauthenticated.
 
 ### Access token
 
-- short-lived;
+- lifetime 15 minutes, RS256 with issuer, audience, expiry and scope checks;
 - validated locally;
 - not checked against Auth DB on every request.
 
 ### Refresh token
 
-- longer-lived;
+- lifetime 30 days;
 - processed by Auth;
-- rotation/revocation strategy deferred to detailed design.
+- only its hash is stored by Auth; each refresh atomically consumes the old session and creates a replacement; logout revokes it;
+- browser storage: HttpOnly cookie locally and after deployment, Secure in production; access-token stays in memory. See [0020](../decisions/0020-auth-password-rs256-and-sessions.md) and [0025](../decisions/0025-browser-session-storage.md).
 
 ---
 
@@ -108,14 +109,14 @@ At minimum:
 
 ## Security items for later detailed design
 
-- password hashing parameters;
-- refresh token storage;
+- Argon2id parameters are accepted in [0021](../decisions/0021-auth-policy-gates.md), implementation still required;
+- cookie topology, SameSite and CSRF enforcement at implementation time (storage choice accepted in 0025);
 - key rotation/JWKS;
 - account recovery;
 - email verification;
 - rate limiting per endpoint;
 - abuse prevention;
 - audit log;
-- admin authorization;
+- admin provisioning policy accepted in 0021; operator command and scope enforcement still required;
 - upload malware/content validation;
 - DRM if required.
