@@ -6,6 +6,8 @@
 
 HTTP API лишається на gateway. WebSocket кімнат іде прямо в Rooms. Відео віддає сховище і CDN, не сервіси. Чат у v1 живе в Rooms, не в `services/chat`. Профіль і друзі — у Users на MongoDB, каталог — у Movie на PostgreSQL, живий стан кімнати — у Redis. Пошук і картка опублікованого фільму — анонімні. Див. [0008](decisions/0008-target-ingress-and-plan.md) і [0011](decisions/0011-anonymous-published-movie-reads.md).
 
+Rooms має погоджену власну PostgreSQL для довговічних запрошень/outbox і розкладів; живий стан і чат залишаються в Redis ([0022](decisions/0022-room-policy-gates.md), [0023](decisions/0023-rooms-durable-storage.md)). Це цільове рішення, не вже підключена база.
+
 ## Форма репозиторію
 
 Це бекенд. Фронтенд — окремий репозиторій. Монорепозиторій pnpm на Node 24. Пакети: `services/*` і `packages/*`. Менеджер пакетів зафіксований у кореневому `package.json` (`pnpm@10.34.4`). Turborepo немає. Див. [0001](decisions/0001-pnpm-monorepo.md) і [0010](decisions/0010-v1-stack-backend-repo.md).
@@ -46,7 +48,7 @@ Auth перевіряє Google ID token (`GOOGLE_CLIENT_ID`), заводить �
 
 Сховище auth — PostgreSQL через Prisma Next, не через класичну Prisma schema. Модель `AuthUser`: `id` (uuid), унікальний `email`, `role` за замовчуванням `USER`, унікальна пара `provider` + `providerUserId`.
 
-Див. [0005](decisions/0005-auth-google-prisma-next.md). Поля відповіді `user_auth_id` і те, що саме писати в `providerUserId`, ще не узгоджені — див. [status.md](status.md).
+Це поточна реалізація, а не нова політика. [0020](decisions/0020-auth-password-rs256-and-sessions.md) замінило 0005: Google зберігається, додаються парольний вхід, RS256 access 15 хв та refresh-сесії 30 днів із ротацією/відкликанням. [0021](decisions/0021-auth-policy-gates.md) визначає Argon2id, компенсацію та admin; [0025](decisions/0025-browser-session-storage.md) — cookie браузера. Реалізація цих змін ще не є частиною цього PR. Поля відповіді `user_auth_id` і те, що саме писати в `providerUserId`, ще не узгоджені — див. [status.md](status.md).
 
 ## Дані й перевірка
 

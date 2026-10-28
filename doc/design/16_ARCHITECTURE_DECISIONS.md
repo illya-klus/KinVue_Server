@@ -63,6 +63,8 @@ Low-latency read/write workload and horizontal Rooms scaling.
 
 Do not introduce PostgreSQL for Rooms v1 simply because every service "needs a DB".
 
+Accepted exception, 2026-10-28: [decision 0023](../decisions/0023-rooms-durable-storage.md) introduces a Rooms-owned PostgreSQL database for durable invites, their transactional outbox, schedules and invitees. Live room state, playback, presence and chat remain ephemeral in Redis. Schedules do not belong to Movie PostgreSQL.
+
 **Reason**
 
 Room state behaves like a call/session and does not currently require long-term durability.

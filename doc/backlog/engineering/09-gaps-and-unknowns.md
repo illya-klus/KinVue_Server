@@ -23,6 +23,8 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 - **What it blocks:** Admin seed ticket and any end-to-end admin journey.
 - **Proposal, not a requirement:** Auth stores a scopes column and a documented local seed command creates one admin. This remains a proposal, not a requirement.
 
+- **Recorded 2026-10-28:** Accepted in [0021](../../decisions/0021-auth-policy-gates.md). Historical alternatives above are not the chosen policy. Implementation remains a separate ticket.
+
 ### G-03 — Invite URL contents are unspecified
 
 - **Class:** Missing API contracts
@@ -31,6 +33,8 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 - **Decision required:** Define the URL format, expiry, and whether opening it adds the user to the invite list.
 - **What it blocks:** URL join API and the private-room URL end-to-end test.
 - **Proposal, not a requirement:** Use an unguessable invite token stored beside the room membership, expiring with the room. In-app invites can keep using user ids.
+
+- **Recorded 2026-10-28:** Accepted in [0022](../../decisions/0022-room-policy-gates.md). Historical alternatives above are not the chosen policy. Implementation remains a separate ticket.
 
 ### G-04 — Rooms durable outbox has no database
 
@@ -41,6 +45,8 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 - **What it blocks:** Rooms outbox writer, publisher, and invite notification delivery.
 - **Proposal, not a requirement:** Add a small Rooms-owned PostgreSQL outbox used only for durable invite and schedule events. Ephemeral playback state stays in Redis. This is an extension of ADR-005 and must be accepted explicitly.
 
+- **Recorded 2026-10-28:** Accepted in [0023](../../decisions/0023-rooms-durable-storage.md). Historical alternatives above are not the chosen policy. Implementation remains a separate ticket.
+
 ### G-05 — Scheduled-room invitees are missing from the table
 
 - **Class:** Missing data models
@@ -49,6 +55,8 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 - **Decision required:** Add a child table or array of invitee user ids and define who may be invited.
 - **What it blocks:** Schedule create API, opener, and schedule UI invite picker.
 - **Proposal, not a requirement:** Add scheduled_room_invitees(scheduled_room_id, user_id) in the same database as scheduled_rooms.
+
+- **Recorded 2026-10-28:** Accepted in [0023](../../decisions/0023-rooms-durable-storage.md). Historical alternatives above are not the chosen policy. Implementation remains a separate ticket.
 
 ### G-06 — Movie editorial status and media status share one column
 
@@ -78,6 +86,8 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 - **What it blocks:** Web refresh storage and the refresh request contract.
 - **Proposal, not a requirement:** Use a JSON refresh token held in memory for local development, and an HTTP-only Secure cookie in any deployed environment.
 
+- **Recorded 2026-10-28:** Accepted in [0025](../../decisions/0025-browser-session-storage.md). Historical alternatives above are not the chosen policy. Implementation remains a separate ticket.
+
 ### G-09 — Registration compensation deletes or retains the identity
 
 - **Class:** Contradictory documentation
@@ -86,6 +96,8 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 - **Decision required:** Delete the compensated identity or release the email.
 - **What it blocks:** Registration compensation implementation.
 - **Proposal, not a requirement:** Keep an audit row but clear or suffix the email so the person can register again. Login stays rejected because status is not ACTIVE.
+
+- **Recorded 2026-10-28:** Accepted in [0021](../../decisions/0021-auth-policy-gates.md). Historical alternatives above are not the chosen policy. Implementation remains a separate ticket.
 
 ### G-10 — Heartbeat interval disagrees between capacity and implementation
 
@@ -96,6 +108,8 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 - **What it blocks:** Presence sweeper and the rooms load model notes.
 - **Proposal, not a requirement:** Implement 30 seconds / 75 seconds. Record in the capacity results that the 4k/sec heartbeat figure is not the v1 client behavior.
 
+- **Recorded 2026-10-28:** Accepted in [0022](../../decisions/0022-room-policy-gates.md). Historical alternatives above are not the chosen policy. Implementation remains a separate ticket.
+
 ### G-11 — Argon2id parameters are unnamed
 
 - **Class:** Missing technical specifications
@@ -104,6 +118,8 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 - **Decision required:** Choose memory, time, and parallelism, and record them.
 - **What it blocks:** Password hasher ticket.
 - **Proposal, not a requirement:** Select current OWASP Argon2id parameters at implementation time and store them in the decision log. Do not treat a specific number as already required.
+
+- **Recorded 2026-10-28:** Accepted in [0021](../../decisions/0021-auth-policy-gates.md). Historical alternatives above are not the chosen policy. Implementation remains a separate ticket.
 
 ### G-12 — Admin edit needs a read that is not specified
 
@@ -221,7 +237,7 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 ### C-07 — Scheduled rooms stored in Movie PostgreSQL
 
 - **Documents:** ADR-005; 05_SERVICE_BOUNDARIES.md; 27 Phase 25 step 25.2
-- **Impact:** The plan states the exception. E-00 still has to accept it because it moves durable room scheduling into the movie database.
+- **Impact:** Resolved by [0023](../../decisions/0023-rooms-durable-storage.md): schedules and invitees belong to Rooms PostgreSQL, not Movie PostgreSQL.
 
 ### C-08 — Watchlist ownership is only in the implementation plan
 
