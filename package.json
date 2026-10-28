@@ -17,12 +17,13 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "pnpm -r test",
+    "test": "pnpm build:shared && pnpm -r --if-present test",
     "build": "pnpm -r build",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm build:shared && pnpm -r typecheck",
     "build:contracts": "pnpm --filter @kinvue/contracts build",
-    "typecheck:contracts": "pnpm build:contracts && pnpm typecheck",
-    "prepare": "husky"
+    "typecheck:contracts": "pnpm typecheck",
+    "prepare": "husky",
+    "build:shared": "pnpm --filter \"./packages/**\" -r --if-present build"
   },
   "lint-staged": {
     "*.{js,ts}": [
