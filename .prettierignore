@@ -12,3 +12,9 @@ pnpm-lock.yaml
 
 # One-off Jira import dumps. Some files are UTF-16 and are not source.
 doc/archive/
+# Prisma Next emitted artifacts are regenerated, never manually formatted.
+services/auth/src/prisma/contract.json
+services/auth/src/prisma/contract.d.ts
+services/auth/migrations/**/migration.json
+services/auth/migrations/**/snapshot.json
+services/auth/migrations/**/ops.json

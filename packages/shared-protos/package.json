@@ -11,7 +11,8 @@
   "scripts": {
     "generate": "node -e \"require('fs').mkdirSync('src/generated',{recursive:true})\" && grpc_tools_node_protoc --plugin=protoc-gen-ts_proto=.\\node_modules\\.bin\\protoc-gen-ts_proto.cmd --ts_proto_out=./src/generated --ts_proto_opt=nestJs=true,outputServices=grpc-js,useOptionals=messages --proto_path=./proto ./proto/auth.proto",
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.cjs"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",
@@ -23,6 +24,7 @@
     "@bufbuild/protobuf": "^2.14.0",
     "@grpc/grpc-js": "^1.14.4",
     "@nestjs/microservices": "^12.0.1",
-    "rxjs": "^7.8.2"
+    "rxjs": "^7.8.2",
+    "zod": "^4.0.0"
   }
 }

@@ -57,3 +57,7 @@ Auth перевіряє Google ID token (`GOOGLE_CLIENT_ID`), заводить �
 CI на pull request і на push у `main` та `dev` ставить Node 24 на `ubuntu-24.04`, залежності з lockfile, ганяє `pnpm format:check`, `pnpm typecheck:contracts` і `pnpm test`. Окремого кроку `pnpm build` немає. Крок лінта закоментований: `typescript-eslint` 8.x не підтримує TypeScript 7, [0018](decisions/0018-shared-typescript-and-checks.md). Husky на коміті запускає lint-staged (Prettier для змінених JS/TS) і `pnpm typecheck`, потім commitlint. Повний тест і збірка на коміт не йдуть. Сервіси розширюють кореневий `tsconfig.base.json`.
 
 Документообіг описаний у [0007](decisions/0007-document-workflow.md). Здавання змін — гілка від `dev` і pull request, [0009](decisions/0009-pull-request-from-dev.md). CI/CD як шлюз злиття ще не налаштований; наявний workflow перевіряє формат, типи контрактів і юніт-тести.
+
+## Спільний фундамент першого спринту
+
+Пакети config/logger/errors/JWT/testing незалежні від Nest. Config перевіряє поля до запуску listener; помилка містить лише назви полів. JWT verifier приймає готовий JWKS і не виконує мережевих запитів. `@kinvue/contracts` містить DTO та Zod-валідатори разом із наявним auth proto. Чат лишається частиною Rooms; API окремих Chat/Streaming не додається. Інструкція: [shared-packages](runbooks/shared-packages.md).
