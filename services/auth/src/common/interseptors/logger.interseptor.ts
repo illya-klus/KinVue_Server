@@ -2,14 +2,14 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
-  Logger,
   NestInterceptor,
 } from "@nestjs/common";
 import { Observable, tap } from "rxjs";
+import { createLogger } from "@kinvue/logger";
 
 @Injectable()
 export class GrcpLoggingInterceptor implements NestInterceptor {
-  private readonly logger = new Logger(GrcpLoggingInterceptor.name);
+  private readonly logger = createLogger("auth");
 
   intercept(
     context: ExecutionContext,
@@ -22,14 +22,19 @@ export class GrcpLoggingInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap({
         next: () => {
-          this.logger.log(
-            `gRPC success ${controller}.${handler} ${Date.now() - startedAt}ms`,
-          );
+          this.logger.info("gRPC request completed", {
+            controller,
+            handler,
+            durationMs: Date.now() - startedAt,
+          });
         },
         error: (error) => {
-          this.logger.error(
-            `gRPC error ${controller}.${handler} ${Date.now() - startedAt}ms: ${error.message}`,
-          );
+          this.logger.error("gRPC request failed", {
+            controller,
+            handler,
+            durationMs: Date.now() - startedAt,
+            error,
+          });
         },
       }),
     );
