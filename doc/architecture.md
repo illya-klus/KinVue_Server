@@ -28,13 +28,13 @@ Rooms має погоджену власну PostgreSQL для довговіч�
 
 ## Сервіси
 
-| Пакет                                           | Роль зараз                                                                                         |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `@kinvue/gateway`                               | Публічний HTTP                                                                                     |
-| `@kinvue/auth`                                  | HTTP :4001 (health/metrics) і gRPC `auth.v1` на `0.0.0.0:50051`                                     |
-| `@kinvue/contracts`                             | Proto і згенеровані типи (`packages/shared-protos`)                                                |
-| `@kinvue/rooms`                                 | HTTP :4004 (health/metrics), Redis readiness і зарезервований WebSocket :4014 `/rooms`             |
-| `user`, `movie`, `chat`, `notification`         | Порожній каркас Nest. Ім'я пакета досі `application`. Слухають `PORT ?? 3000`. Це не публічний API |
+| Пакет                                   | Роль зараз                                                                                         |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `@kinvue/gateway`                       | Публічний HTTP                                                                                     |
+| `@kinvue/auth`                          | HTTP :4001 (health/metrics) і gRPC `auth.v1` на `0.0.0.0:50051`                                    |
+| `@kinvue/contracts`                     | Proto і згенеровані типи (`packages/shared-protos`)                                                |
+| `@kinvue/rooms`                         | HTTP :4004 (health/metrics), Redis readiness і зарезервований WebSocket :4014 `/rooms`             |
+| `user`, `movie`, `chat`, `notification` | Порожній каркас Nest. Ім'я пакета досі `application`. Слухають `PORT ?? 3000`. Це не публічний API |
 
 Між сервісами — gRPC, контракт у `@kinvue/contracts`. Див. [0003](decisions/0003-grpc-between-services.md) і [0004](decisions/0004-shared-contracts.md).
 
