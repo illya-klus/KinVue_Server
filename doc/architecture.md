@@ -31,9 +31,10 @@ Rooms має погоджену власну PostgreSQL для довговіч�
 | Пакет                                           | Роль зараз                                                                                         |
 | ----------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | `@kinvue/gateway`                               | Публічний HTTP                                                                                     |
-| `@kinvue/auth`                                  | gRPC `auth.v1` на `0.0.0.0:50051`                                                                  |
+| `@kinvue/auth`                                  | HTTP :4001 (health/metrics) і gRPC `auth.v1` на `0.0.0.0:50051`                                     |
 | `@kinvue/contracts`                             | Proto і згенеровані типи (`packages/shared-protos`)                                                |
-| `user`, `room`, `movie`, `chat`, `notification` | Порожній каркас Nest. Ім'я пакета досі `application`. Слухають `PORT ?? 3000`. Це не публічний API |
+| `@kinvue/rooms`                                 | HTTP :4004 (health/metrics), Redis readiness і зарезервований WebSocket :4014 `/rooms`             |
+| `user`, `movie`, `chat`, `notification`         | Порожній каркас Nest. Ім'я пакета досі `application`. Слухають `PORT ?? 3000`. Це не публічний API |
 
 Між сервісами — gRPC, контракт у `@kinvue/contracts`. Див. [0003](decisions/0003-grpc-between-services.md) і [0004](decisions/0004-shared-contracts.md).
 
@@ -61,3 +62,5 @@ CI на pull request і на push у `main` та `dev` ставить Node 24 н
 ## Спільний фундамент першого спринту
 
 Пакети config/logger/errors/JWT/testing незалежні від Nest. Config перевіряє поля до запуску listener; помилка містить лише назви полів. JWT verifier приймає готовий JWKS і не виконує мережевих запитів. `@kinvue/contracts` містить DTO та Zod-валідатори разом із наявним auth proto. Чат лишається частиною Rooms; API окремих Chat/Streaming не додається. Інструкція: [shared-packages](runbooks/shared-packages.md).
+
+Каркаси Auth і Rooms використовують спільні JSON-логи та безпечний формат HTTP-помилок, `/health/live`, `/health/ready` і `/metrics`. Auth readiness перевіряє власну PostgreSQL через `SELECT 1`, Rooms — Redis. Rooms приймає WebSocket-з'єднання на окремому резервному порту, але поки закриває його кодом 1003; функціонального WebSocket-протоколу ще немає. Dockerfiles працюють на Node 24 без root. Auth лишає gRPC на 50051 для наявного Google-входу. Локальний Docker image smoke не пройшов через нестачу місця на диску C; CI контейнерів не збирає.
