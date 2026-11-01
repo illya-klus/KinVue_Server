@@ -22,7 +22,7 @@
 
 ## Не зроблено
 
-- Сервіси `user`, `room`, `movie`, `chat`, `notification` — каркас Nest, продуктового коду немає.
+- Users і Movie мають діагностичні каркаси, Rooms має резервний WebSocket; продуктового коду цих сервісів немає. Chat і Notifications — початкові каркаси Nest.
 - Перший спринт Богдана: PR #10 і #11 містять рішення та shared-пакети; PR #12 містить каркаси Auth/Rooms і відкритий до `dev`. CI PR #12 пройшов. П'ять із семи каркасних тікетів у Verifying (by developer); Docker-тікети KIN-54 і KIN-228 лишаються в In Testing (by agent), бо локальний Docker image smoke не перевірений: диск C заповнювався під час перевірки, і автоматична перевірка заблокувала видалення тимчасових Docker-бінарників.
 - Збереження, ротація і відкликання refresh-токенів.
 - Інші RPC і proto, крім `SignInWithGoogle`.
@@ -52,3 +52,22 @@
 Рішення задокументовано; це не свідчення завершення продуктових реалізацій. Тікети проходять In Progress → In Testing (by agent) → Verifying (by developer) за фактичними перевірками та PR. Done потребує приймання.
 
 Shared-поставка першого спринту: `@kinvue/config`, `@kinvue/logger`, `@kinvue/errors`, `@kinvue/jwt`, `@kinvue/testing` і DTO-схеми `@kinvue/contracts`. Продуктовий Auth лишається Google/HMAC; нові пакети не означають виконання наступних спринтів.
+
+## Перший спринт Анатолія, 2026-11-01
+
+Обсяг: 13 призначених задач активного KIN Sprint 1. Зміни підготовлені гілкою від `dev` і здаються pull request у `dev`.
+
+| Задачі                                                 | Результат                                                                                                                                                                                 |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| KIN-40, KIN-44, KIN-48, KIN-67, KIN-75, KIN-81, KIN-87 | Користувач явно погодив пакет; політики записані як прийняте [0026](decisions/0026-sprint-1-users-movie-policies.md), username збережений за 0024. G-06/C-02/C-08 закриті.                |
+| KIN-61, KIN-64                                         | @kinvue/users у services/user: HTTP 4002, конфіг, JSON-логування, safe errors, live/ready/metrics; MongoDB ping з обмеженим таймаутом.                                                    |
+| KIN-70, KIN-74                                         | @kinvue/movie у services/movie: HTTP 4003, конфіг, JSON-логування, safe errors, live/ready/metrics; SELECT 1 у власній PostgreSQL.                                                        |
+| KIN-68, KIN-77                                         | Dockerfiles написані, Node 24, USER node, root workspace context, production deploy, HEALTHCHECK, .env виключений. Docker build/run ще не підтверджені; задачі залишаються на тестуванні. |
+
+Пройдено shared/Nest build, повний workspace typecheck, повний `pnpm test`, форматування і перевірка lockfile з pnpm 10.34.4. Users/Movie HTTP e2e перевіряють повний Nest module з контрольованою залежністю. Процесні smoke перевіряють стандартні порти, live під час недоступності БД, ready=503, metrics, безпечні логи й відмову на невалідній конфігурації. Справжній ready=200 з живими БД у цьому середовищі не перевірений.
+
+Наявне обмеження lint підтверджене: typescript-eslint 8.64.0 падає на TypeScript 7 до аналізу файлів (див. 0018). Пайплайн, версії TypeScript і політику build scripts не змінювали. Docker CLI/runtime відсутні. Додаткова перевірка legacy pnpm deploy не завершилась через registry timeout; offline спроба не знайшла metadata. Docker-критерії не вважаються виконаними.
+
+Продуктові API, репозиторії даних і медіаворкер залишаються в наступних спринтах. Runbook: [users-movie-scaffolds](runbooks/users-movie-scaffolds.md).
+
+Передача заблокована доступом: GitHub create branch повернув 403 Resource not accessible by integration; локальний Git не має авторизації для push. Браузерна автоматизація зупинилась через неможливість надійно визначити URL Chrome. PR ще не відкритий, тому робота не оголошується завершеною. Усі 13 задач проведені через In Progress у In Testing (by agent), включно з уже In Progress KIN-81; Verifying/Done без PR не виставлялися. Готові локальний коміт і пакет для передачі.

@@ -67,6 +67,8 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 - **What it blocks:** Movie status constraint, publish rules, upload transitions, and playback authorization.
 - **Proposal, not a requirement:** Use two fields. Publication status controls search visibility. Media status controls whether playback can be authorized.
 
+- **Recorded 2026-11-01:** Accepted in [0026](../../decisions/0026-sprint-1-users-movie-policies.md): independent publication/media states, explicit transitions, published search visibility, and PUBLISHED + READY for authenticated playback. Schema and feature implementation remain separate tasks.
+
 ### G-07 — Search is both a protected API and a public route
 
 - **Class:** Contradictory documentation
@@ -214,6 +216,8 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 - **Documents:** 09_MOVIE_SEARCH_AND_INDEXING.md; 10_MEDIA_UPLOAD_TRANSCODING_DELIVERY.md; 23_DATA_MODELS_DRAFT.md; 27 Phase 7
 - **Impact:** Tracked as G-06. Schema work waits on that decision.
 
+- **Resolved 2026-11-01:** [0026](../../decisions/0026-sprint-1-users-movie-policies.md) accepts two independent fields. The earlier single-column plan is not the implementation contract.
+
 ### C-03 — Heartbeat rate disagrees
 
 - **Documents:** 03_CAPACITY_ESTIMATION.md §2; 27 Phase 17
@@ -243,6 +247,8 @@ These items are missing, contradictory, or only proposed. Tickets that depend on
 
 - **Documents:** 07_USERS_AND_SOCIAL_GRAPH.md example projection; 27 Phase 14 and the fixed decisions
 - **Impact:** FR-11 confirms the capability. Which service owns the rows is a proposal: Movie PostgreSQL.
+
+- **Resolved 2026-11-01:** [0026](../../decisions/0026-sprint-1-users-movie-policies.md) explicitly accepts Movie PostgreSQL, fields userId/movieId/createdAt and unique (userId, movieId). Watch history remains optional and unimplemented.
 
 ### C-09 — 100k concurrent target and $300 MVP budget are different constraints
 
