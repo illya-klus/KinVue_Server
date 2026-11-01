@@ -1,6 +1,6 @@
 # Архітектура
 
-Знімок коду на 2026-10-26. Цільовий план, з якого зібрані тікети, лежить у [design/](design/README.md). Оновлюй цей файл, коли змінюється картина системи, а не після кожного дрібного коміту.
+Знімок коду з оновленням Users/Movie на 2026-11-01. Цільовий план, з якого зібрані тікети, лежить у [design/](design/README.md). Оновлюй цей файл, коли змінюється картина системи, а не після кожного дрібного коміту.
 
 ## Ціль, якої ще немає в коді
 
@@ -28,13 +28,15 @@ Rooms має погоджену власну PostgreSQL для довговіч�
 
 ## Сервіси
 
-| Пакет                                   | Роль зараз                                                                                         |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `@kinvue/gateway`                       | Публічний HTTP                                                                                     |
-| `@kinvue/auth`                          | HTTP :4001 (health/metrics) і gRPC `auth.v1` на `0.0.0.0:50051`                                    |
-| `@kinvue/contracts`                     | Proto і згенеровані типи (`packages/shared-protos`)                                                |
-| `@kinvue/rooms`                         | HTTP :4004 (health/metrics), Redis readiness і зарезервований WebSocket :4014 `/rooms`             |
-| `user`, `movie`, `chat`, `notification` | Порожній каркас Nest. Ім'я пакета досі `application`. Слухають `PORT ?? 3000`. Це не публічний API |
+| Пакет                  | Роль зараз                                                                                   |
+| ---------------------- | -------------------------------------------------------------------------------------------- |
+| `@kinvue/gateway`      | Публічний HTTP                                                                               |
+| `@kinvue/auth`         | HTTP :4001 (health/metrics) і gRPC `auth.v1` на `0.0.0.0:50051`                              |
+| `@kinvue/contracts`    | Proto і згенеровані типи (`packages/shared-protos`)                                          |
+| `@kinvue/rooms`        | HTTP :4004 (health/metrics), Redis readiness і зарезервований WebSocket :4014 `/rooms`       |
+| `@kinvue/users`        | `services/user`, HTTP-діагностика :4002, readiness MongoDB, без продуктового API             |
+| `@kinvue/movie`        | `services/movie`, HTTP-діагностика :4003, readiness власної PostgreSQL, без продуктового API |
+| `chat`, `notification` | Порожній каркас Nest, ім'я пакета `application`, `PORT ?? 3000`                              |
 
 Між сервісами — gRPC, контракт у `@kinvue/contracts`. Див. [0003](decisions/0003-grpc-between-services.md) і [0004](decisions/0004-shared-contracts.md).
 
@@ -53,7 +55,7 @@ Auth перевіряє Google ID token (`GOOGLE_CLIENT_ID`), заводить �
 
 ## Дані й перевірка
 
-Локальний стек — один файл `docker-compose.yml`, [0019](decisions/0019-one-local-compose.md). База auth у ньому — Postgres 16, сервіс `postgres`, база `kinvue`, порт 5432, [0006](decisions/0006-postgres-16.md). У тому самому файлі є Postgres каталогу на 5434, Mongo, один Redis, RabbitMQ, Meilisearch, MinIO, Prometheus і Grafana. Сервіси Nest, крім auth, до цих сховищ ще не підключені. Порти стенда не є прийнятою картою портів. Як дивитись: [runbooks/local-dev.md](runbooks/local-dev.md).
+Локальний стек — один файл `docker-compose.yml`, [0019](decisions/0019-one-local-compose.md). База auth у ньому — Postgres 16, сервіс `postgres`, база `kinvue`, порт 5432, [0006](decisions/0006-postgres-16.md). У тому самому файлі є Postgres каталогу на 5434, Mongo, один Redis, RabbitMQ, Meilisearch, MinIO, Prometheus і Grafana. Users і Movie мають діагностичні клієнти власних БД; бізнес-репозиторіїв у них ще немає. Порти стенда не є прийнятою картою портів. Як дивитись: [runbooks/local-dev.md](runbooks/local-dev.md).
 
 CI на pull request і на push у `main` та `dev` ставить Node 24 на `ubuntu-24.04`, залежності з lockfile, ганяє `pnpm format:check`, `pnpm typecheck:contracts` і `pnpm test`. Окремого кроку `pnpm build` немає. Крок лінта закоментований: `typescript-eslint` 8.x не підтримує TypeScript 7, [0018](decisions/0018-shared-typescript-and-checks.md). Husky на коміті запускає lint-staged (Prettier для змінених JS/TS) і `pnpm typecheck`, потім commitlint. Повний тест і збірка на коміт не йдуть. Сервіси розширюють кореневий `tsconfig.base.json`.
 
@@ -64,3 +66,9 @@ CI на pull request і на push у `main` та `dev` ставить Node 24 н
 Пакети config/logger/errors/JWT/testing незалежні від Nest. Config перевіряє поля до запуску listener; помилка містить лише назви полів. JWT verifier приймає готовий JWKS і не виконує мережевих запитів. `@kinvue/contracts` містить DTO та Zod-валідатори разом із наявним auth proto. Чат лишається частиною Rooms; API окремих Chat/Streaming не додається. Інструкція: [shared-packages](runbooks/shared-packages.md).
 
 Каркаси Auth і Rooms використовують спільні JSON-логи та безпечний формат HTTP-помилок, `/health/live`, `/health/ready` і `/metrics`. Auth readiness перевіряє власну PostgreSQL через `SELECT 1`, Rooms — Redis. Rooms приймає WebSocket-з'єднання на окремому резервному порту, але поки закриває його кодом 1003; функціонального WebSocket-протоколу ще немає. Dockerfiles працюють на Node 24 без root. Auth лишає gRPC на 50051 для наявного Google-входу. Локальний Docker image smoke не пройшов через нестачу місця на диску C; CI контейнерів не збирає.
+
+## Політики Users і Movie першого спринту
+
+Рішення [0026](decisions/0026-sprint-1-users-movie-policies.md) погоджене 2026-11-01: watchlist належить Movie PostgreSQL; публікація та медіа мають незалежні стани; пошук бачить опубліковані фільми, media-access потребує PUBLISHED + READY та автентифікації. Погоджено Mongo-пошук користувачів і курсори, версії відтворення, debounce/мінімум запиту та HLS-політику. Це контракти для наступних спринтів, а не наявні продуктові API.
+
+Каркаси Users і Movie мають safe errors, JSON-логи, live/ready/metrics; інструкція — [users-movie-scaffolds](runbooks/users-movie-scaffolds.md). Docker build/run підтверджено в тимчасовому Linux-середовищі 2026-11-01: Node 24, USER node/uid 1000, ready з живими MongoDB 7 і PostgreSQL 16 та відновлення після відмови БД. Users явно повторює connect перед ping, тому відновлюється навіть після невдалого першого підключення. Звіт — [перевірка контейнерів](verification/2026-11-01-users-movie.md).

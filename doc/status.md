@@ -22,7 +22,7 @@
 
 ## Не зроблено
 
-- Сервіси `user`, `room`, `movie`, `chat`, `notification` — каркас Nest, продуктового коду немає.
+- Users і Movie мають діагностичні каркаси, Rooms має резервний WebSocket; продуктового коду цих сервісів немає. Chat і Notifications — початкові каркаси Nest.
 - Перший спринт Богдана: PR #10 і #11 містять рішення та shared-пакети; PR #12 містить каркаси Auth/Rooms і відкритий до `dev`. CI PR #12 пройшов. П'ять із семи каркасних тікетів у Verifying (by developer); Docker-тікети KIN-54 і KIN-228 лишаються в In Testing (by agent), бо локальний Docker image smoke не перевірений: диск C заповнювався під час перевірки, і автоматична перевірка заблокувала видалення тимчасових Docker-бінарників.
 - Збереження, ротація і відкликання refresh-токенів.
 - Інші RPC і proto, крім `SignInWithGoogle`.
@@ -52,3 +52,22 @@
 Рішення задокументовано; це не свідчення завершення продуктових реалізацій. Тікети проходять In Progress → In Testing (by agent) → Verifying (by developer) за фактичними перевірками та PR. Done потребує приймання.
 
 Shared-поставка першого спринту: `@kinvue/config`, `@kinvue/logger`, `@kinvue/errors`, `@kinvue/jwt`, `@kinvue/testing` і DTO-схеми `@kinvue/contracts`. Продуктовий Auth лишається Google/HMAC; нові пакети не означають виконання наступних спринтів.
+
+## Перший спринт Анатолія, 2026-11-01
+
+Обсяг: 13 призначених задач активного KIN Sprint 1. Зміни запушені окремою гілкою від dev та передані через [PR #13 у dev](https://github.com/illya-klus/KinVue_Server/pull/13).
+
+| Задачі                                                 | Результат                                                                                                                                                                  |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| KIN-40, KIN-44, KIN-48, KIN-67, KIN-75, KIN-81, KIN-87 | Користувач явно погодив пакет; політики записані як прийняте [0026](decisions/0026-sprint-1-users-movie-policies.md), username збережений за 0024. G-06/C-02/C-08 закриті. |
+| KIN-61, KIN-64                                         | @kinvue/users у services/user: HTTP 4002, конфіг, JSON-логи, safe errors, live/ready/metrics, MongoDB ping; відновлює підключення після початкової відмови БД.             |
+| KIN-70, KIN-74                                         | @kinvue/movie у services/movie: HTTP 4003, конфіг, JSON-логи, safe errors, live/ready/metrics; SELECT 1 у власній PostgreSQL.                                              |
+| KIN-68, KIN-77                                         | Docker build/run пройшли в тимчасовому Linux Sandbox: Node 24, USER node/uid 1000, production deploy, HEALTHCHECK, відсутні .env у /app.                                   |
+
+Пройдено shared/Nest build, workspace typecheck, повний набір тестів (44 після регресійного тесту), Users/Movie HTTP e2e і процесні smoke, форматування та frozen lockfile. CI коду 29f2ace пройшов. Справжні MongoDB 7/PostgreSQL 16 підтвердили ready=503 → 200 → 503 → 200 без перезапуску сервісів; live лишався 200 при відмові БД. Виправлено виявлене контейнерним тестом зависання Users у 503 після першого невдалого неявного підключення MongoDB. [Звіт перевірки](verification/2026-11-01-users-movie.md).
+
+У Jira всі 13 задач проведені через In Progress та In Testing (by agent) до Verifying (by developer), із посиланням на PR. KIN-61/64 додатково поверталися на тестування після знайденої помилки й знову передані на рев'ю після виправлення. Done потребує приймання.
+
+Блокери push і Docker усунуті: після підтвердження користувача використано GitHub CLI та тимчасовий непостійний Vercel Sandbox. Docker/WSL на Windows не встановлювали. Попередні невдалі спроби та їх причини лишаються в журналі дня.
+
+Наявне обмеження lint підтверджене: typescript-eslint 8.64.0 падає на TypeScript 7 до аналізу файлів (0018). CI, версії TypeScript і політику build scripts не змінювали. Продуктові API, репозиторії даних та медіаворкер залишаються задачами наступних спринтів. Runbook: [users-movie-scaffolds](runbooks/users-movie-scaffolds.md).

@@ -1,8 +1,25 @@
 import { NestFactory } from "@nestjs/core";
+import { movieConfigSchema, loadEnvironmentConfig } from "@kinvue/config";
 import { AppModule } from "./app.module";
+import { SharedHttpErrorFilter } from "./errors.filters";
+import { SharedLogger } from "./shared-logger";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  const config = loadEnvironmentConfig(movieConfigSchema);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.useLogger(app.get(SharedLogger));
+  app.useGlobalFilters(app.get(SharedHttpErrorFilter));
+  app.enableShutdownHooks();
+  await app.listen(config.MOVIE_HTTP_PORT, config.MOVIE_HTTP_HOST);
+  app.get(SharedLogger).log("service listening", {
+    service: "movie",
+    httpPort: config.MOVIE_HTTP_PORT,
+  });
 }
-bootstrap();
+
+bootstrap().catch((error: unknown) => {
+  process.stderr.write(
+    `movie failed to start: ${error instanceof Error ? error.name : "UnknownError"}\n`,
+  );
+  process.exitCode = 1;
+});

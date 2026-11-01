@@ -8,6 +8,8 @@ import {
   serviceSchemas,
   authConfigSchema,
   gatewayConfigSchema,
+  usersConfigSchema,
+  movieConfigSchema,
   z,
 } from "../src/index.ts";
 
@@ -15,6 +17,42 @@ test("all eight service schemas reject missing required configuration", () => {
   assert.equal(Object.keys(serviceSchemas).length, 8);
   for (const schema of Object.values(serviceSchemas))
     assert.throws(() => loadConfig(schema, {}), ConfigError);
+});
+
+test("Users and Movie diagnostics have distinct ports and reject invalid overrides", () => {
+  const users = { USERS_MONGO_URL: "mongodb://localhost/kinvue_users" };
+  const movie = {
+    MOVIE_DATABASE_URL: "postgresql://user:password@localhost/kinvue_movies",
+    MEILISEARCH_HOST: "http://localhost:7700",
+    MEILISEARCH_MASTER_KEY: "test-key",
+  };
+  assert.equal(loadConfig(usersConfigSchema, users).USERS_HTTP_PORT, 4002);
+  assert.equal(loadConfig(movieConfigSchema, movie).MOVIE_HTTP_PORT, 4003);
+  assert.equal(
+    loadConfig(usersConfigSchema, users).USERS_HTTP_HOST,
+    "127.0.0.1",
+  );
+  assert.equal(
+    loadConfig(movieConfigSchema, movie).MOVIE_HTTP_HOST,
+    "127.0.0.1",
+  );
+  assert.equal(
+    loadConfig(usersConfigSchema, { ...users, USERS_HTTP_PORT: "4102" })
+      .USERS_HTTP_PORT,
+    4102,
+  );
+  for (const invalid of ["0", "65536", "", "1.5"]) {
+    assert.throws(
+      () =>
+        loadConfig(usersConfigSchema, { ...users, USERS_HTTP_PORT: invalid }),
+      ConfigError,
+    );
+    assert.throws(
+      () =>
+        loadConfig(movieConfigSchema, { ...movie, MOVIE_HTTP_PORT: invalid }),
+      ConfigError,
+    );
+  }
 });
 test("invalid config never retains rejected secrets, even custom Zod messages", () => {
   const secret = "unique-secret-value";
