@@ -21,6 +21,9 @@ export class UsersMongoReadiness
     );
   }
   async check(): Promise<void> {
+    // A failed implicit connection leaves a closed topology. Explicit connect
+    // retries it on the next probe and reuses the topology when already healthy.
+    await this.client.connect();
     await this.client.db().command({ ping: 1 }, { timeoutMS: 1500 });
   }
   async onApplicationShutdown() {
