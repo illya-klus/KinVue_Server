@@ -1,0 +1,22 @@
+name: Integration
+
+on:
+  pull_request:
+  push:
+    branches: [main, dev]
+
+jobs:
+  compose-health:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start data plane
+        run: docker compose --env-file .env.example up -d postgres movie-postgres notifications-postgres meilisearch rabbitmq rooms-redis
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Wait for infra health
+        run: node tests/integration/wait-infra-health.mjs

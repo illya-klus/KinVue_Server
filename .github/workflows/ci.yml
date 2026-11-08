@@ -40,3 +40,6 @@ jobs:
 
       - name: Run unit tests
         run: pnpm test
+
+      - name: Typecheck (full)
+        run: pnpm typecheck
