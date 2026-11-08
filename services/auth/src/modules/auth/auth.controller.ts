@@ -7,6 +7,7 @@ import {
 } from "@kinvue/contracts";
 import { TokensService } from "../tokens/tokens.service.js";
 import { status } from "@grpc/grpc-js";
+import { authLoginAttempts } from "../../auth-observability.metrics.js";
 
 @Controller()
 export class AuthController {
@@ -19,16 +20,28 @@ export class AuthController {
   public async signInWithGoogle(
     request: SignInWithGoogleRequest,
   ): Promise<SignInWithGoogleResponse> {
-    //google-provided user data verification
+    try {
+      return await this.signInWithGoogleInner(request);
+    } catch (error) {
+      authLoginAttempts.inc({ outcome: "failure" });
+      throw error;
+    }
+  }
+
+  private async signInWithGoogleInner(
+    request: SignInWithGoogleRequest,
+  ): Promise<SignInWithGoogleResponse> {
     const googleUser = await this.authService.verifyGoogleToken(
       request.googleToken,
     );
 
-    if (!googleUser.email)
+    if (!googleUser.email) {
+      authLoginAttempts.inc({ outcome: "failure" });
       throw new RpcException({
         code: status.NOT_FOUND,
         message: "User email not found",
       });
+    }
 
     // create new user in database
     const user = await this.authService.createIfNotExists(
@@ -45,6 +58,7 @@ export class AuthController {
       );
 
     //compact-returning of result
+    authLoginAttempts.inc({ outcome: "success" });
     return {
       accessToken,
       refreshToken,
