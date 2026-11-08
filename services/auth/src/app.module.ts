@@ -13,7 +13,7 @@ import {
 import { PrismaService } from "./prisma/prisma.service.js";
 import { SharedHttpErrorFilter } from "./shared-http-error.filter.js";
 import { SharedLogger } from "./shared-logger.js";
-import { MetricsController, MetricsService } from "./metrics.controller.js";
+import { MetricsController } from "./metrics.controller.js";
 import { authConfigSchema, loadConfig } from "@kinvue/config";
 
 @Module({
@@ -29,7 +29,6 @@ import { authConfigSchema, loadConfig } from "@kinvue/config";
   controllers: [AppController, HealthController, MetricsController],
   providers: [
     AppService,
-    MetricsService,
     AuthReadiness,
     { provide: AUTH_READINESS_CHECK, useExisting: PrismaService },
     SharedLogger,

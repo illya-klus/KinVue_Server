@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { HealthController, READINESS_CHECK } from "./health.controller";
-import { MetricsController, MetricsService } from "./metrics.controller";
+import { MetricsController } from "./metrics.controller";
 import { SharedHttpErrorFilter } from "./errors.filters";
 import request from "supertest";
 
@@ -29,7 +29,6 @@ describe("users diagnostics", () => {
     const module = await Test.createTestingModule({
       controllers: [HealthController, MetricsController, FailureController],
       providers: [
-        MetricsService,
         { provide: READINESS_CHECK, useValue: readiness },
       ],
     }).compile();

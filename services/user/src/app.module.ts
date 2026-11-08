@@ -3,7 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { usersConfigSchema, loadConfig } from "@kinvue/config";
 import { HealthController, READINESS_CHECK } from "./health.controller";
 import { UsersMongoReadiness } from "./readiness";
-import { MetricsController, MetricsService } from "./metrics.controller";
+import { MetricsController } from "./metrics.controller";
 import { SharedLogger } from "./shared-logger";
 import { SharedHttpErrorFilter } from "./errors.filters";
 
@@ -18,7 +18,6 @@ import { SharedHttpErrorFilter } from "./errors.filters";
   providers: [
     UsersMongoReadiness,
     { provide: READINESS_CHECK, useExisting: UsersMongoReadiness },
-    MetricsService,
     SharedLogger,
     SharedHttpErrorFilter,
   ],

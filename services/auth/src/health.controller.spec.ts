@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import type { INestApplication } from "@nestjs/common";
 import { HealthController, AuthReadiness } from "./health.controller.js";
-import { MetricsController, MetricsService } from "./metrics.controller.js";
+import { MetricsController } from "./metrics.controller.js";
 import { SharedHttpErrorFilter } from "./shared-http-error.filter.js";
 import request from "supertest";
 
@@ -12,7 +12,6 @@ describe("Auth scaffold diagnostics", () => {
     const module = await Test.createTestingModule({
       controllers: [HealthController, MetricsController],
       providers: [
-        MetricsService,
         { provide: AuthReadiness, useValue: { check: () => check() } },
       ],
     }).compile();

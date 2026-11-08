@@ -5,7 +5,7 @@ import {
   REDIS_READINESS,
   type RedisReadiness,
 } from "./health.controller";
-import { MetricsController, MetricsService } from "./metrics.controller";
+import { MetricsController } from "./metrics.controller";
 import { SharedHttpErrorFilter } from "./errors.filters";
 import request from "supertest";
 
@@ -16,7 +16,6 @@ describe("Rooms scaffold diagnostics", () => {
     const module = await Test.createTestingModule({
       controllers: [HealthController, MetricsController],
       providers: [
-        MetricsService,
         { provide: REDIS_READINESS, useValue: redis },
       ],
     }).compile();

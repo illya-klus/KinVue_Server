@@ -10,7 +10,7 @@ import {
 } from "./health.controller";
 import { SharedHttpErrorFilter } from "./errors.filters";
 import { SharedLogger } from "./shared-logger";
-import { MetricsController, MetricsService } from "./metrics.controller";
+import { MetricsController } from "./metrics.controller";
 import { WebSocketReservation } from "./websocket-reservation";
 
 @Module({
@@ -23,7 +23,6 @@ import { WebSocketReservation } from "./websocket-reservation";
   controllers: [AppController, HealthController, MetricsController],
   providers: [
     AppService,
-    MetricsService,
     SharedLogger,
     SharedHttpErrorFilter,
     WebSocketReservation,

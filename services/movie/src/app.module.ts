@@ -5,7 +5,7 @@ import { loadConfig, movieConfigSchema } from "@kinvue/config";
 import { DatabaseModule } from "./database/database.module";
 import { SharedHttpErrorFilter } from "./errors.filters";
 import { HealthController, READINESS_CHECK } from "./health.controller";
-import { MetricsController, MetricsService } from "./metrics.controller";
+import { MetricsController } from "./metrics.controller";
 import { MeilisearchModule } from "./modules/meilisearch/meilisearch.module";
 import { ReconcileModule } from "./modules/reconcile/reconcile.module";
 import { InternalModule } from "./modules/internal/internal.module";
@@ -30,7 +30,6 @@ import { SharedLogger } from "./shared-logger";
   providers: [
     MoviePostgresReadiness,
     { provide: READINESS_CHECK, useExisting: MoviePostgresReadiness },
-    MetricsService,
     SharedLogger,
     SharedHttpErrorFilter,
   ],
