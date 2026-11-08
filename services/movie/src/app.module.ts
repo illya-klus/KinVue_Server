@@ -1,11 +1,16 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { movieConfigSchema, loadConfig } from "@kinvue/config";
-import { HealthController, READINESS_CHECK } from "./health.controller";
-import { MoviePostgresReadiness } from "./readiness";
-import { MetricsController, MetricsService } from "./metrics.controller";
-import { SharedLogger } from "./shared-logger";
+import { ScheduleModule } from "@nestjs/schedule";
+import { loadConfig, movieConfigSchema } from "@kinvue/config";
+import { DatabaseModule } from "./database/database.module";
 import { SharedHttpErrorFilter } from "./errors.filters";
+import { HealthController, READINESS_CHECK } from "./health.controller";
+import { MetricsController, MetricsService } from "./metrics.controller";
+import { MeilisearchModule } from "./modules/meilisearch/meilisearch.module";
+import { ReconcileModule } from "./modules/reconcile/reconcile.module";
+import { SearchModule } from "./modules/search/search.module";
+import { MoviePostgresReadiness } from "./readiness";
+import { SharedLogger } from "./shared-logger";
 
 @Module({
   imports: [
@@ -13,6 +18,11 @@ import { SharedHttpErrorFilter } from "./errors.filters";
       isGlobal: true,
       validate: (env) => loadConfig(movieConfigSchema, env),
     }),
+    ScheduleModule.forRoot(),
+    DatabaseModule,
+    MeilisearchModule,
+    SearchModule,
+    ReconcileModule,
   ],
   controllers: [HealthController, MetricsController],
   providers: [

@@ -1,5 +1,6 @@
+import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { movieConfigSchema, loadEnvironmentConfig } from "@kinvue/config";
+import { loadEnvironmentConfig, movieConfigSchema } from "@kinvue/config";
 import { AppModule } from "./app.module";
 import { SharedHttpErrorFilter } from "./errors.filters";
 import { SharedLogger } from "./shared-logger";
@@ -8,6 +9,9 @@ async function bootstrap() {
   const config = loadEnvironmentConfig(movieConfigSchema);
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(app.get(SharedLogger));
+  app.useGlobalPipes(
+    new ValidationPipe({ transform: true, whitelist: true }),
+  );
   app.useGlobalFilters(app.get(SharedHttpErrorFilter));
   app.enableShutdownHooks();
   await app.listen(config.MOVIE_HTTP_PORT, config.MOVIE_HTTP_HOST);
