@@ -365,6 +365,12 @@ services:
     environment:
       PORT: "4016"
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672
+      MOVIE_SERVICE_URL: http://movie:4003
+      MOVIE_INTERNAL_TOKEN: ${MOVIE_INTERNAL_TOKEN}
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_BUCKET: ${S3_BUCKET}
       NODE_ENV: production
     depends_on:
       rabbitmq:
