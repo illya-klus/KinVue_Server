@@ -21,16 +21,33 @@
 ## Grafana
 
 - UI: http://localhost:3001 (admin/admin by default from `.env.example`)
-- Provisioned dashboards: **KinVue Overview**, **KinVue Rooms**, **KinVue Media** (`infra/grafana/provisioning/dashboards/json/`)
+- Datasource: auto-provisioned **Prometheus** → `http://prometheus:9090` (`infra/grafana/provisioning/datasources/prometheus.yml`)
+- Dashboards: **KinVue Overview**, **KinVue Rooms**, **KinVue Media** (`infra/grafana/provisioning/dashboards/json/`)
 
 ## Key metrics
 
-- `http_requests_total`, `http_request_duration_seconds` — all HTTP services
-- `auth_login_attempts_total` — Auth gRPC login
-- `users_*` — reserved counters for Users API
+- `http_requests_total`, `http_request_duration_seconds` — all HTTP services (exclude `/health`, `/metrics`)
+- `auth_login_attempts_total{outcome}` — Auth Google sign-in
+- `auth_registration_attempts_total{outcome}` — when register path emits attempts
+- `users_profile_reads_total`, `users_friendship_operations_total`, `users_search_latency_seconds` — Users (after API handlers increment)
 - `movie_search_*`, `movie_reconcile_runs_total` — Movie search/reconcile
 - `rooms_websocket_connections`, `rooms_redis_reachable` — Rooms
-- `rabbitmq_queue_depth` — Notification queues + DLQ
-- `media_transcode_*` — Transcode worker
+- `rabbitmq_queue_depth{queue}` — `notifications.events` + DLQ
+- `media_transcode_jobs_total`, `media_transcode_duration_seconds`, `media_transcode_queue_depth` — worker
 
-Secrets (tokens, emails) must not appear in label values.
+## Local workflow
+
+1. `pnpm infra:up` (Prometheus + Grafana + data plane).
+2. Run services on host ports 4000–4005, 4016 (see table above).
+3. Prometheus **Targets** → all `kinvue-*` jobs UP.
+4. Grafana → open each dashboard; panels use `service` / `outcome` labels from prom-client.
+
+## Capacity note (MVP)
+
+Local dashboards validate wiring, not 100k-user saturation. Record load-script output under `doc/runbooks/capacity-results.md`. Do not add horizontal search/cache tiers until an NFR is proven failed on measured p95.
+
+## Log correlation
+
+Pass `x-request-id` from Gateway through proxies; grep logs by that id across services. Never log refresh tokens, passwords, or signed media URLs.
+
+Secrets (tokens, emails) must not appear in metric label values.

@@ -43,20 +43,22 @@ export class AuthService {
     provider: "GOOGLE",
     providerUserId: string,
     email: string,
-  ): Promise<AuthUserRow> {
-    //check user existing
+  ): Promise<{ user: AuthUserRow; created: boolean }> {
     const user = await this.prisma.db.orm.public.AuthUser.first({
       provider,
       providerUserId,
     });
 
-    if (user) return user;
+    if (user) {
+      return { user, created: false };
+    }
 
-    return await this.prisma.db.orm.public.AuthUser.create({
+    const created = await this.prisma.db.orm.public.AuthUser.create({
       provider,
       providerUserId,
       email,
       role: "USER",
     });
+    return { user: created, created: true };
   }
 }

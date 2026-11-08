@@ -10,6 +10,7 @@ import { MeilisearchModule } from "./modules/meilisearch/meilisearch.module";
 import { ReconcileModule } from "./modules/reconcile/reconcile.module";
 import { InternalModule } from "./modules/internal/internal.module";
 import { SearchModule } from "./modules/search/search.module";
+import { UploadsModule } from "./modules/uploads/uploads.module";
 import { MoviePostgresReadiness } from "./readiness";
 import { SharedLogger } from "./shared-logger";
 
@@ -25,6 +26,7 @@ import { SharedLogger } from "./shared-logger";
     SearchModule,
     ReconcileModule,
     InternalModule,
+    UploadsModule,
   ],
   controllers: [HealthController, MetricsController],
   providers: [

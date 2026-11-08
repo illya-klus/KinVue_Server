@@ -7,7 +7,10 @@ import {
 } from "@kinvue/contracts";
 import { TokensService } from "../tokens/tokens.service.js";
 import { status } from "@grpc/grpc-js";
-import { authLoginAttempts } from "../../auth-observability.metrics.js";
+import {
+  authLoginAttempts,
+  authRegistrationAttempts,
+} from "../../auth-observability.metrics.js";
 
 @Controller()
 export class AuthController {
@@ -43,14 +46,15 @@ export class AuthController {
       });
     }
 
-    // create new user in database
-    const user = await this.authService.createIfNotExists(
+    const { user, created } = await this.authService.createIfNotExists(
       "GOOGLE",
       request.googleToken,
       googleUser.email,
     );
+    authRegistrationAttempts.inc({
+      outcome: created ? "success" : "existing",
+    });
 
-    //access and refresh
     const { accessToken, refreshToken } =
       await this.tokensService.createTokenPair(
         user.id,

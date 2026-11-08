@@ -18,3 +18,9 @@ export const usersSearchLatency: Histogram<string> = getHistogram(
   "Users search latency",
   ["outcome"],
 );
+
+export const usersNotificationPublishes: Counter<string> = getCounter(
+  "users_notification_events_published_total",
+  "Users notification events published to RabbitMQ",
+  ["type", "outcome"],
+);

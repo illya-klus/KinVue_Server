@@ -25,6 +25,10 @@ test("Users and Movie diagnostics have distinct ports and reject invalid overrid
     MOVIE_DATABASE_URL: "postgresql://user:password@localhost/kinvue_movies",
     MEILISEARCH_HOST: "http://localhost:7700",
     MEILISEARCH_MASTER_KEY: "test-key",
+    S3_ENDPOINT: "http://localhost:9000",
+    S3_ACCESS_KEY: "kinvue",
+    S3_SECRET_KEY: "kinvue-secret",
+    S3_BUCKET: "kinvue-media",
   };
   assert.equal(loadConfig(usersConfigSchema, users).USERS_HTTP_PORT, 4002);
   assert.equal(loadConfig(movieConfigSchema, movie).MOVIE_HTTP_PORT, 4003);

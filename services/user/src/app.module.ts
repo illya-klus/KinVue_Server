@@ -6,6 +6,10 @@ import { UsersMongoReadiness } from "./readiness";
 import { MetricsController } from "./metrics.controller";
 import { SharedLogger } from "./shared-logger";
 import { SharedHttpErrorFilter } from "./errors.filters";
+import { MongoModule } from "./mongo/mongo.module";
+import { EventsModule } from "./events/events.module";
+import { UsersModule } from "./users/users.module";
+import { FriendshipsModule } from "./friendships/friendships.module";
 
 @Module({
   imports: [

@@ -16,5 +16,5 @@ coverage
 playwright-report
 test-results
 tmp
-uploads
+/uploads/
 *.log

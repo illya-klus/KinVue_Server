@@ -11,6 +11,9 @@ import pg from "pg";
 
 export type MovieStatus = "DRAFT" | "SCHEDULED" | "PUBLISHED";
 
+export type MediaStatus =
+  "NONE" | "UPLOADING" | "PROCESSING" | "READY" | "PROCESSING_FAILED";
+
 export type MovieRow = {
   id: string;
   title: string;
@@ -18,6 +21,9 @@ export type MovieRow = {
   genres: string[];
   status: MovieStatus;
   publish_at: Date | null;
+  media_status?: MediaStatus;
+  original_object_key?: string | null;
+  hls_master_key?: string | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -48,7 +54,11 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async runMigrations(): Promise<void> {
-    for (const file of ["001_movies.sql", "002_media_status.sql"]) {
+    for (const file of [
+      "001_movies.sql",
+      "002_media_status.sql",
+      "003_movie_uploads.sql",
+    ]) {
       const sqlPath = join(process.cwd(), "migrations", file);
       const sql = readFileSync(sqlPath, "utf8");
       await this.pool.query(sql);
