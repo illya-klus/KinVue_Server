@@ -18,6 +18,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typecheck": "tsc --noEmit",
     "contract:emit": "prisma contract emit",
+    "migrate:deploy": "node scripts/migrate-auth.mjs",
     "test:scaffold": "node --test test/scaffold.test.cjs"
   },
   "dependencies": {

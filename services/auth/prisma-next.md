@@ -79,7 +79,16 @@ You can customize how your environment variables are loaded by changing or remov
 pnpm prisma contract emit       # Update contract.json and contract.d.ts
 pnpm prisma db init             # Create tables in the database
 pnpm prisma migration status    # Show migration status
+pnpm --filter @kinvue/auth migrate:deploy # Apply pending Auth migrations safely
 ```
+
+### Applying Auth migrations
+
+Set `AUTH_DATABASE_URL` to the PostgreSQL `kinvue` database, then run
+`pnpm --filter @kinvue/auth migrate:deploy`. The runner rejects other database
+names and invokes Prisma Next's ordered, content-hashed migration graph. It
+does not print the connection URL. Review and apply migrations through this
+command rather than `db update` on shared environments.
 
 ### Files
 
