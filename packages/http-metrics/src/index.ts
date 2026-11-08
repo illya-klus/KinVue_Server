@@ -29,7 +29,12 @@ export function getCounter(
   if (existing) {
     return existing;
   }
-  const created = new Counter({ name, help, labelNames, registers: [register] });
+  const created = new Counter({
+    name,
+    help,
+    labelNames,
+    registers: [register],
+  });
   counters.set(name, created);
   return created;
 }
@@ -72,11 +77,11 @@ export function getGauge(
 export function httpMetricsMiddleware(
   serviceName: string,
 ): (req: Request, res: Response, next: NextFunction) => void {
-  const requests = getCounter(
-    "http_requests_total",
-    "Total HTTP requests",
-    ["service", "method", "status_code"],
-  );
+  const requests = getCounter("http_requests_total", "Total HTTP requests", [
+    "service",
+    "method",
+    "status_code",
+  ]);
   const duration = getHistogram(
     "http_request_duration_seconds",
     "HTTP request latency",

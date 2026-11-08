@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from "@nestjs/common";
 import type { ConsumeMessage } from "amqplib";
 import {
   MEDIA_TRANSCODE_MAX_ATTEMPTS,

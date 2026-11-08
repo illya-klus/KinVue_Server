@@ -1,10 +1,10 @@
 # E2E journeys (Phase 29, KIN-133)
 
-| Step | Spec (KinVue_Client) | Needs stack |
-|------|----------------------|-------------|
-| 29.1–29.5 | `e2e/journeys.spec.ts` | `E2E_STACK=1` |
-| 29.19 | `e2e/notifications-friend-room.spec.ts` (KIN-125) | `E2E_STACK=1` + credentials |
-| Smoke | `e2e/home.spec.ts` | build only |
+| Step      | Spec (KinVue_Client)                              | Needs stack                 |
+| --------- | ------------------------------------------------- | --------------------------- |
+| 29.1–29.5 | `e2e/journeys.spec.ts`                            | `E2E_STACK=1`               |
+| 29.19     | `e2e/notifications-friend-room.spec.ts` (KIN-125) | `E2E_STACK=1` + credentials |
+| Smoke     | `e2e/home.spec.ts`                                | build only                  |
 
 Run all:
 

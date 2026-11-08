@@ -3,10 +3,7 @@ import { AppModule } from "./app.module";
 import { loadEnvironmentConfig, roomsConfigSchema } from "@kinvue/config";
 import { SharedHttpErrorFilter } from "./errors.filters";
 import { SharedLogger } from "./shared-logger";
-import {
-  httpMetricsMiddleware,
-  initPrometheus,
-} from "@kinvue/http-metrics";
+import { httpMetricsMiddleware, initPrometheus } from "@kinvue/http-metrics";
 
 async function bootstrap() {
   initPrometheus("rooms");

@@ -41,7 +41,8 @@ async function main(): Promise<void> {
       break;
     }
 
-    const messageId = message.properties.messageId ?? message.fields.deliveryTag;
+    const messageId =
+      message.properties.messageId ?? message.fields.deliveryTag;
     const idLabel = String(messageId);
     const shouldReplay = options.all || options.messageId === idLabel;
 

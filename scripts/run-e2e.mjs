@@ -7,7 +7,9 @@ import { resolve } from "node:path";
 
 const clientRoot = resolve(process.cwd(), "..", "KinVue_Client");
 if (!existsSync(resolve(clientRoot, "package.json"))) {
-  console.error("KinVue_Client not found next to KinVue_Server — skip or clone client repo.");
+  console.error(
+    "KinVue_Client not found next to KinVue_Server — skip or clone client repo.",
+  );
   process.exit(1);
 }
 

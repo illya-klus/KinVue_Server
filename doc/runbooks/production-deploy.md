@@ -4,15 +4,15 @@ KIN-278, KIN-308, KIN-311, KIN-320, KIN-323.
 
 ## Docker images (KIN-278)
 
-| Image | Dockerfile | USER | HEALTHCHECK |
-|-------|------------|------|-------------|
-| gateway | `docker/gateway/Dockerfile` | node | `/health/live` |
-| auth | `docker/auth/Dockerfile` | node | yes |
-| users | `docker/users/Dockerfile` | node | yes |
-| movie | `docker/movie/Dockerfile` | node | yes |
-| rooms | `docker/rooms/Dockerfile` | node | yes |
-| notification | `docker/notification/Dockerfile` | node | yes |
-| transcode-worker | `docker/transcode-worker/Dockerfile` | node + ffmpeg | yes |
+| Image            | Dockerfile                           | USER          | HEALTHCHECK    |
+| ---------------- | ------------------------------------ | ------------- | -------------- |
+| gateway          | `docker/gateway/Dockerfile`          | node          | `/health/live` |
+| auth             | `docker/auth/Dockerfile`             | node          | yes            |
+| users            | `docker/users/Dockerfile`            | node          | yes            |
+| movie            | `docker/movie/Dockerfile`            | node          | yes            |
+| rooms            | `docker/rooms/Dockerfile`            | node          | yes            |
+| notification     | `docker/notification/Dockerfile`     | node          | yes            |
+| transcode-worker | `docker/transcode-worker/Dockerfile` | node + ffmpeg | yes            |
 
 Secrets: inject at runtime via env / secret manager — never bake `.env` into images.
 

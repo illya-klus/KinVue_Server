@@ -4,10 +4,7 @@ import { loadEnvironmentConfig, movieConfigSchema } from "@kinvue/config";
 import { AppModule } from "./app.module";
 import { SharedHttpErrorFilter } from "./errors.filters";
 import { SharedLogger } from "./shared-logger";
-import {
-  httpMetricsMiddleware,
-  initPrometheus,
-} from "@kinvue/http-metrics";
+import { httpMetricsMiddleware, initPrometheus } from "@kinvue/http-metrics";
 
 async function bootstrap() {
   initPrometheus("movie");
@@ -15,9 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.use(httpMetricsMiddleware("movie"));
   app.useLogger(app.get(SharedLogger));
-  app.useGlobalPipes(
-    new ValidationPipe({ transform: true, whitelist: true }),
-  );
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   app.useGlobalFilters(app.get(SharedHttpErrorFilter));
   app.enableShutdownHooks();
   await app.listen(config.MOVIE_HTTP_PORT, config.MOVIE_HTTP_HOST);

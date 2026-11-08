@@ -17,13 +17,10 @@ describe("Health", () => {
   });
 
   it("/health/live (GET)", () => {
-    return request(app.getHttpServer())
-      .get("/health/live")
-      .expect(200)
-      .expect({
-        status: "ok",
-        service: "KinVue notifications service",
-      });
+    return request(app.getHttpServer()).get("/health/live").expect(200).expect({
+      status: "ok",
+      service: "KinVue notifications service",
+    });
   });
 
   it("/metrics (GET)", () => {

@@ -28,9 +28,7 @@ describe("movie diagnostics", () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       controllers: [HealthController, MetricsController, FailureController],
-      providers: [
-        { provide: READINESS_CHECK, useValue: readiness },
-      ],
+      providers: [{ provide: READINESS_CHECK, useValue: readiness }],
     }).compile();
     app = module.createNestApplication();
     app.useGlobalFilters(new SharedHttpErrorFilter());

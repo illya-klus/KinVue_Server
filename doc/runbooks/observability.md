@@ -2,14 +2,14 @@
 
 ## Endpoints
 
-| Service | Metrics |
-| ------- | ------- |
-| Gateway | http://localhost:4000/metrics |
-| Auth | http://localhost:4001/metrics |
-| Users | http://localhost:4002/metrics |
-| Movie | http://localhost:4003/metrics |
-| Rooms | http://localhost:4004/metrics |
-| Notification | http://localhost:4005/metrics |
+| Service          | Metrics                       |
+| ---------------- | ----------------------------- |
+| Gateway          | http://localhost:4000/metrics |
+| Auth             | http://localhost:4001/metrics |
+| Users            | http://localhost:4002/metrics |
+| Movie            | http://localhost:4003/metrics |
+| Rooms            | http://localhost:4004/metrics |
+| Notification     | http://localhost:4005/metrics |
 | Transcode worker | http://localhost:4016/metrics |
 
 ## Prometheus

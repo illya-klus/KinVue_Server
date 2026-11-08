@@ -118,7 +118,10 @@ export class HlsTranscodeService {
     });
   }
 
-  private async uploadDirectory(localDir: string, prefix: string): Promise<void> {
+  private async uploadDirectory(
+    localDir: string,
+    prefix: string,
+  ): Promise<void> {
     const bucket = this.config.getOrThrow<string>("S3_BUCKET");
     const names = await readdir(localDir);
     for (const name of names) {

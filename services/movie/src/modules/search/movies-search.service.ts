@@ -45,10 +45,7 @@ export class MoviesSearchService {
         { result: "error" },
         Number(process.hrtime.bigint() - started) / 1e9,
       );
-      throw new AppError(
-        "UPSTREAM_UNAVAILABLE",
-        "Meilisearch is unavailable.",
-      );
+      throw new AppError("UPSTREAM_UNAVAILABLE", "Meilisearch is unavailable.");
     }
   }
 }

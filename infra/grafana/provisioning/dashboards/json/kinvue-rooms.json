@@ -16,9 +16,7 @@
       "type": "gauge",
       "title": "Redis reachable",
       "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 },
-      "targets": [
-        { "expr": "rooms_redis_reachable", "legendFormat": "redis" }
-      ]
+      "targets": [{ "expr": "rooms_redis_reachable", "legendFormat": "redis" }]
     }
   ]
 }

@@ -11,10 +11,7 @@ import { existsSync } from "node:fs";
 import { GrcpLoggingInterceptor } from "./common/interseptors/logger.interseptor.js";
 import { SharedHttpErrorFilter } from "./shared-http-error.filter.js";
 import { SharedLogger } from "./shared-logger.js";
-import {
-  httpMetricsMiddleware,
-  initPrometheus,
-} from "@kinvue/http-metrics";
+import { httpMetricsMiddleware, initPrometheus } from "@kinvue/http-metrics";
 
 async function bootstrap() {
   initPrometheus("auth");

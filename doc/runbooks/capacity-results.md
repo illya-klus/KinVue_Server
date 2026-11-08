@@ -2,11 +2,11 @@
 
 KIN-274 / Phase 31.17. **Not** proof of 100k CCU — local scripts only.
 
-| Script | Date | Environment | RPS / QPS | p50 | p95 | p99 | Notes |
-|--------|------|---------------|-----------|-----|-----|-----|-------|
-| `tests/load/gateway-authenticated-api.mjs` | _run locally_ | dev laptop + Gateway :4000 | — | — | — | — | Requires `LOAD_JWT`, stack up |
-| `tests/load/movie-search.mjs` | _run locally_ | Gateway + Meilisearch | — | — | — | — | Paper model 3.6k avg / 7–11k peak is architecture, not this run |
-| `tests/load/media-upload-transcode.mjs` | _run locally_ | queue depth only | — | — | — | — | Fixture jobs, not 20 GB files |
+| Script                                     | Date          | Environment                | RPS / QPS | p50 | p95 | p99 | Notes                                                           |
+| ------------------------------------------ | ------------- | -------------------------- | --------- | --- | --- | --- | --------------------------------------------------------------- |
+| `tests/load/gateway-authenticated-api.mjs` | _run locally_ | dev laptop + Gateway :4000 | —         | —   | —   | —   | Requires `LOAD_JWT`, stack up                                   |
+| `tests/load/movie-search.mjs`              | _run locally_ | Gateway + Meilisearch      | —         | —   | —   | —   | Paper model 3.6k avg / 7–11k peak is architecture, not this run |
+| `tests/load/media-upload-transcode.mjs`    | _run locally_ | queue depth only           | —         | —   | —   | —   | Fixture jobs, not 20 GB files                                   |
 
 ## NFR-07
 

@@ -13,7 +13,9 @@ describe("MoviesSearchService", () => {
     await expect(
       service.search({ limit: 10, offset: 0 }),
     ).rejects.toBeInstanceOf(AppError);
-    await expect(service.search({ limit: 10, offset: 0 })).rejects.toMatchObject({
+    await expect(
+      service.search({ limit: 10, offset: 0 }),
+    ).rejects.toMatchObject({
       code: "UPSTREAM_UNAVAILABLE",
     });
   });

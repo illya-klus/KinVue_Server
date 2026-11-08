@@ -33,7 +33,8 @@ console.log(
       p50Ms: pct(50),
       p95Ms: pct(95),
       p99Ms: pct(99),
-      paperModelNote: "3.6k avg / 7–11k peak is architecture capacity model, not this run.",
+      paperModelNote:
+        "3.6k avg / 7–11k peak is architecture capacity model, not this run.",
     },
     null,
     2,

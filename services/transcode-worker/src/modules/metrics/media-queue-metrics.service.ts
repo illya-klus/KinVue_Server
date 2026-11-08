@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from "@nestjs/common";
 import { MEDIA_TRANSCODE_QUEUE } from "../../messaging/media-transcode.constants";
 import { MediaTranscodeTopologyService } from "../../messaging/media-transcode-topology.service";
 import { transcodeQueueDepth } from "../../transcode-observability.metrics";
@@ -26,7 +31,10 @@ export class MediaQueueMetricsService implements OnModuleInit, OnModuleDestroy {
     try {
       const channel = this.topology.getChannel();
       const stats = await channel.checkQueue(MEDIA_TRANSCODE_QUEUE);
-      transcodeQueueDepth.set({ service: "transcode-worker" }, stats.messageCount);
+      transcodeQueueDepth.set(
+        { service: "transcode-worker" },
+        stats.messageCount,
+      );
     } catch (error) {
       this.logger.debug(
         `Queue metrics sample skipped: ${

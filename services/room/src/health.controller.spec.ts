@@ -15,9 +15,7 @@ describe("Rooms scaffold diagnostics", () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       controllers: [HealthController, MetricsController],
-      providers: [
-        { provide: REDIS_READINESS, useValue: redis },
-      ],
+      providers: [{ provide: REDIS_READINESS, useValue: redis }],
     }).compile();
     app = module.createNestApplication();
     app.useGlobalFilters(new SharedHttpErrorFilter());

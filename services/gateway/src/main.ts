@@ -5,10 +5,7 @@ import { Logger, RequestMethod, ValidationPipe } from "@nestjs/common";
 import helmet from "helmet";
 import { GlobalExceptionsFilter } from "./common/filters";
 import { connectSwagger } from "./config/swagger";
-import {
-  httpMetricsMiddleware,
-  initPrometheus,
-} from "@kinvue/http-metrics";
+import { httpMetricsMiddleware, initPrometheus } from "@kinvue/http-metrics";
 
 async function bootstrap() {
   initPrometheus("gateway");

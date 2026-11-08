@@ -1,5 +1,13 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
-import { notificationEventSchema, type NotificationEvent } from "@kinvue/contracts";
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from "@nestjs/common";
+import {
+  notificationEventSchema,
+  type NotificationEvent,
+} from "@kinvue/contracts";
 import type { ConsumeMessage } from "amqplib";
 import { NOTIFIER_MAIN_QUEUE } from "../../messaging/notifications-topology.constants";
 import { NotificationsTopologyService } from "../../messaging/notifications-topology.service";
@@ -47,9 +55,8 @@ export class ConsumerService implements OnModuleInit, OnModuleDestroy {
     const channel = this.topology.getChannel();
     try {
       const event = this.parseEvent(message);
-      const outcome = await this.notifications.insertNotificationIfNewEvent(
-        event,
-      );
+      const outcome =
+        await this.notifications.insertNotificationIfNewEvent(event);
       if (outcome === "created") {
         this.push.deliverInApp(event);
       }
