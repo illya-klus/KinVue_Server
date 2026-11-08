@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { MoviesRepository } from "../../database/movies.repository";
 import { SyncStateRepository } from "../../database/sync-state.repository";
 import { MovieSearchIndexService } from "../search/movie-search-index.service";
+import { movieReconcileRuns } from "../../movie-observability.metrics";
 import { reconcileWindow } from "./reconcile-window";
 
 @Injectable()
@@ -21,6 +22,7 @@ export class MovieReconcileService {
     const batch = await this.movies.listPublishedUpdatedBetween(from, to);
     if (batch.length === 0) {
       await this.syncState.setLastSuccessfulSync(jobStartedAt);
+      movieReconcileRuns.inc({ outcome: "noop" });
       return;
     }
 
@@ -32,7 +34,9 @@ export class MovieReconcileService {
       this.logger.log(
         `Reconciliation upserted ${batch.length} movies (${from.toISOString()} .. ${to.toISOString()})`,
       );
+      movieReconcileRuns.inc({ outcome: "success" });
     } catch (error) {
+      movieReconcileRuns.inc({ outcome: "error" });
       this.logger.error("Reconciliation failed; checkpoint unchanged", error);
       throw error;
     }
