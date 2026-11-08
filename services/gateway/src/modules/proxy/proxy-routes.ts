@@ -104,6 +104,20 @@ export const PROXY_ROUTES: ProxyRoute[] = [
     auth: "admin",
     rateLimit: "authenticated",
   },
+  {
+    methods: ["GET"],
+    path: /^\/api\/notifications\/?$/,
+    upstream: "notification",
+    auth: "required",
+    rateLimit: "authenticated",
+  },
+  {
+    methods: ["POST"],
+    path: /^\/api\/notifications\/[^/]+\/read\/?$/,
+    upstream: "notification",
+    auth: "required",
+    rateLimit: "authenticated",
+  },
 ];
 
 export function matchProxyRoute(

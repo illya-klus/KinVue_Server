@@ -1,4 +1,9 @@
-export type UpstreamName = "auth" | "users" | "movie" | "rooms";
+export type UpstreamName =
+  | "auth"
+  | "users"
+  | "movie"
+  | "rooms"
+  | "notification";
 
 export type AuthPolicy = "public" | "required" | "admin";
 

@@ -12,6 +12,7 @@ export class UpstreamService {
       users: "USERS_SERVICE_URL",
       movie: "MOVIE_SERVICE_URL",
       rooms: "ROOMS_SERVICE_URL",
+      notification: "NOTIFICATION_SERVICE_URL",
     };
     return this.config.getOrThrow<string>(map[upstream]);
   }
