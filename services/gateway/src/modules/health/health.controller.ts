@@ -17,13 +17,7 @@ export class HealthController {
     return {
       status: "ok",
       checks: {
-        gatewayService: "true",
-        authService: "false",
-        chatService: "false",
-        movieService: "false",
-        notificationService: "false",
-        roomService: "false",
-        userService: "false",
+        process: "ok",
       },
     };
   }

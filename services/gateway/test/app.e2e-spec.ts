@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { INestApplication } from "@nestjs/common";
+import { INestApplication, RequestMethod } from "@nestjs/common";
 import request from "supertest";
 import { App } from "supertest/types";
 import { AppModule } from "../src/app.module";
@@ -13,14 +13,20 @@ describe("Health", () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix("/api");
+    app.setGlobalPrefix("api", {
+      exclude: [
+        { path: "health", method: RequestMethod.ALL },
+        { path: "health/(.*)", method: RequestMethod.ALL },
+        { path: "metrics", method: RequestMethod.GET },
+      ],
+    });
 
     await app.init();
   });
 
   it("/health/live (GET)", () => {
     return request(app.getHttpServer())
-      .get("/api/health/live")
+      .get("/health/live")
       .expect(200)
       .expect({
         status: "ok",
@@ -30,20 +36,21 @@ describe("Health", () => {
 
   it("/health/ready (GET)", () => {
     return request(app.getHttpServer())
-      .get("/api/health/ready")
+      .get("/health/ready")
       .expect(200)
       .expect({
         status: "ok",
         checks: {
-          gatewayService: "true",
-          authService: "false",
-          chatService: "false",
-          movieService: "false",
-          notificationService: "false",
-          roomService: "false",
-          userService: "false",
+          process: "ok",
         },
       });
+  });
+
+  it("/metrics (GET)", () => {
+    return request(app.getHttpServer())
+      .get("/metrics")
+      .expect(200)
+      .expect("Content-Type", /text\/plain/);
   });
 
   afterEach(async () => {

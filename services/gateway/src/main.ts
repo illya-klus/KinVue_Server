@@ -1,7 +1,7 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ConfigService } from "@nestjs/config";
-import { Logger, ValidationPipe } from "@nestjs/common";
+import { Logger, RequestMethod, ValidationPipe } from "@nestjs/common";
 import helmet from "helmet";
 import { GlobalExceptionsFilter } from "./common/filters";
 import { connectSwagger } from "./config/swagger";
@@ -14,7 +14,15 @@ async function bootstrap() {
 
   //add global prefix
   logger.log("Set global prefix: api");
-  app.setGlobalPrefix("api");
+  app.setGlobalPrefix("api", {
+    exclude: [
+      { path: "health", method: RequestMethod.ALL },
+      { path: "health/(.*)", method: RequestMethod.ALL },
+      { path: "metrics", method: RequestMethod.GET },
+      { path: ".well-known", method: RequestMethod.ALL },
+      { path: ".well-known/(.*)", method: RequestMethod.ALL },
+    ],
+  });
 
   //add validation pipe
   app.useGlobalPipes(
@@ -50,6 +58,6 @@ async function bootstrap() {
 
   const port = configService.getOrThrow<number>("PORT");
   await app.listen(port);
-  logger.log("Server started on port: " + port);
+  logger.log(`@kinvue/gateway listening on ${port}`);
 }
 bootstrap();

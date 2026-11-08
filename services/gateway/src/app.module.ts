@@ -8,12 +8,18 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { ConfigModule } from "@nestjs/config";
 import { HealthModule } from "./modules/health/health.module";
+import { MetricsModule } from "./modules/metrics/metrics.module";
 import { RequestIdMiddleware } from "./common/middleware/request-ids.middleware";
 import { RequestsLoggerMiddleware } from "./common/middleware/requests-loger.middleware";
 import { AuthModule } from "./modules/auth/auth.module";
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), HealthModule, AuthModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    HealthModule,
+    MetricsModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
