@@ -5,7 +5,9 @@ import {
   OnModuleInit,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import amqp, { type Channel, type Connection } from "amqplib";
+import amqp, { type Channel } from "amqplib";
+
+type AmqpConnection = Awaited<ReturnType<typeof amqp.connect>>;
 import {
   NOTIFIER_DELIVERY_LIMIT,
   NOTIFIER_DLQ_QUEUE,
@@ -21,7 +23,7 @@ export class NotificationsTopologyService
   implements OnModuleInit, OnModuleDestroy
 {
   private readonly logger = new Logger(NotificationsTopologyService.name);
-  private connection: Connection | null = null;
+  private connection: AmqpConnection | null = null;
   private channel: Channel | null = null;
 
   constructor(private readonly config: ConfigService) {}
@@ -32,26 +34,28 @@ export class NotificationsTopologyService
 
   public async bootstrap(): Promise<void> {
     const url = this.config.getOrThrow<string>("RABBITMQ_URL");
-    this.connection = await amqp.connect(url);
-    this.channel = await this.connection.createChannel();
+    const connection = await amqp.connect(url);
+    const channel = await connection.createChannel();
+    this.connection = connection;
+    this.channel = channel;
 
-    await this.channel.assertExchange(NOTIFIER_DOMAIN_EXCHANGE, "direct", {
+    await channel.assertExchange(NOTIFIER_DOMAIN_EXCHANGE, "direct", {
       durable: true,
     });
-    await this.channel.assertExchange(NOTIFIER_DLX_EXCHANGE, "direct", {
+    await channel.assertExchange(NOTIFIER_DLX_EXCHANGE, "direct", {
       durable: true,
     });
 
-    await this.channel.assertQueue(NOTIFIER_DLQ_QUEUE, {
+    await channel.assertQueue(NOTIFIER_DLQ_QUEUE, {
       durable: true,
     });
-    await this.channel.bindQueue(
+    await channel.bindQueue(
       NOTIFIER_DLQ_QUEUE,
       NOTIFIER_DLX_EXCHANGE,
       NOTIFIER_DLQ_ROUTING_KEY,
     );
 
-    await this.channel.assertQueue(NOTIFIER_MAIN_QUEUE, {
+    await channel.assertQueue(NOTIFIER_MAIN_QUEUE, {
       durable: true,
       arguments: {
         "x-queue-type": "quorum",
@@ -62,7 +66,7 @@ export class NotificationsTopologyService
     });
 
     for (const routingKey of NOTIFIER_ROUTING_KEYS) {
-      await this.channel.bindQueue(
+      await channel.bindQueue(
         NOTIFIER_MAIN_QUEUE,
         NOTIFIER_DOMAIN_EXCHANGE,
         routingKey,

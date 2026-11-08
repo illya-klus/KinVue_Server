@@ -12,7 +12,7 @@ export class NotificationsRepository {
       `SELECT event_id FROM processed_notification_events WHERE event_id = $1`,
       [eventId],
     );
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   public async insertNotificationIfNewEvent(
