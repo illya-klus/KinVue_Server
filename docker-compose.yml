@@ -12,6 +12,7 @@ networks:
 volumes:
   postgres_data:
     name: kinvue_server_postgres_data
+  notifications-postgres-data:
   movie-postgres-data:
   users-mongo-data:
   rooms-redis-data:
@@ -38,6 +39,32 @@ services:
       - kinvue-edge
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U kinvue -d kinvue"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+  notifications-postgres:
+    image: postgres:16
+    container_name: kinvue-notifications-postgres
+    environment:
+      POSTGRES_USER: ${NOTIFICATIONS_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${NOTIFICATIONS_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${NOTIFICATIONS_POSTGRES_DB}
+    ports:
+      - "5435:5432"
+    volumes:
+      - notifications-postgres-data:/var/lib/postgresql/data
+    networks:
+      - kinvue-data
+      - kinvue-edge
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${NOTIFICATIONS_POSTGRES_USER} -d ${NOTIFICATIONS_POSTGRES_DB}",
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -301,11 +328,14 @@ services:
     environment:
       PORT: "4005"
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672
+      NOTIFICATIONS_DATABASE_URL: postgresql://${NOTIFICATIONS_POSTGRES_USER}:${NOTIFICATIONS_POSTGRES_PASSWORD}@notifications-postgres:5432/${NOTIFICATIONS_POSTGRES_DB}
       NODE_ENV: production
     ports:
       - "4005:4005"
     depends_on:
       rabbitmq:
+        condition: service_healthy
+      notifications-postgres:
         condition: service_healthy
     networks:
       - kinvue-data
