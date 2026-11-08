@@ -1,0 +1,30 @@
+{
+  "title": "KinVue Media",
+  "uid": "kinvue-media",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Transcode jobs",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(media_transcode_jobs_total[5m])) by (outcome)",
+          "legendFormat": "{{outcome}}"
+        }
+      ]
+    },
+    {
+      "type": "gauge",
+      "title": "media.transcode queue depth",
+      "gridPos": { "h": 6, "w": 8, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "media_transcode_queue_depth",
+          "legendFormat": "depth"
+        }
+      ]
+    }
+  ]
+}
