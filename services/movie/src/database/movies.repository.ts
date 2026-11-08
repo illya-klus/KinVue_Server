@@ -41,6 +41,32 @@ export class MoviesRepository {
     return result.rows;
   }
 
+  public async markMediaReady(
+    movieId: string,
+    masterKey: string,
+  ): Promise<boolean> {
+    const result = await this.db.query(
+      `UPDATE movies
+       SET media_status = 'READY',
+           hls_master_key = $2,
+           updated_at = NOW()
+       WHERE id = $1`,
+      [movieId, masterKey],
+    );
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  public async markMediaFailed(movieId: string): Promise<boolean> {
+    const result = await this.db.query(
+      `UPDATE movies
+       SET media_status = 'PROCESSING_FAILED',
+           updated_at = NOW()
+       WHERE id = $1`,
+      [movieId],
+    );
+    return (result.rowCount ?? 0) > 0;
+  }
+
   public async listAllPublished(): Promise<MovieRow[]> {
     const result = await this.db.query<MovieRow>(
       `SELECT id, title, description, genres, status::text AS status,

@@ -8,6 +8,7 @@ import { HealthController, READINESS_CHECK } from "./health.controller";
 import { MetricsController, MetricsService } from "./metrics.controller";
 import { MeilisearchModule } from "./modules/meilisearch/meilisearch.module";
 import { ReconcileModule } from "./modules/reconcile/reconcile.module";
+import { InternalModule } from "./modules/internal/internal.module";
 import { SearchModule } from "./modules/search/search.module";
 import { MoviePostgresReadiness } from "./readiness";
 import { SharedLogger } from "./shared-logger";
@@ -23,6 +24,7 @@ import { SharedLogger } from "./shared-logger";
     MeilisearchModule,
     SearchModule,
     ReconcileModule,
+    InternalModule,
   ],
   controllers: [HealthController, MetricsController],
   providers: [

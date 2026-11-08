@@ -5,4 +5,5 @@ export const movieConfigSchema = base.extend({
   MOVIE_DATABASE_URL: postgres,
   MEILISEARCH_HOST: http,
   MEILISEARCH_MASTER_KEY: nonempty,
+  MOVIE_INTERNAL_TOKEN: nonempty.default("local-movie-internal-token"),
 });

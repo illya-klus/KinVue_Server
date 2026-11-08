@@ -48,9 +48,11 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async runMigrations(): Promise<void> {
-    const sqlPath = join(process.cwd(), "migrations", "001_movies.sql");
-    const sql = readFileSync(sqlPath, "utf8");
-    await this.pool.query(sql);
+    for (const file of ["001_movies.sql", "002_media_status.sql"]) {
+      const sqlPath = join(process.cwd(), "migrations", file);
+      const sql = readFileSync(sqlPath, "utf8");
+      await this.pool.query(sql);
+    }
     this.logger.log("Movie database migrations applied");
   }
 }
