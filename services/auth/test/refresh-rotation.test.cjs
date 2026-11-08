@@ -61,3 +61,25 @@ test("refresh rotation rejects replay and does not create another session", asyn
   assert.deepEqual(queries, ["BEGIN", queries[1], "ROLLBACK"]);
   assert.match(queries[1], /UPDATE public\.refresh_sessions/);
 });
+
+test("logout revokes only the matching refresh session hash", async () => {
+  const { RefreshSessionRepository } =
+    await import("../dist/modules/tokens/refresh-session.repository.js");
+  let captured;
+  const repository = new RefreshSessionRepository({
+    pool: {
+      async query(sql, values) {
+        captured = { sql, values };
+        return { rowCount: 1, rows: [] };
+      },
+    },
+  });
+
+  await repository.revoke("sha256-hash");
+
+  assert.match(
+    captured.sql,
+    /SET revoked_at = COALESCE\(revoked_at, NOW\(\)\)/,
+  );
+  assert.deepEqual(captured.values, ["sha256-hash"]);
+});

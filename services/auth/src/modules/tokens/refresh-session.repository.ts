@@ -6,6 +6,15 @@ import { PrismaService } from "../../prisma/prisma.service.js";
 export class RefreshSessionRepository {
   public constructor(private readonly prisma: PrismaService) {}
 
+  public async revoke(tokenHash: string): Promise<void> {
+    await this.prisma.pool.query(
+      `UPDATE public.refresh_sessions
+       SET revoked_at = COALESCE(revoked_at, NOW()), updated_at = NOW()
+       WHERE token_hash = $1`,
+      [tokenHash],
+    );
+  }
+
   public async rotate(tokenHash: string, nextTokenHash: string) {
     const client = await this.prisma.pool.connect();
     const nextId = randomUUID();
