@@ -33,7 +33,7 @@
 
 ## Відкладено
 
-- Sprint 2 (Auth, Богдан): KIN-289 у роботі в окремій гілці `feat/sprint-2-auth-passwords`: Argon2id функції hash/verify використовують узгоджені параметри з рішення 0021; локальні unit-тести та Auth typecheck проходять. PR ще не створений.
+- Sprint 2 (Auth, Богдан): KIN-289 реалізовано в [PR #15](https://github.com/illya-klus/KinVue_Server/pull/15), статус `In Testing (by agent)`: Argon2id функції hash/verify використовують узгоджені параметри з рішення 0021; локальні unit-тести та Auth typecheck проходять. CI PR очікує завершення.
 
 - Відкриті дірки плану: `doc/backlog/engineering/09-gaps-and-unknowns.md`. Їх не закривають побіжно. G-07 закрита [0011](decisions/0011-anonymous-published-movie-reads.md). FR-09 не реалізують, доки продукт не відповість, [0014](decisions/0014-defer-fr09-activity.md).
 - Політику JWT погоджено у 0020: access 15 хв, refresh 30 днів з ротацією. Реалізація поки лишається старою (refresh 7 днів без сховища).
