@@ -20,7 +20,8 @@
     "contract:emit": "prisma contract emit",
     "migrate:deploy": "node scripts/migrate-auth.mjs",
     "test:scaffold": "node --test test/scaffold.test.cjs",
-    "test:migrations": "node --test test/migrate-auth.test.cjs test/migrate-empty-db.test.cjs"
+    "test:migrations": "node --test test/migrate-auth.test.cjs test/migrate-empty-db.test.cjs",
+    "test:refresh-sessions": "pnpm build && node --test test/refresh-sessions.test.cjs"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.14.4",
