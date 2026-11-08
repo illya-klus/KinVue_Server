@@ -40,7 +40,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const result = spawnSync(
       process.execPath,
       [prismaCli, "db", "migrate", "--db", databaseUrl],
-      { cwd: authDirectory, env: process.env, stdio: "inherit" },
+      {
+        cwd: authDirectory,
+        env: { ...process.env, DATABASE_URL: databaseUrl },
+        stdio: "inherit",
+      },
     );
     if (result.error) {
       console.error("Could not start Prisma migration runner");

@@ -33,7 +33,7 @@
 
 ## Відкладено
 
-- Sprint 2 (Auth, Богдан): у роботі KIN-271 — запуск міграцій Prisma Next з перевіркою, що ціль PostgreSQL має назву `kinvue`. KIN-287 (перевірка на порожній БД) очікує виконання на чистому PostgreSQL; локальну перевірку відклали, бо на системному диску лишилося близько 375 МБ після Docker smoke Sprint 1.
+- Sprint 2 (Auth, Богдан): KIN-271 реалізовано та передано в `In Testing (by agent)` у [PR #14](https://github.com/illya-klus/KinVue_Server/pull/14); повний `pnpm typecheck` і перевірка URL проходять. Prisma міграції застосовані на порожній тимчасовій PostgreSQL 15; унікальність email перевірена. KIN-287 у роботі: додано автоматизований Docker smoke test із типовими PostgreSQL 16 та портом 5433; локально пройшов на наявному PostgreSQL 15 image на вільному порту 55433, оскільки порт 5433 зайнятий контейнером користувача. Перевірка саме на PostgreSQL 16 ще потрібна.
 
 - Відкриті дірки плану: `doc/backlog/engineering/09-gaps-and-unknowns.md`. Їх не закривають побіжно. G-07 закрита [0011](decisions/0011-anonymous-published-movie-reads.md). FR-09 не реалізують, доки продукт не відповість, [0014](decisions/0014-defer-fr09-activity.md).
 - Політику JWT погоджено у 0020: access 15 хв, refresh 30 днів з ротацією. Реалізація поки лишається старою (refresh 7 днів без сховища).

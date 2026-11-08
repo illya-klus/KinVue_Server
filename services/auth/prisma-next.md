@@ -90,6 +90,12 @@ names and invokes Prisma Next's ordered, content-hashed migration graph. It
 does not print the connection URL. Review and apply migrations through this
 command rather than `db update` on shared environments.
 
+For a disposable empty-database check, run
+`pnpm --filter @kinvue/auth test:migrations`. Docker and the PostgreSQL 16
+image are required. The test binds local port 5433 by default; set
+`AUTH_TEST_PORT` if that port is already in use, or
+`AUTH_TEST_POSTGRES_IMAGE` to select an already available compatible image.
+
 ### Files
 
 | File                                                       | Purpose                                                  |
