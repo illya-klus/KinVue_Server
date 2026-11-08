@@ -10,6 +10,10 @@ import {
 } from "../../messaging/media-transcode-job.schema";
 import { MediaTranscodeTopologyService } from "../../messaging/media-transcode-topology.service";
 import { MovieCallbackClient } from "../movie-callback/movie-callback.client";
+import {
+  transcodeDuration,
+  transcodeJobs,
+} from "../../transcode-observability.metrics";
 import { HlsTranscodeService } from "../transcode/hls-transcode.service";
 
 @Injectable()
@@ -53,10 +57,16 @@ export class ConsumerService implements OnModuleInit, OnModuleDestroy {
     }
     this.processing = true;
     const channel = this.topology.getChannel();
+    const started = process.hrtime.bigint();
     try {
       const job = this.parseJob(message);
       const masterKey = await this.transcode.transcode(job);
       await this.movie.transcodeComplete(job.movieId, masterKey);
+      transcodeJobs.inc({ outcome: "success" });
+      transcodeDuration.observe(
+        { outcome: "success" },
+        Number(process.hrtime.bigint() - started) / 1e9,
+      );
       channel.ack(message);
     } catch (error: unknown) {
       const job = this.safeParseJob(message);
@@ -66,6 +76,11 @@ export class ConsumerService implements OnModuleInit, OnModuleDestroy {
       }
       if (job.attempt >= MEDIA_TRANSCODE_MAX_ATTEMPTS) {
         await this.movie.transcodeFailed(job.movieId);
+        transcodeJobs.inc({ outcome: "failed" });
+        transcodeDuration.observe(
+          { outcome: "failed" },
+          Number(process.hrtime.bigint() - started) / 1e9,
+        );
         channel.ack(message);
         return;
       }
