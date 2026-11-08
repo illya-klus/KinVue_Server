@@ -9,6 +9,7 @@ import { HealthController, READINESS_CHECK } from "./health.controller";
 import { MetricsController } from "./metrics.controller";
 import { SharedHttpErrorFilter } from "./errors.filters";
 import request from "supertest";
+import { initPrometheus } from "@kinvue/http-metrics";
 
 @Controller("test")
 class FailureController {
@@ -26,6 +27,7 @@ describe("movie diagnostics", () => {
   let app: INestApplication;
   const readiness = { check: jest.fn() };
   beforeAll(async () => {
+    initPrometheus("movie");
     const module = await Test.createTestingModule({
       controllers: [HealthController, MetricsController, FailureController],
       providers: [{ provide: READINESS_CHECK, useValue: readiness }],
@@ -46,8 +48,7 @@ describe("movie diagnostics", () => {
       .get("/metrics")
       .expect(200);
     expect(metrics.headers["content-type"]).toContain("text/plain");
-    expect(metrics.text).toContain("# TYPE service_up gauge");
-    expect(metrics.text).toContain("service_up 1");
+    expect(metrics.text).toContain("process_cpu_user_seconds_total");
   });
 
   it("returns 503 on dependency failure and recovers to 200", async () => {

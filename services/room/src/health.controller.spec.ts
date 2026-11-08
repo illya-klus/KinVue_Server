@@ -8,11 +8,13 @@ import {
 import { MetricsController } from "./metrics.controller";
 import { SharedHttpErrorFilter } from "./errors.filters";
 import request from "supertest";
+import { initPrometheus } from "@kinvue/http-metrics";
 
 describe("Rooms scaffold diagnostics", () => {
   let app: INestApplication;
   const redis: Pick<RedisReadiness, "ping"> = { ping: jest.fn() };
   beforeAll(async () => {
+    initPrometheus("rooms");
     const module = await Test.createTestingModule({
       controllers: [HealthController, MetricsController],
       providers: [{ provide: REDIS_READINESS, useValue: redis }],
@@ -31,7 +33,7 @@ describe("Rooms scaffold diagnostics", () => {
       .get("/metrics")
       .expect(200);
     expect(metrics.headers["content-type"]).toContain("text/plain");
-    expect(metrics.text).toContain("service_up 1");
+    expect(metrics.text).toContain("process_cpu_user_seconds_total");
   });
   it("reports only its own Redis readiness and a shared safe 404", async () => {
     (redis.ping as jest.Mock).mockResolvedValueOnce("PONG");

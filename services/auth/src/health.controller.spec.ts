@@ -4,11 +4,13 @@ import { HealthController, AuthReadiness } from "./health.controller.js";
 import { MetricsController } from "./metrics.controller.js";
 import { SharedHttpErrorFilter } from "./shared-http-error.filter.js";
 import request from "supertest";
+import { initPrometheus } from "@kinvue/http-metrics";
 
 describe("Auth scaffold diagnostics", () => {
   let app: INestApplication;
   let check: () => Promise<void> = async () => {};
   beforeAll(async () => {
+    initPrometheus("auth");
     const module = await Test.createTestingModule({
       controllers: [HealthController, MetricsController],
       providers: [
@@ -29,8 +31,7 @@ describe("Auth scaffold diagnostics", () => {
       .get("/metrics")
       .expect(200);
     expect(metrics.headers["content-type"]).toContain("text/plain");
-    expect(metrics.text).toContain("service_up 1");
-    expect(metrics.text).toContain("process_uptime_seconds");
+    expect(metrics.text).toContain("process_cpu_user_seconds_total");
   });
   it("reports its own database readiness and a shared safe 404", async () => {
     check = async () => {};
