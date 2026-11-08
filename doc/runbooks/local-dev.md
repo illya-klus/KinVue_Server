@@ -36,6 +36,12 @@ pnpm infra:down
 
 `infra:up` читає `.env.example` і піднімає кореневий `docker-compose.yml`. Щоб підставити свої значення, скопіюй приклад у `.env` і запускай ту саму команду з `--env-file .env`.
 
+Образи Nest (gateway 4000, notifications 4005, transcode-worker 4016) — профіль `apps`:
+
+```powershell
+docker compose --env-file .env.example --profile apps up -d --build gateway notification transcode-worker
+```
+
 Стан: `docker compose --env-file .env.example ps`.
 
 ## Куди дивитись
