@@ -8,6 +8,7 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Redis from "ioredis";
+import { roomsRedisReachable } from "./room-observability.metrics";
 
 export const REDIS_READINESS = Symbol("REDIS_READINESS");
 export type RedisReadiness = Pick<Redis, "ping">;
@@ -48,8 +49,10 @@ export class HealthController {
   async ready() {
     try {
       await this.redis.ping();
+      roomsRedisReachable.set({ service: "rooms" }, 1);
       return { status: "ok", service: "rooms" };
     } catch {
+      roomsRedisReachable.set({ service: "rooms" }, 0);
       throw new ServiceUnavailableException("Service dependency unavailable");
     }
   }

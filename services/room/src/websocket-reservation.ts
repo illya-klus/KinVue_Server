@@ -6,6 +6,7 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { WebSocketServer } from "ws";
 import { createLogger } from "@kinvue/logger";
+import { roomsWebsocketConnections } from "./room-observability.metrics";
 
 @Injectable()
 export class WebSocketReservation
@@ -21,7 +22,13 @@ export class WebSocketReservation
       maxPayload: 16 * 1024,
     });
     this.server = server;
-    server.on("connection", (socket) => socket.close(1003, "not-implemented"));
+    server.on("connection", (socket) => {
+      roomsWebsocketConnections.inc({ service: "rooms" });
+      socket.on("close", () => {
+        roomsWebsocketConnections.dec({ service: "rooms" });
+      });
+      socket.close(1003, "not-implemented");
+    });
     server.on("error", (error) =>
       createLogger("rooms").error("WebSocket listener failed", { error }),
     );
