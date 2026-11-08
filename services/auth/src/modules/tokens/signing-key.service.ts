@@ -15,6 +15,7 @@ type PublicJwk = {
 @Injectable()
 export class SigningKeyService {
   private readonly signingKey: KeyObject;
+  private readonly verificationKey: string;
   private readonly publicJwk: PublicJwk;
 
   public constructor(config: ConfigService) {
@@ -42,7 +43,12 @@ export class SigningKeyService {
       );
     }
 
-    const exported = createPublicKey(this.signingKey).export({ format: "jwk" });
+    const publicKey = createPublicKey(this.signingKey);
+    this.verificationKey = publicKey.export({
+      type: "spki",
+      format: "pem",
+    }) as string;
+    const exported = publicKey.export({ format: "jwk" });
     if (!exported.n || !exported.e) {
       throw new Error("AUTH_JWT_PRIVATE_KEY did not produce a public RSA key");
     }
@@ -60,6 +66,14 @@ export class SigningKeyService {
 
   public getPrivateKey(): KeyObject {
     return this.signingKey;
+  }
+
+  public getPublicKey(): string {
+    return this.verificationKey;
+  }
+
+  public getKeyId(): string {
+    return this.publicJwk.kid;
   }
 
   public getJwks(): { keys: PublicJwk[] } {

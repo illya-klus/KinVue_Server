@@ -84,6 +84,8 @@ test("auth validates database protocol and gateway parses CORS origins", () => {
     GOOGLE_CLIENT_ID: "google",
     JWT_ACCESS_SECRET: "test-access",
     JWT_REFRESH_SECRET: "test-refresh",
+    AUTH_JWT_PRIVATE_KEY: "test-only-not-a-real-key",
+    AUTH_JWT_KEY_ID: "test-key",
   };
   assert.equal(
     loadConfig(authConfigSchema, env).AUTH_GRPC_URL,

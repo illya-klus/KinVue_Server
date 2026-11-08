@@ -1,9 +1,7 @@
 import { base, postgres, nonempty, port } from "./base.ts";
-// Sprint 1 retains the current Google/HMAC runtime. RS256 sessions are a later Auth change.
 export const authConfigSchema = base.extend({
   DATABASE_URL: postgres,
   GOOGLE_CLIENT_ID: nonempty,
-  JWT_ACCESS_SECRET: nonempty,
   JWT_REFRESH_SECRET: nonempty,
   AUTH_JWT_PRIVATE_KEY: nonempty,
   AUTH_JWT_KEY_ID: nonempty,
