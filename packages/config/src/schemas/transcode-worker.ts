@@ -5,4 +5,6 @@ export const transcodeWorkerConfigSchema = base.extend({
   S3_ACCESS_KEY: nonempty,
   S3_SECRET_KEY: nonempty,
   S3_BUCKET: nonempty,
+  MOVIE_SERVICE_URL: http,
+  MOVIE_INTERNAL_TOKEN: nonempty.default("local-movie-internal-token"),
 });
