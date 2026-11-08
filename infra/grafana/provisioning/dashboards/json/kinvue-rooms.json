@@ -1,0 +1,24 @@
+{
+  "title": "KinVue Rooms",
+  "uid": "kinvue-rooms",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "gauge",
+      "title": "WebSocket connections",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "rooms_websocket_connections", "legendFormat": "connections" }
+      ]
+    },
+    {
+      "type": "gauge",
+      "title": "Redis reachable",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 },
+      "targets": [
+        { "expr": "rooms_redis_reachable", "legendFormat": "redis" }
+      ]
+    }
+  ]
+}
