@@ -33,6 +33,8 @@
 
 ## Відкладено
 
+- Sprint 2 (Auth, Богдан): KIN-291 у роботі в окремій гілці `feat/sprint-2-auth-jwks`: обов'язковий RSA signing key та key id, публічний JWKS endpoint, локальний runbook. Unit-тести ключа й маршруту, Auth typecheck та форматування проходять; PR ще не створений.
+
 - Відкриті дірки плану: `doc/backlog/engineering/09-gaps-and-unknowns.md`. Їх не закривають побіжно. G-07 закрита [0011](decisions/0011-anonymous-published-movie-reads.md). FR-09 не реалізують, доки продукт не відповість, [0014](decisions/0014-defer-fr09-activity.md).
 - Політику JWT погоджено у 0020: access 15 хв, refresh 30 днів з ротацією. Реалізація поки лишається старою (refresh 7 днів без сховища).
 - Карта портів як архітектурне рішення. Порти в `docker-compose.yml` — локальний приклад. Auth лишається на порту 5432, [0006](decisions/0006-postgres-16.md).

@@ -18,7 +18,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typecheck": "tsc --noEmit",
     "contract:emit": "prisma contract emit",
-    "test:scaffold": "node --test test/scaffold.test.cjs"
+    "test:scaffold": "node --test test/scaffold.test.cjs",
+    "test:jwks": "pnpm build && node --test test/jwks.test.cjs"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.14.4",
