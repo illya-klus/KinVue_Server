@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@kinvue/config": "workspace:*",
+    "@kinvue/http-metrics": "workspace:*",
     "@kinvue/errors": "workspace:*",
     "@kinvue/logger": "workspace:*",
     "@nestjs/common": "^12.0.1",

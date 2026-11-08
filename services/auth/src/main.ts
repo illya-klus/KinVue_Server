@@ -11,10 +11,16 @@ import { existsSync } from "node:fs";
 import { GrcpLoggingInterceptor } from "./common/interseptors/logger.interseptor.js";
 import { SharedHttpErrorFilter } from "./shared-http-error.filter.js";
 import { SharedLogger } from "./shared-logger.js";
+import {
+  httpMetricsMiddleware,
+  initPrometheus,
+} from "@kinvue/http-metrics";
 
 async function bootstrap() {
+  initPrometheus("auth");
   const config = loadEnvironmentConfig(authConfigSchema);
   const app = await NestFactory.create(AppModule);
+  app.use(httpMetricsMiddleware("auth"));
   app.useGlobalFilters(app.get(SharedHttpErrorFilter));
   app.useLogger(app.get(SharedLogger));
   app.enableShutdownHooks();

@@ -25,6 +25,7 @@
     "@nestjs/config": "^12.0.0",
     "@nestjs/core": "^12.0.1",
     "@nestjs/platform-express": "^12.0.1",
+    "@kinvue/http-metrics": "workspace:*",
     "@aws-sdk/client-s3": "^3.888.0",
     "amqplib": "^0.10.9",
     "zod": "^4.0.0",

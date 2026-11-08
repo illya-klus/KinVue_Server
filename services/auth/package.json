@@ -40,6 +40,7 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "@kinvue/config": "workspace:*",
+    "@kinvue/http-metrics": "workspace:*",
     "@kinvue/logger": "workspace:*",
     "@kinvue/errors": "workspace:*",
     "pg": "^8.16.3"

@@ -3,10 +3,16 @@ import { AppModule } from "./app.module";
 import { loadEnvironmentConfig, roomsConfigSchema } from "@kinvue/config";
 import { SharedHttpErrorFilter } from "./errors.filters";
 import { SharedLogger } from "./shared-logger";
+import {
+  httpMetricsMiddleware,
+  initPrometheus,
+} from "@kinvue/http-metrics";
 
 async function bootstrap() {
+  initPrometheus("rooms");
   const config = loadEnvironmentConfig(roomsConfigSchema);
   const app = await NestFactory.create(AppModule);
+  app.use(httpMetricsMiddleware("rooms"));
   app.useGlobalFilters(app.get(SharedHttpErrorFilter));
   app.useLogger(app.get(SharedLogger));
   app.enableShutdownHooks();
