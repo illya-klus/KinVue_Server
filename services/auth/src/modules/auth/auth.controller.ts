@@ -60,9 +60,10 @@ export class AuthController {
       throw new UnauthorizedException("Invalid email or password");
     }
 
+    const role = await this.authService.roleForIdentity(identity.userId);
     const tokens = await this.tokensService.createTokenPair(
       identity.userId,
-      "USER",
+      role,
     );
     this.setRefreshCookie(response, tokens.refreshToken);
     authLoginAttempts.inc({ outcome: "success" });

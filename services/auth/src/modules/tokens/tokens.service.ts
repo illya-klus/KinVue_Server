@@ -37,8 +37,9 @@ export class TokensService {
   }
 
   public async createTokenPair(sub: string, role: "ADMIN" | "USER") {
+    const scopes = role === "ADMIN" ? ["admin"] : [];
     const accessToken = await this.jwtService.signAsync(
-      { sub, role },
+      { sub, role, scopes },
       {
         secret: this.config.getOrThrow("JWT_ACCESS_SECRET"),
         expiresIn: "15m",
