@@ -1,4 +1,12 @@
-import { Controller } from "@nestjs/common";
+import {
+  Controller,
+  HttpCode,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+} from "@nestjs/common";
+import type { Request, Response } from "express";
 import { AuthService } from "./auth.service.js";
 import { GrpcMethod, RpcException } from "@nestjs/microservices";
 import {
@@ -18,6 +26,53 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly tokensService: TokensService,
   ) {}
+
+  @Post("auth/refresh")
+  public async refresh(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const refreshToken = this.readRefreshCookie(request.headers.cookie);
+    if (!refreshToken) throw new UnauthorizedException();
+    const tokens = await this.tokensService.rotateRefreshToken(refreshToken);
+    if (!tokens) throw new UnauthorizedException();
+
+    response.cookie("kinvue_refresh", tokens.refreshToken, {
+      httpOnly: true,
+      secure: process.env["NODE_ENV"] === "production",
+      sameSite: "strict",
+      path: "/auth/refresh",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+    return { accessToken: tokens.accessToken };
+  }
+
+  @Post("auth/logout")
+  @HttpCode(204)
+  public async logout(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    const refreshToken = this.readRefreshCookie(request.headers.cookie);
+    if (refreshToken) {
+      await this.tokensService.revokeRefreshToken(refreshToken);
+    }
+    response.clearCookie("kinvue_refresh", {
+      httpOnly: true,
+      secure: process.env["NODE_ENV"] === "production",
+      sameSite: "strict",
+      path: "/auth/refresh",
+    });
+  }
+
+  private readRefreshCookie(cookieHeader?: string): string | null {
+    const value = cookieHeader
+      ?.split(";")
+      .map((part) => part.trim())
+      .find((part) => part.startsWith("kinvue_refresh="))
+      ?.slice("kinvue_refresh=".length);
+    return value ? decodeURIComponent(value) : null;
+  }
 
   @GrpcMethod("AuthService", "SignInWithGoogle")
   public async signInWithGoogle(
