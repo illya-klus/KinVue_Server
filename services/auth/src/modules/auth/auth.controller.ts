@@ -1,5 +1,6 @@
 import {
   Controller,
+  Body,
   HttpCode,
   Post,
   Req,
@@ -14,6 +15,7 @@ import {
   SignInWithGoogleResponse,
 } from "@kinvue/contracts";
 import { TokensService } from "../tokens/tokens.service.js";
+import { PasswordHasherService } from "./password-hasher.service.js";
 import { status } from "@grpc/grpc-js";
 import {
   authLoginAttempts,
@@ -25,7 +27,44 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly tokensService: TokensService,
+    private readonly passwordHasher: PasswordHasherService,
   ) {}
+
+  @Post("auth/login")
+  public async login(
+    @Body() body: { email?: unknown; password?: unknown },
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    if (typeof body?.email !== "string" || typeof body.password !== "string") {
+      throw new UnauthorizedException("Invalid email or password");
+    }
+    const identity = await this.authService.findLoginIdentityByEmail(
+      body.email.trim().toLowerCase(),
+    );
+    let passwordMatches = false;
+    if (identity?.status === "ACTIVE" && identity.passwordHash) {
+      try {
+        passwordMatches = await this.passwordHasher.verifyPassword(
+          identity.passwordHash,
+          body.password,
+        );
+      } catch {
+        passwordMatches = false;
+      }
+    }
+    if (!identity || identity.status !== "ACTIVE" || !passwordMatches) {
+      authLoginAttempts.inc({ outcome: "failure" });
+      throw new UnauthorizedException("Invalid email or password");
+    }
+
+    const tokens = await this.tokensService.createTokenPair(
+      identity.userId,
+      "USER",
+    );
+    this.setRefreshCookie(response, tokens.refreshToken);
+    authLoginAttempts.inc({ outcome: "success" });
+    return { accessToken: tokens.accessToken };
+  }
 
   @Post("auth/refresh")
   public async refresh(
@@ -37,14 +76,18 @@ export class AuthController {
     const tokens = await this.tokensService.rotateRefreshToken(refreshToken);
     if (!tokens) throw new UnauthorizedException();
 
-    response.cookie("kinvue_refresh", tokens.refreshToken, {
+    this.setRefreshCookie(response, tokens.refreshToken);
+    return { accessToken: tokens.accessToken };
+  }
+
+  private setRefreshCookie(response: Response, refreshToken: string): void {
+    response.cookie("kinvue_refresh", refreshToken, {
       httpOnly: true,
       secure: process.env["NODE_ENV"] === "production",
       sameSite: "strict",
       path: "/auth/refresh",
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
-    return { accessToken: tokens.accessToken };
   }
 
   @Post("auth/logout")
