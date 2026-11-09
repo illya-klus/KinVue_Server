@@ -156,6 +156,9 @@ test("three Users failures reject registration without activating the identity",
       async transitionStatus(_userId, _from, to) {
         transitions.push(to);
       },
+      async compensateRegistration() {
+        transitions.push("COMPENSATING", "COMPENSATED");
+      },
     },
     {
       async hashPassword() {
@@ -185,7 +188,11 @@ test("three Users failures reject registration without activating the identity",
   assert.equal(attempts.length, 3);
   assert.equal(new Set(attempts).size, 1);
   assert.deepEqual(delays, [100, 250]);
-  assert.deepEqual(transitions, ["PROFILE_CREATING"]);
+  assert.deepEqual(transitions, [
+    "PROFILE_CREATING",
+    "COMPENSATING",
+    "COMPENSATED",
+  ]);
 });
 
 test("Users client posts the same global user id to the internal profile endpoint", async () => {
@@ -255,18 +262,12 @@ test("duplicate registration email maps to HTTP 409", async () => {
     ],
   );
   const repository = new AuthIdentityRepository({
-    db: {
-      orm: {
-        public: {
-          AuthIdentity: {
-            async create() {
-              throw {
-                code: "23505",
-                constraint: "auth_identities_email_key",
-              };
-            },
-          },
-        },
+    pool: {
+      async query() {
+        throw {
+          code: "23505",
+          constraint: "auth_identities_email_key",
+        };
       },
     },
   });
@@ -274,6 +275,31 @@ test("duplicate registration email maps to HTTP 409", async () => {
   await assert.rejects(
     repository.createPending("generated-user-id", "user@example.com", "hash"),
     { constructor: ConflictException, status: 409 },
+  );
+});
+
+test("registration compensation clears credentials and releases the email", async () => {
+  const { AuthIdentityRepository } =
+    await import("../dist/modules/auth/auth-identity.repository.js");
+  const statements = [];
+  const repository = new AuthIdentityRepository({
+    pool: {
+      async query(sql, params) {
+        statements.push({ sql, params });
+        return { rowCount: 1 };
+      },
+    },
+  });
+
+  await repository.compensateRegistration("user-id");
+
+  assert.equal(statements.length, 2);
+  assert.match(statements[0].sql, /status = 'COMPENSATING'/);
+  assert.match(statements[1].sql, /status = 'COMPENSATED'/);
+  assert.match(statements[1].sql, /email = NULL, password_hash = NULL/);
+  assert.deepEqual(
+    statements.map(({ params }) => params),
+    [["user-id"], ["user-id"]],
   );
 });
 

@@ -1,8 +1,5 @@
 import { ConflictException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service.js";
-import type { FieldOutputTypes } from "@/prisma/contract";
-
-type AuthIdentityRow = FieldOutputTypes["public"]["AuthIdentity"];
 
 @Injectable()
 export class AuthIdentityRepository {
@@ -12,14 +9,14 @@ export class AuthIdentityRepository {
     userId: string,
     email: string,
     passwordHash: string,
-  ): Promise<AuthIdentityRow> {
+  ): Promise<void> {
     try {
-      return await this.prisma.db.orm.public.AuthIdentity.create({
-        userId,
-        email,
-        passwordHash,
-        status: "PENDING",
-      });
+      await this.prisma.pool.query(
+        `INSERT INTO public.auth_identities
+          (user_id, email, password_hash, status, created_at, updated_at)
+         VALUES ($1, $2, $3, 'PENDING', NOW(), NOW())`,
+        [userId, email, passwordHash],
+      );
     } catch (error) {
       if (this.isDuplicateEmail(error)) {
         throw new ConflictException("Email is already registered");
@@ -41,6 +38,31 @@ export class AuthIdentityRepository {
     );
     if (result.rowCount !== 1) {
       throw new ConflictException("Registration identity state changed");
+    }
+  }
+
+  public async compensateRegistration(userId: string): Promise<void> {
+    const started = await this.prisma.pool.query(
+      `UPDATE public.auth_identities
+       SET status = 'COMPENSATING', updated_at = NOW()
+       WHERE user_id = $1 AND status = 'PROFILE_CREATING'`,
+      [userId],
+    );
+    if (started.rowCount !== 1) {
+      throw new ConflictException(
+        "Registration identity cannot be compensated",
+      );
+    }
+
+    const completed = await this.prisma.pool.query(
+      `UPDATE public.auth_identities
+       SET status = 'COMPENSATED', email = NULL, password_hash = NULL,
+           updated_at = NOW()
+       WHERE user_id = $1 AND status = 'COMPENSATING'`,
+      [userId],
+    );
+    if (completed.rowCount !== 1) {
+      throw new ConflictException("Registration compensation did not complete");
     }
   }
 

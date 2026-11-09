@@ -40,19 +40,26 @@ export class RegistrationSagaService {
       username: input.username,
       displayName: input.displayName,
     };
-    for (let attempt = 0; ; attempt += 1) {
-      try {
-        await this.users.createProfile(profileInput);
-        break;
-      } catch (error) {
-        if (
-          !(error instanceof ServiceUnavailableException) ||
-          attempt >= RETRY_BACKOFF_MS.length
-        ) {
-          throw error;
+    try {
+      for (let attempt = 0; ; attempt += 1) {
+        try {
+          await this.users.createProfile(profileInput);
+          break;
+        } catch (error) {
+          if (
+            !(error instanceof ServiceUnavailableException) ||
+            attempt >= RETRY_BACKOFF_MS.length
+          ) {
+            throw error;
+          }
+          await this.sleep(RETRY_BACKOFF_MS[attempt]);
         }
-        await this.sleep(RETRY_BACKOFF_MS[attempt]);
       }
+    } catch (error) {
+      if (error instanceof ServiceUnavailableException) {
+        await this.identities.compensateRegistration(userId);
+      }
+      throw error;
     }
     await this.identities.transitionStatus(
       userId,
