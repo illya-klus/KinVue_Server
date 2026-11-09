@@ -1,4 +1,4 @@
-import { base, postgres, nonempty, port } from "./base.ts";
+import { base, postgres, nonempty, port, http } from "./base.ts";
 // Sprint 1 retains the current Google/HMAC runtime. RS256 sessions are a later Auth change.
 export const authConfigSchema = base.extend({
   DATABASE_URL: postgres,
@@ -8,4 +8,5 @@ export const authConfigSchema = base.extend({
   AUTH_GRPC_URL: nonempty.default("0.0.0.0:50051"),
   AUTH_HTTP_PORT: port.default(4001),
   AUTH_HTTP_HOST: nonempty.default("127.0.0.1"),
+  USERS_INTERNAL_URL: http.default("http://127.0.0.1:4002"),
 });
