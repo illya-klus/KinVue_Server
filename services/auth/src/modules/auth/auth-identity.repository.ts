@@ -44,6 +44,31 @@ export class AuthIdentityRepository {
     }
   }
 
+  public async compensateRegistration(userId: string): Promise<void> {
+    const started = await this.prisma.pool.query(
+      `UPDATE public.auth_identities
+       SET status = 'COMPENSATING', updated_at = NOW()
+       WHERE user_id = $1 AND status = 'PROFILE_CREATING'`,
+      [userId],
+    );
+    if (started.rowCount !== 1) {
+      throw new ConflictException(
+        "Registration identity cannot be compensated",
+      );
+    }
+
+    const completed = await this.prisma.pool.query(
+      `UPDATE public.auth_identities
+       SET status = 'COMPENSATED', email = NULL, password_hash = NULL,
+           updated_at = NOW()
+       WHERE user_id = $1 AND status = 'COMPENSATING'`,
+      [userId],
+    );
+    if (completed.rowCount !== 1) {
+      throw new ConflictException("Registration compensation did not complete");
+    }
+  }
+
   private isDuplicateEmail(error: unknown): boolean {
     if (!error || typeof error !== "object") return false;
     const value = error as {
