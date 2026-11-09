@@ -85,6 +85,10 @@ export class TokensService {
     return { accessToken, refreshToken };
   }
 
+  public revokeRefreshToken(token: string): Promise<void> {
+    return this.refreshSessions.revoke(this.hashRefreshToken(token));
+  }
+
   private hashRefreshToken(token: string): string {
     return createHash("sha256").update(token, "utf8").digest("hex");
   }

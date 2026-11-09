@@ -1,5 +1,6 @@
 import {
   Controller,
+  HttpCode,
   Post,
   Req,
   Res,
@@ -44,6 +45,24 @@ export class AuthController {
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     return { accessToken: tokens.accessToken };
+  }
+
+  @Post("auth/logout")
+  @HttpCode(204)
+  public async logout(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    const refreshToken = this.readRefreshCookie(request.headers.cookie);
+    if (refreshToken) {
+      await this.tokensService.revokeRefreshToken(refreshToken);
+    }
+    response.clearCookie("kinvue_refresh", {
+      httpOnly: true,
+      secure: process.env["NODE_ENV"] === "production",
+      sameSite: "strict",
+      path: "/auth/refresh",
+    });
   }
 
   private readRefreshCookie(cookieHeader?: string): string | null {
