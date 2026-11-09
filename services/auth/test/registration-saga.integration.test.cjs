@@ -150,10 +150,12 @@ test(
         );
         return result.rows[0];
       };
+      let successfulUserId;
 
       await t.test("successful profile creation reaches ACTIVE", async () => {
         mode = "success";
         const result = await register("success@example.com", "success_user");
+        successfulUserId = result.userId;
         const row = await state(result.userId);
         assert.equal(result.status, "ACTIVE");
         assert.equal(row.status, "ACTIVE");
@@ -161,6 +163,22 @@ test(
         assert.equal(row.password_hash, "test-hash:test-password-value");
         assert.ok(profileStore.has(result.userId));
       });
+
+      await t.test(
+        "operator command grants admin only for the active identity",
+        async () => {
+          const { grantAdmin } = await import("../scripts/grant-admin.mjs");
+          await grantAdmin(pool, successfulUserId);
+          const result = await pool.query(
+            `SELECT "role", "provider" FROM public."authUser" WHERE "id" = $1`,
+            [successfulUserId],
+          );
+          assert.deepEqual(result.rows[0], {
+            role: "ADMIN",
+            provider: "PASSWORD",
+          });
+        },
+      );
 
       await t.test(
         "lost Users response retries idempotently with the same user ID",

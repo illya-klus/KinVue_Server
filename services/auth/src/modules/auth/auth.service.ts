@@ -72,4 +72,9 @@ export class AuthService {
       })) ?? null
     );
   }
+
+  public async roleForIdentity(userId: string): Promise<"ADMIN" | "USER"> {
+    const user = await this.prisma.db.orm.public.AuthUser.first({ id: userId });
+    return user?.role === "ADMIN" ? "ADMIN" : "USER";
+  }
 }
