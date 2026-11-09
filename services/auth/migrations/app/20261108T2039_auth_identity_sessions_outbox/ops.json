@@ -1,0 +1,320 @@
+[
+  {
+    "id": "table.auth_identities",
+    "label": "Create table \"auth_identities\"",
+    "summary": "Creates table \"auth_identities\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "auth_identities"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"auth_identities\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"auth_identities\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"auth_identities\"",
+        "sql": "CREATE TABLE \"public\".\"auth_identities\" (\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text,\n  \"password_hash\" text,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"updated_at\" timestamptz NOT NULL,\n  \"user_id\" uuid NOT NULL,\n  PRIMARY KEY (\"user_id\"),\n  CONSTRAINT \"auth_identities_compensated_credentials_check_a078c01e\" CHECK ((status = 'COMPENSATED' AND email IS NULL AND password_hash IS NULL) OR (status <> 'COMPENSATED' AND email IS NOT NULL)),\n  CONSTRAINT \"auth_identities_status_check_3b7c904d\" CHECK (\"status\" IN ('PENDING', 'PROFILE_CREATING', 'ACTIVE', 'COMPENSATING', 'COMPENSATED', 'DISABLED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"auth_identities\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"auth_identities\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.auth_outbox_events",
+    "label": "Create table \"auth_outbox_events\"",
+    "summary": "Creates table \"auth_outbox_events\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "auth_outbox_events"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"auth_outbox_events\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"auth_outbox_events\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"auth_outbox_events\"",
+        "sql": "CREATE TABLE \"public\".\"auth_outbox_events\" (\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"event_id\" uuid NOT NULL,\n  \"payload\" jsonb NOT NULL,\n  \"published_at\" timestamptz,\n  \"retry_count\" int4 DEFAULT 0 NOT NULL,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"type\" text NOT NULL,\n  PRIMARY KEY (\"event_id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"auth_outbox_events\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"auth_outbox_events\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.refresh_sessions",
+    "label": "Create table \"refresh_sessions\"",
+    "summary": "Creates table \"refresh_sessions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "refresh_sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"refresh_sessions\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"refresh_sessions\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"refresh_sessions\"",
+        "sql": "CREATE TABLE \"public\".\"refresh_sessions\" (\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"expires_at\" timestamptz NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"revoked_at\" timestamptz,\n  \"rotated_from_session_id\" uuid,\n  \"token_hash\" text NOT NULL,\n  \"updated_at\" timestamptz NOT NULL,\n  \"user_id\" uuid NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"refresh_sessions\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"refresh_sessions\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.auth_identities.auth_identities_email_key",
+    "label": "Add unique constraint on \"auth_identities\" (email)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "auth_identities_email_key",
+        "table": "auth_identities"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"auth_identities_email_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auth_identities_email_key",
+          "public",
+          "\"public\".\"auth_identities\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"auth_identities_email_key\"",
+        "sql": "ALTER TABLE \"public\".\"auth_identities\" ADD CONSTRAINT \"auth_identities_email_key\" UNIQUE (\"email\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"auth_identities_email_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auth_identities_email_key",
+          "public",
+          "\"public\".\"auth_identities\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.refresh_sessions.refresh_sessions_token_hash_key",
+    "label": "Add unique constraint on \"refresh_sessions\" (token_hash)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "refresh_sessions_token_hash_key",
+        "table": "refresh_sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"refresh_sessions_token_hash_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "refresh_sessions_token_hash_key",
+          "public",
+          "\"public\".\"refresh_sessions\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"refresh_sessions_token_hash_key\"",
+        "sql": "ALTER TABLE \"public\".\"refresh_sessions\" ADD CONSTRAINT \"refresh_sessions_token_hash_key\" UNIQUE (\"token_hash\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"refresh_sessions_token_hash_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "refresh_sessions_token_hash_key",
+          "public",
+          "\"public\".\"refresh_sessions\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.auth_outbox_events.auth_outbox_events_status_idx",
+    "label": "Create index \"auth_outbox_events_status_idx\" on \"auth_outbox_events\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "auth_outbox_events_status_idx",
+        "table": "auth_outbox_events"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"auth_outbox_events_status_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"auth_outbox_events_status_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"auth_outbox_events_status_idx\"",
+        "sql": "CREATE INDEX \"auth_outbox_events_status_idx\" ON \"public\".\"auth_outbox_events\" (\"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"auth_outbox_events_status_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"auth_outbox_events_status_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.refresh_sessions.refresh_sessions_expires_at_idx",
+    "label": "Create index \"refresh_sessions_expires_at_idx\" on \"refresh_sessions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "refresh_sessions_expires_at_idx",
+        "table": "refresh_sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"refresh_sessions_expires_at_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"refresh_sessions_expires_at_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"refresh_sessions_expires_at_idx\"",
+        "sql": "CREATE INDEX \"refresh_sessions_expires_at_idx\" ON \"public\".\"refresh_sessions\" (\"expires_at\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"refresh_sessions_expires_at_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"refresh_sessions_expires_at_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.refresh_sessions.refresh_sessions_user_id_idx",
+    "label": "Create index \"refresh_sessions_user_id_idx\" on \"refresh_sessions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "refresh_sessions_user_id_idx",
+        "table": "refresh_sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"refresh_sessions_user_id_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"refresh_sessions_user_id_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"refresh_sessions_user_id_idx\"",
+        "sql": "CREATE INDEX \"refresh_sessions_user_id_idx\" ON \"public\".\"refresh_sessions\" (\"user_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"refresh_sessions_user_id_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"refresh_sessions_user_id_idx\""
+        ]
+      }
+    ]
+  }
+]
