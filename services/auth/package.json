@@ -11,7 +11,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest && pnpm test:refresh && pnpm test:auth-http",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest && pnpm test:refresh && pnpm test:auth-http && pnpm test:registration-input",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -24,7 +24,8 @@
     "test:refresh-sessions": "pnpm build && node --test test/refresh-sessions.test.cjs",
     "test:refresh-rotation": "pnpm build && node --test test/refresh-rotation.test.cjs",
     "test:refresh": "pnpm build && node --test test/refresh-sessions.test.cjs test/refresh-rotation.test.cjs",
-    "test:auth-http": "pnpm build && node --test test/auth-login.test.cjs"
+    "test:auth-http": "pnpm build && node --test test/auth-login.test.cjs test/auth-registration.test.cjs",
+    "test:registration-input": "pnpm build && node --test test/registration-input.test.cjs"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.14.4",

@@ -1,0 +1,48 @@
+import { ConflictException, Injectable } from "@nestjs/common";
+import { PrismaService } from "../../prisma/prisma.service.js";
+import type { FieldOutputTypes } from "@/prisma/contract";
+
+type AuthIdentityRow = FieldOutputTypes["public"]["AuthIdentity"];
+
+@Injectable()
+export class AuthIdentityRepository {
+  public constructor(private readonly prisma: PrismaService) {}
+
+  public async createPending(
+    userId: string,
+    email: string,
+    passwordHash: string,
+  ): Promise<AuthIdentityRow> {
+    try {
+      return await this.prisma.db.orm.public.AuthIdentity.create({
+        userId,
+        email,
+        passwordHash,
+        status: "PENDING",
+      });
+    } catch (error) {
+      if (this.isDuplicateEmail(error)) {
+        throw new ConflictException("Email is already registered");
+      }
+      throw error;
+    }
+  }
+
+  private isDuplicateEmail(error: unknown): boolean {
+    if (!error || typeof error !== "object") return false;
+    const value = error as {
+      code?: unknown;
+      constraint?: unknown;
+      meta?: { target?: unknown };
+    };
+    if (value.code === "23505") {
+      return value.constraint === "auth_identities_email_key";
+    }
+    return (
+      value.code === "P2002" &&
+      (value.meta?.target === "email" ||
+        (Array.isArray(value.meta?.target) &&
+          value.meta.target.includes("email")))
+    );
+  }
+}

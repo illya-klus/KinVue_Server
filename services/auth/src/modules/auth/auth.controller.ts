@@ -16,6 +16,7 @@ import {
 } from "@kinvue/contracts";
 import { TokensService } from "../tokens/tokens.service.js";
 import { PasswordHasherService } from "./password-hasher.service.js";
+import { validateRegistrationInput } from "./registration-input.js";
 import { status } from "@grpc/grpc-js";
 import {
   authLoginAttempts,
@@ -64,6 +65,13 @@ export class AuthController {
     this.setRefreshCookie(response, tokens.refreshToken);
     authLoginAttempts.inc({ outcome: "success" });
     return { accessToken: tokens.accessToken };
+  }
+
+  @Post("auth/register")
+  @HttpCode(202)
+  public async register(@Body() body: unknown) {
+    const input = validateRegistrationInput(body);
+    return this.authService.createPendingRegistration(input);
   }
 
   @Post("auth/refresh")
