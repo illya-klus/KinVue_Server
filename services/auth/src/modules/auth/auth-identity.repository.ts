@@ -1,8 +1,5 @@
 import { ConflictException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service.js";
-import type { FieldOutputTypes } from "@/prisma/contract";
-
-type AuthIdentityRow = FieldOutputTypes["public"]["AuthIdentity"];
 
 @Injectable()
 export class AuthIdentityRepository {
@@ -12,14 +9,14 @@ export class AuthIdentityRepository {
     userId: string,
     email: string,
     passwordHash: string,
-  ): Promise<AuthIdentityRow> {
+  ): Promise<void> {
     try {
-      return await this.prisma.db.orm.public.AuthIdentity.create({
-        userId,
-        email,
-        passwordHash,
-        status: "PENDING",
-      });
+      await this.prisma.pool.query(
+        `INSERT INTO public.auth_identities
+          (user_id, email, password_hash, status, created_at, updated_at)
+         VALUES ($1, $2, $3, 'PENDING', NOW(), NOW())`,
+        [userId, email, passwordHash],
+      );
     } catch (error) {
       if (this.isDuplicateEmail(error)) {
         throw new ConflictException("Email is already registered");

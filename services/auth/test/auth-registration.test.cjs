@@ -262,18 +262,12 @@ test("duplicate registration email maps to HTTP 409", async () => {
     ],
   );
   const repository = new AuthIdentityRepository({
-    db: {
-      orm: {
-        public: {
-          AuthIdentity: {
-            async create() {
-              throw {
-                code: "23505",
-                constraint: "auth_identities_email_key",
-              };
-            },
-          },
-        },
+    pool: {
+      async query() {
+        throw {
+          code: "23505",
+          constraint: "auth_identities_email_key",
+        };
       },
     },
   });
