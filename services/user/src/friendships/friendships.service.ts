@@ -1,7 +1,6 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { randomUUID } from "node:crypto";
+import { Injectable } from "@nestjs/common";
 import { AppError } from "@kinvue/errors";
-import { type NotificationEvent, friendRequestSchema } from "@kinvue/contracts";
+import { friendRequestSchema } from "@kinvue/contracts";
 import {
   FriendshipConflictError,
   FriendshipsRepository,
@@ -13,24 +12,14 @@ import {
   toRequestRow,
 } from "./friendships.types";
 import { UsersRepository } from "../users/users.repository";
-import {
-  NOTIFICATION_PUBLISHER,
-  type NotificationPublisher,
-} from "../events/notification-publisher";
-import { SharedLogger } from "../shared-logger";
-import {
-  usersFriendshipOps,
-  usersNotificationPublishes,
-} from "../users-observability.metrics";
+import { type PageQuery, pageOptions, splitPage } from "../mongo/pagination";
+import { usersFriendshipOps } from "../users-observability.metrics";
 
 @Injectable()
 export class FriendshipsService {
   constructor(
     private readonly friendships: FriendshipsRepository,
     private readonly users: UsersRepository,
-    private readonly logger: SharedLogger,
-    @Inject(NOTIFICATION_PUBLISHER)
-    private readonly publisher: NotificationPublisher,
   ) {}
 
   async sendRequest(
@@ -64,28 +53,12 @@ export class FriendshipsService {
       throw error;
     }
     usersFriendshipOps.inc({ operation: "request_sent" });
-    await this.emit({
-      type: "FRIEND_REQUEST_CREATED",
-      producer: "users",
-      eventId: randomUUID(),
-      occurredAt: new Date().toISOString(),
-      recipientId: targetId,
-      payload: { friendshipId: doc._id, fromUserId: callerId },
-    });
     return toRequestRow(doc);
   }
 
   async accept(callerId: string, id: string): Promise<FriendRequestRow> {
     const doc = await this.resolve(callerId, id, "ACCEPTED");
     usersFriendshipOps.inc({ operation: "request_accepted" });
-    await this.emit({
-      type: "FRIEND_REQUEST_ACCEPTED",
-      producer: "users",
-      eventId: randomUUID(),
-      occurredAt: new Date().toISOString(),
-      recipientId: doc.requesterId,
-      payload: { friendshipId: doc._id, fromUserId: callerId },
-    });
     return toRequestRow(doc);
   }
 
@@ -95,26 +68,44 @@ export class FriendshipsService {
     return toRequestRow(doc);
   }
 
-  async incoming(callerId: string): Promise<{ items: FriendRequestRow[] }> {
-    const docs = await this.friendships.listIncoming(callerId);
+  async incoming(callerId: string, query: PageQuery) {
+    const page = pageOptions(query);
+    const { items, nextCursor } = splitPage(
+      await this.friendships.listIncoming(callerId, page),
+      page.limit,
+    );
     usersFriendshipOps.inc({ operation: "list_incoming" });
-    return { items: await this.withOtherUser(callerId, docs) };
+    return { items: await this.withOtherUser(callerId, items), nextCursor };
   }
 
-  async outgoing(callerId: string): Promise<{ items: FriendRequestRow[] }> {
-    const docs = await this.friendships.listOutgoing(callerId);
+  async outgoing(callerId: string, query: PageQuery) {
+    const page = pageOptions(query);
+    const { items, nextCursor } = splitPage(
+      await this.friendships.listOutgoing(callerId, page),
+      page.limit,
+    );
     usersFriendshipOps.inc({ operation: "list_outgoing" });
-    return { items: await this.withOtherUser(callerId, docs) };
+    return { items: await this.withOtherUser(callerId, items), nextCursor };
   }
 
-  async friends(callerId: string): Promise<{ items: FriendRow[] }> {
-    const docs = await this.friendships.listAccepted(callerId);
+  async friends(
+    callerId: string,
+    query: PageQuery,
+  ): Promise<{ items: FriendRow[]; nextCursor: string | null }> {
+    const page = pageOptions(query);
+    const { items: docs, nextCursor } = splitPage(
+      await this.friendships.listAccepted(callerId, page),
+      page.limit,
+    );
     usersFriendshipOps.inc({ operation: "list_friends" });
-    const otherIds = docs.map((d) => this.otherId(callerId, d));
+    const otherIds = docs
+      .map((d) => this.otherId(callerId, d))
+      .filter((id) => id !== callerId);
     const profiles = new Map(
       (await this.users.findManyByIds(otherIds)).map((p) => [p._id, p]),
     );
     return {
+      nextCursor,
       items: otherIds.flatMap((userId) => {
         const profile = profiles.get(userId);
         return profile
@@ -138,15 +129,20 @@ export class FriendshipsService {
     const updated = await this.friendships.resolvePending(id, callerId, status);
     if (updated) return updated;
     const existing = await this.friendships.findById(id);
-    // Hide requests the caller is not the addressee of.
-    if (!existing || existing.addresseeId !== callerId) {
+    if (!existing) {
       throw new AppError("NOT_FOUND", "Friend request not found");
+    }
+    if (existing.addresseeId !== callerId) {
+      throw new AppError(
+        "FORBIDDEN",
+        "Only the addressee may resolve the request",
+      );
     }
     throw new AppError("CONFLICT", "Friend request is no longer pending");
   }
 
   private otherId(callerId: string, doc: FriendshipDoc): string {
-    return doc.requesterId === callerId ? doc.addresseeId : doc.requesterId;
+    return doc.requestedBy === callerId ? doc.addresseeId : doc.requestedBy;
   }
 
   private async withOtherUser(
@@ -174,27 +170,5 @@ export class FriendshipsService {
           }
         : row;
     });
-  }
-
-  /**
-   * Best-effort publish after the state change is committed. A broker outage
-   * must not roll back or fail the friendship; failures are logged and counted
-   * (no outbox yet, so the notification is lost in that case).
-   */
-  private async emit(event: NotificationEvent): Promise<void> {
-    try {
-      await this.publisher.publish(event);
-      usersNotificationPublishes.inc({
-        type: event.type,
-        outcome: "published",
-      });
-    } catch (error) {
-      usersNotificationPublishes.inc({ type: event.type, outcome: "failed" });
-      this.logger.error("failed to publish notification event", {
-        type: event.type,
-        eventId: event.eventId,
-        error: error instanceof Error ? error.name : "UnknownError",
-      });
-    }
   }
 }

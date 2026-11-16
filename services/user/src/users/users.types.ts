@@ -21,6 +21,7 @@ export type UserProfile = {
   avatarUrl: string | null;
   preferences: Preferences;
   createdAt: string;
+  updatedAt: string;
 };
 
 export type UserSearchHit = {
@@ -48,5 +49,6 @@ export function toUserProfile(doc: ProfileDoc): UserProfile {
     avatarUrl: doc.avatarUrl,
     preferences: doc.preferences,
     createdAt: doc.createdAt.toISOString(),
+    updatedAt: doc.updatedAt.toISOString(),
   };
 }

@@ -2,8 +2,9 @@ export type FriendshipStatus = "PENDING" | "ACCEPTED" | "REJECTED";
 
 export type FriendshipDoc = {
   _id: string; // friendshipId (uuid), used as friendRequest id
-  pairKey: string; // sorted "<idA>:<idB>", unique: one record per user pair
-  requesterId: string;
+  user1Id: string;
+  user2Id: string;
+  requestedBy: string;
   addresseeId: string;
   status: FriendshipStatus;
   createdAt: Date;
@@ -25,14 +26,14 @@ export type FriendRow = {
   displayName: string;
 };
 
-export function pairKey(a: string, b: string): string {
-  return a < b ? `${a}:${b}` : `${b}:${a}`;
+export function normalizeFriendshipPair(a: string, b: string) {
+  return a < b ? { user1Id: a, user2Id: b } : { user1Id: b, user2Id: a };
 }
 
 export function toRequestRow(doc: FriendshipDoc): FriendRequestRow {
   return {
     id: doc._id,
-    fromUserId: doc.requesterId,
+    fromUserId: doc.requestedBy,
     toUserId: doc.addresseeId,
     status: doc.status,
     createdAt: doc.createdAt.toISOString(),
