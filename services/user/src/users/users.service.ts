@@ -6,6 +6,7 @@ import {
   updateProfileRequestSchema,
 } from "@kinvue/contracts";
 import { UsernameTakenError, UsersRepository } from "./users.repository";
+import { type PageQuery, pageOptions, splitPage } from "../mongo/pagination";
 import {
   type UserProfile,
   type UserSearchResponse,
@@ -16,22 +17,10 @@ import {
   usersSearchLatency,
 } from "../users-observability.metrics";
 
-const DEFAULT_LIMIT = 20;
-const MAX_LIMIT = 50;
 const MAX_QUERY_LENGTH = 50;
 
 function validationFailed(message = "Validation failed"): AppError {
   return new AppError("VALIDATION_FAILED", message);
-}
-
-export function encodeCursor(username: string): string {
-  return Buffer.from(username, "utf8").toString("base64url");
-}
-
-export function decodeCursor(cursor: string): string {
-  const value = Buffer.from(cursor, "base64url").toString("utf8");
-  if (!value || encodeCursor(value) !== cursor) throw validationFailed();
-  return value;
 }
 
 @Injectable()
@@ -46,7 +35,7 @@ export class UsersService {
   }
 
   async updateMe(userId: string, body: unknown): Promise<UserProfile> {
-    const parsed = updateProfileRequestSchema.safeParse(body ?? {});
+    const parsed = updateProfileRequestSchema.safeParse(body);
     if (!parsed.success) throw validationFailed();
     const patch: UpdateProfileRequest = parsed.data;
     const doc = await this.repo.update(userId, patch);
@@ -55,12 +44,17 @@ export class UsersService {
   }
 
   /** Internal bootstrap used by auth/dev tooling; idempotent per userId. */
-  async createProfile(body: unknown): Promise<UserProfile> {
+  async createProfile(
+    body: unknown,
+  ): Promise<{ profile: UserProfile; created: boolean }> {
     const parsed = createProfileRequestSchema.safeParse(body);
     if (!parsed.success) throw validationFailed();
     try {
-      const { doc } = await this.repo.create(parsed.data);
-      return toUserProfile(doc);
+      const { doc, created } = await this.repo.create({
+        ...parsed.data,
+        userId: parsed.data.userId.toLowerCase(),
+      });
+      return { profile: toUserProfile(doc), created };
     } catch (error) {
       if (error instanceof UsernameTakenError) {
         throw new AppError("CONFLICT", "Username is already taken");
@@ -71,45 +65,29 @@ export class UsersService {
 
   async search(
     callerId: string,
-    params: { query?: string; limit?: string; cursor?: string },
+    params: PageQuery & { query?: string },
   ): Promise<UserSearchResponse> {
     const stop = usersSearchLatency.startTimer();
     try {
       const query = typeof params.query === "string" ? params.query.trim() : "";
-      if (query.length === 0 || query.length > MAX_QUERY_LENGTH) {
+      if (query.length < 2 || query.length > MAX_QUERY_LENGTH) {
         throw validationFailed();
       }
-      let limit = DEFAULT_LIMIT;
-      if (params.limit !== undefined) {
-        limit = typeof params.limit === "string" ? Number(params.limit) : NaN;
-        if (!Number.isInteger(limit) || limit < 1 || limit > MAX_LIMIT) {
-          throw validationFailed();
-        }
-      }
-      const afterUsername =
-        params.cursor === undefined
-          ? undefined
-          : typeof params.cursor === "string"
-            ? decodeCursor(params.cursor)
-            : (() => {
-                throw validationFailed();
-              })();
+      const { limit, after } = pageOptions(params);
       const rows = await this.repo.search({
         query,
         excludeUserId: callerId,
         limit: limit + 1,
-        afterUsername,
+        after,
       });
-      const page = rows.slice(0, limit);
-      const last = page[page.length - 1];
+      const page = splitPage(rows, limit);
       const response: UserSearchResponse = {
-        items: page.map((doc) => ({
+        items: page.items.map((doc) => ({
           userId: doc._id,
           username: doc.username,
           displayName: doc.displayName,
         })),
-        nextCursor:
-          rows.length > limit && last ? encodeCursor(last.username) : null,
+        nextCursor: page.nextCursor,
       };
       stop({ outcome: "success" });
       return response;

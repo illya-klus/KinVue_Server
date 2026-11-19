@@ -5,10 +5,12 @@ import {
   HttpCode,
   Param,
   Post,
+  Query,
   UseGuards,
 } from "@nestjs/common";
 import { CallerUserGuard, CallerUserId } from "../common/caller-user";
 import { FriendshipsService } from "./friendships.service";
+import type { PageQuery } from "../mongo/pagination";
 
 @Controller()
 @UseGuards(CallerUserGuard)
@@ -21,13 +23,13 @@ export class FriendshipsController {
   }
 
   @Get("friend-requests/incoming")
-  incoming(@CallerUserId() userId: string) {
-    return this.friendships.incoming(userId);
+  incoming(@CallerUserId() userId: string, @Query() query: PageQuery) {
+    return this.friendships.incoming(userId, query);
   }
 
   @Get("friend-requests/outgoing")
-  outgoing(@CallerUserId() userId: string) {
-    return this.friendships.outgoing(userId);
+  outgoing(@CallerUserId() userId: string, @Query() query: PageQuery) {
+    return this.friendships.outgoing(userId, query);
   }
 
   @Post("friend-requests/:id/accept")
@@ -43,7 +45,7 @@ export class FriendshipsController {
   }
 
   @Get("friends")
-  friends(@CallerUserId() userId: string) {
-    return this.friendships.friends(userId);
+  friends(@CallerUserId() userId: string, @Query() query: PageQuery) {
+    return this.friendships.friends(userId, query);
   }
 }
