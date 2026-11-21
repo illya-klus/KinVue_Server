@@ -71,7 +71,6 @@ export class GatewayProxyMiddleware implements NestMiddleware {
       pathRewrite: () => upstreamPath,
       on: {
         proxyReq: (proxyReq: ClientRequest, incoming: IncomingMessage) => {
-          fixRequestBody(proxyReq, incoming as Request);
           const r = incoming as Request;
           proxyReq.setHeader("x-request-id", r.requestId);
           proxyReq.removeHeader("x-user-id");
@@ -82,6 +81,7 @@ export class GatewayProxyMiddleware implements NestMiddleware {
           if (r.authScopes?.length) {
             proxyReq.setHeader("x-user-scopes", r.authScopes.join(" "));
           }
+          fixRequestBody(proxyReq, r);
         },
         error: (_error, _req, response) => {
           sendUpstreamUnavailable(response as Response);

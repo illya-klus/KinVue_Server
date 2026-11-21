@@ -22,7 +22,7 @@
 
 ## Не зроблено
 
-- Users і Movie мають діагностичні каркаси, Rooms має резервний WebSocket; продуктового коду цих сервісів немає. Chat і Notifications — початкові каркаси Nest.
+- Приймання Users у Sprint 2 ще попереду. Реалізація й перевірки описані нижче; підключення внутрішнього створення профілю до реальної саги Auth залишається окремою інтеграцією.
 - Перший спринт Богдана: PR #10 і #11 містять рішення та shared-пакети; PR #12 містить каркаси Auth/Rooms і відкритий до `dev`. CI PR #12 пройшов. П'ять із семи каркасних тікетів у Verifying (by developer); Docker-тікети KIN-54 і KIN-228 лишаються в In Testing (by agent), бо локальний Docker image smoke не перевірений: диск C заповнювався під час перевірки, і автоматична перевірка заблокувала видалення тимчасових Docker-бінарників.
 - Збереження, ротація і відкликання refresh-токенів.
 - Інші RPC і proto, крім `SignInWithGoogle`.
@@ -33,6 +33,8 @@
 
 ## Відкладено
 
+- Sprint 2 (Auth, Богдан): KIN-291 та KIN-296 у [PR #16](https://github.com/illya-klus/KinVue_Server/pull/16): обов'язковий RSA signing key, публічний JWKS endpoint, RS256 access токени з `sub/iss/aud/iat/exp/userId/scopes`. JWKS/access-token тести, повний root `pnpm test`, typecheck і форматування проходять локально. Перша CI перевірка виявила застарілі fixtures після вимоги нових env keys; виправлено конфіг тест, CI має перезапуститися.
+- Sprint 2 (Auth, Богдан): KIN-289 реалізовано в [PR #15](https://github.com/illya-klus/KinVue_Server/pull/15), статус `In Testing (by agent)`: Argon2id функції hash/verify використовують узгоджені параметри з рішення 0021; локальні unit-тести та Auth typecheck проходять. CI PR очікує завершення.
 - Sprint 2 (Auth, Богдан): KIN-271 реалізовано та передано в `Verifying (by developer)` у [PR #14](https://github.com/illya-klus/KinVue_Server/pull/14); перевірки PR пройшли. Для KIN-276/280/284 додано `auth_identities`, `refresh_sessions`, `auth_outbox_events` через Prisma Next міграцію: PK і email/status constraints, refresh hash/expiry/revocation/rotation, потрібні індекси, JSONB outbox payload. KIN-287 автоматизовано disposable Docker PostgreSQL тестом. Усі чотири задачі пройшли локальний integration test на свіжій PostgreSQL 15, повний `pnpm typecheck` і форматування; вони передані в `In Testing (by agent)` у PR #14. Тест за замовчуванням налаштований на PostgreSQL 16:5433, але локально використано вже наявний образ PostgreSQL 15 та порт 55433, бо 5433 зайнятий контейнером користувача. Перевірку на дефолтних PG16/5433 ще треба зробити.
 
 - Відкриті дірки плану: `doc/backlog/engineering/09-gaps-and-unknowns.md`. Їх не закривають побіжно. G-07 закрита [0011](decisions/0011-anonymous-published-movie-reads.md). FR-09 не реалізують, доки продукт не відповість, [0014](decisions/0014-defer-fr09-activity.md).
@@ -73,3 +75,9 @@ Shared-поставка першого спринту: `@kinvue/config`, `@kinvu
 Блокери push і Docker усунуті: після підтвердження користувача використано GitHub CLI та тимчасовий непостійний Vercel Sandbox. Docker/WSL на Windows не встановлювали. Попередні невдалі спроби та їх причини лишаються в журналі дня.
 
 Наявне обмеження lint підтверджене: typescript-eslint 8.64.0 падає на TypeScript 7 до аналізу файлів (0018). CI, версії TypeScript і політику build scripts не змінювали. Продуктові API, репозиторії даних та медіаворкер залишаються задачами наступних спринтів. Runbook: [users-movie-scaffolds](runbooks/users-movie-scaffolds.md).
+
+## Sprint 2: Users, 2026-11-16
+
+Реалізовано профілі, пошук, дружбу та транзакційний outbox для KIN-29, KIN-32, KIN-35, KIN-38, KIN-41, KIN-45, KIN-49, KIN-53, KIN-331, KIN-333, KIN-335, KIN-337, KIN-339, KIN-341, KIN-343, KIN-345. Клієнт отримує наступні сторінки пошуку й списків дружби через Gateway. Виправлено старт і передачу JSON-запитів через наявний middleware Gateway. Див. [runbook](runbooks/users-sprint-2.md) і [журнал](log/2026-11-16.md).
+
+Здавання відновлено 2026-11-19: відкриті [Server PR #27 у dev](https://github.com/illya-klus/KinVue_Server/pull/27) і [Client PR #1 у main](https://github.com/illya-klus/KinVue_Client/pull/1). Попереднє обмеження авторизації Git усунуте явним вибором наявного акаунта; подробиці — [журнал публікації](log/2026-11-19.md). Приймання обох PR ще потрібне.

@@ -1,7 +1,7 @@
 import { Test } from "@nestjs/testing";
 import type { INestApplication } from "@nestjs/common";
 import request from "supertest";
-import { UsersMongoReadiness } from "../src/readiness";
+import { MongoService } from "../src/mongo/mongo.service";
 import { SharedHttpErrorFilter } from "../src/errors.filters";
 
 describe("users application (e2e)", () => {
@@ -14,7 +14,7 @@ describe("users application (e2e)", () => {
     });
     const { AppModule } = require("../src/app.module");
     const module = await Test.createTestingModule({ imports: [AppModule] })
-      .overrideProvider(UsersMongoReadiness)
+      .overrideProvider(MongoService)
       .useValue(readiness)
       .compile();
     app = module.createNestApplication();
