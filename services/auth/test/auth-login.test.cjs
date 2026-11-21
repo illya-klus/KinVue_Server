@@ -13,6 +13,9 @@ async function setup(identity, passwordMatches = true) {
         calls.email = email;
         return identity;
       },
+      async roleForIdentity() {
+        return "USER";
+      },
     },
     {
       async createTokenPair(userId, role) {
