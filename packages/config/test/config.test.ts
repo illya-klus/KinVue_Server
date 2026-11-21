@@ -84,10 +84,24 @@ test("auth validates database protocol and gateway parses CORS origins", () => {
     GOOGLE_CLIENT_ID: "google",
     JWT_ACCESS_SECRET: "test-access",
     JWT_REFRESH_SECRET: "test-refresh",
+    AUTH_JWT_PRIVATE_KEY: "test-only-not-a-real-key",
+    AUTH_JWT_KEY_ID: "test-key",
   };
   assert.equal(
     loadConfig(authConfigSchema, env).AUTH_GRPC_URL,
     "0.0.0.0:50051",
+  );
+  assert.equal(
+    loadConfig(authConfigSchema, env).USERS_INTERNAL_URL,
+    "http://127.0.0.1:4002",
+  );
+  assert.throws(
+    () =>
+      loadConfig(authConfigSchema, {
+        ...env,
+        USERS_INTERNAL_URL: "ftp://users:4002",
+      }),
+    ConfigError,
   );
   assert.throws(
     () =>
