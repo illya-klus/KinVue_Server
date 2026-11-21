@@ -1,5 +1,6 @@
 const assert = require("node:assert/strict");
 const { createHash } = require("node:crypto");
+const { generateKeyPairSync } = require("node:crypto");
 const { test } = require("node:test");
 
 test("password hashes use Argon2id and verify without storing plaintext", async () => {
@@ -19,12 +20,22 @@ test("password hashes use Argon2id and verify without storing plaintext", async 
 });
 
 test("access tokens contain subject, userId, scope, issuer, audience and 15-minute TTL", async () => {
-  const [{ TokensService }, { JwtService }] = await Promise.all([
-    import("../dist/modules/tokens/tokens.service.js"),
-    import("@nestjs/jwt"),
-  ]);
-  const secret = "test-access-signing-secret";
-  const jwt = new JwtService({});
+  const [{ TokensService }, { JwtService }, { SigningKeyService }] =
+    await Promise.all([
+      import("../dist/modules/tokens/tokens.service.js"),
+      import("@nestjs/jwt"),
+      import("../dist/modules/tokens/signing-key.service.js"),
+    ]);
+  const { privateKey } = generateKeyPairSync("rsa", {
+    modulusLength: 2048,
+    privateKeyEncoding: { type: "pkcs8", format: "pem" },
+    publicKeyEncoding: { type: "spki", format: "pem" },
+  });
+  const signingKey = new SigningKeyService({
+    getOrThrow: (name) =>
+      ({ AUTH_JWT_PRIVATE_KEY: privateKey, AUTH_JWT_KEY_ID: "test-key" })[name],
+  });
+  const jwt = new JwtService();
   let storedSession;
   const prisma = {
     db: {
@@ -39,15 +50,10 @@ test("access tokens contain subject, userId, scope, issuer, audience and 15-minu
       },
     },
   };
-  const service = new TokensService(
-    { getOrThrow: () => secret },
-    jwt,
-    prisma,
-    {},
-  );
+  const service = new TokensService({}, jwt, signingKey, prisma, {});
 
   const pair = await service.createTokenPair("user-123", "ADMIN");
-  const claims = await jwt.verifyAsync(pair.accessToken, { secret });
+  const claims = await service.verifyAccessToken(pair.accessToken);
 
   assert.equal(claims.sub, "user-123");
   assert.equal(claims.userId, claims.sub);
