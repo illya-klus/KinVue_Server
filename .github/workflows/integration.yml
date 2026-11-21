@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Start data plane
-        run: docker compose --env-file .env.example up -d postgres movie-postgres notifications-postgres meilisearch rabbitmq rooms-redis
+        run: docker compose --env-file .env.example --profile apps up -d --build rooms
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
