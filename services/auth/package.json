@@ -24,7 +24,8 @@
     "test:jwks": "pnpm build && node --test test/jwks.test.cjs",
     "test:access-tokens": "pnpm build && node --test test/access-tokens.test.cjs",
     "test:tokens": "pnpm build && node --test test/jwks.test.cjs test/access-tokens.test.cjs",
-    "test:password-hasher": "pnpm build && node --test test/password-hasher.test.cjs"
+    "test:password-hasher": "pnpm build && node --test test/password-hasher.test.cjs",
+    "test:refresh-sessions": "pnpm build && node --test test/refresh-sessions.test.cjs"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.14.4",

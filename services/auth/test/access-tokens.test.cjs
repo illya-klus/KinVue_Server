@@ -30,6 +30,18 @@ function createKeys() {
   return privateKey;
 }
 
+function createPrisma() {
+  return {
+    db: {
+      orm: {
+        public: {
+          RefreshSession: { async create() {} },
+        },
+      },
+    },
+  };
+}
+
 test("issues and verifies access tokens with the required RS256 claims", async () => {
   const { SigningKeyService, TokensService } = await loadTokenTypes();
   const privateKey = createKeys();
@@ -43,6 +55,7 @@ test("issues and verifies access tokens with the required RS256 claims", async (
     { getOrThrow: () => "refresh-test-secret" },
     new JwtService(),
     signingKey,
+    createPrisma(),
   );
   const userId = "e3aa40c8-3fcf-4d96-9c6a-998c31ef54c3";
   const pair = await tokens.createTokenPair(userId, "ADMIN");
@@ -74,6 +87,7 @@ test("issues a scopes claim for a regular user", async () => {
     { getOrThrow: () => "refresh-test-secret" },
     new JwtService(),
     signingKey,
+    createPrisma(),
   );
   const pair = await tokens.createTokenPair("regular-user", "USER");
   const claims = await tokens.verifyAccessToken(pair.accessToken);
