@@ -96,6 +96,9 @@ At minimum:
 - services are not directly exposed without need;
 - internal network policies should restrict DB/broker access;
 - secrets are not committed to repositories.
+- Users profile bootstrap and Movie transcode callbacks stay on the private
+  service network; the public Gateway exposes only its explicit route allowlist.
+  This deployment boundary is assumed wherever those service endpoints run.
 
 ---
 
