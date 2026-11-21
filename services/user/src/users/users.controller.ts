@@ -2,12 +2,13 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
   Patch,
   Post,
   Query,
+  Res,
   UseGuards,
 } from "@nestjs/common";
+import type { Response } from "express";
 import { CallerUserGuard, CallerUserId } from "../common/caller-user";
 import { UsersService } from "./users.service";
 
@@ -38,10 +39,14 @@ export class UsersController {
     return this.users.search(userId, { query, limit, cursor });
   }
 
-  /** Not routed by the gateway: service-to-service/dev profile bootstrap. */
-  @Post("internal/profiles")
-  @HttpCode(200)
-  createProfile(@Body() body: unknown) {
-    return this.users.createProfile(body);
+  /** Internal profile bootstrap; never registered on the Gateway. */
+  @Post("internal/users/profiles")
+  async createProfile(
+    @Body() body: unknown,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const { profile, created } = await this.users.createProfile(body);
+    response.status(created ? 201 : 200);
+    return profile;
   }
 }

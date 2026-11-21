@@ -100,16 +100,24 @@ services:
   users-mongo:
     image: mongo:7
     container_name: kinvue-users-mongo
-    command: ["mongod", "--bind_ip_all"]
+    command: ["mongod", "--bind_ip_all", "--replSet", "kinvue-users"]
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - users-mongo-data:/data/db
     networks:
       - kinvue-data
       - kinvue-edge
     healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      test:
+        - CMD
+        - mongosh
+        - --quiet
+        - --eval
+        - >-
+          const hello = db.hello();
+          if (!hello.setName) rs.initiate({_id:'kinvue-users',members:[{_id:0,host:'users-mongo:27017'}]});
+          quit(hello.setName === 'kinvue-users' && hello.isWritablePrimary ? 0 : 1);
       interval: 5s
       timeout: 5s
       retries: 10

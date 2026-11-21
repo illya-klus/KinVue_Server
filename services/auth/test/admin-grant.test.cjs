@@ -106,6 +106,14 @@ test("ADMIN access tokens carry the admin scope", async () => {
       },
     },
     {
+      getPrivateKey() {
+        return "test-private-key";
+      },
+      getKeyId() {
+        return "test-key";
+      },
+    },
+    {
       db: {
         orm: {
           public: {
@@ -114,6 +122,7 @@ test("ADMIN access tokens carry the admin scope", async () => {
         },
       },
     },
+    {},
     {},
   );
 

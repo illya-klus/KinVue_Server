@@ -4,20 +4,30 @@ import { JwtService } from "@nestjs/jwt";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { RefreshSessionRepository } from "./refresh-session.repository.js";
+import { SigningKeyService } from "./signing-key.service.js";
 
 export const REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60;
+export const AUTH_ACCESS_TOKEN_ISSUER = "kinvue-auth";
+export const AUTH_ACCESS_TOKEN_AUDIENCE = "kinvue";
+export const AUTH_ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
 
 @Injectable()
 export class TokensService {
   public constructor(
-    private readonly config: ConfigService,
+    // Key material is owned and validated by SigningKeyService.
+    _config: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly signingKey: SigningKeyService,
     private readonly prisma: PrismaService,
     private readonly refreshSessions: RefreshSessionRepository,
   ) {}
-  public verifyAccessToken(token: string) {
+
+  public verifyAccessToken(token: string): Promise<Record<string, unknown>> {
     return this.jwtService.verifyAsync(token, {
-      secret: this.config.getOrThrow("JWT_ACCESS_SECRET"),
+      publicKey: this.signingKey.getPublicKey(),
+      algorithms: ["RS256"],
+      issuer: AUTH_ACCESS_TOKEN_ISSUER,
+      audience: AUTH_ACCESS_TOKEN_AUDIENCE,
     });
   }
 
@@ -38,13 +48,7 @@ export class TokensService {
 
   public async createTokenPair(sub: string, role: "ADMIN" | "USER") {
     const scopes = role === "ADMIN" ? ["admin"] : [];
-    const accessToken = await this.jwtService.signAsync(
-      { sub, role, scopes },
-      {
-        secret: this.config.getOrThrow("JWT_ACCESS_SECRET"),
-        expiresIn: "15m",
-      },
-    );
+    const accessToken = await this.createAccessToken(sub, scopes);
 
     const refreshToken = randomBytes(32).toString("base64url");
     const now = new Date();
@@ -76,18 +80,32 @@ export class TokensService {
       id: session.userId,
     });
     if (!user) return null;
-    const accessToken = await this.jwtService.signAsync(
-      { sub: user.id, role: user.role },
-      {
-        secret: this.config.getOrThrow("JWT_ACCESS_SECRET"),
-        expiresIn: "15m",
-      },
-    );
+
+    const scopes = user.role === "ADMIN" ? ["admin"] : [];
+    const accessToken = await this.createAccessToken(user.id, scopes);
     return { accessToken, refreshToken };
   }
 
   public revokeRefreshToken(token: string): Promise<void> {
     return this.refreshSessions.revoke(this.hashRefreshToken(token));
+  }
+
+  public createAccessToken(
+    userId: string,
+    scopes: readonly string[],
+  ): Promise<string> {
+    return this.jwtService.signAsync(
+      { userId, scopes: [...new Set(scopes)] },
+      {
+        privateKey: this.signingKey.getPrivateKey(),
+        algorithm: "RS256",
+        keyid: this.signingKey.getKeyId(),
+        issuer: AUTH_ACCESS_TOKEN_ISSUER,
+        audience: AUTH_ACCESS_TOKEN_AUDIENCE,
+        subject: userId,
+        expiresIn: AUTH_ACCESS_TOKEN_TTL_SECONDS,
+      },
+    );
   }
 
   private hashRefreshToken(token: string): string {

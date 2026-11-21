@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { argon2id, hash, verify } from "argon2";
 
+// Keep in sync with accepted decision 0021.
 export const ARGON2ID_PASSWORD_OPTIONS = Object.freeze({
   type: argon2id,
   memoryCost: 19 * 1024,
