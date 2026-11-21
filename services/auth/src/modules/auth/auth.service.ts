@@ -4,9 +4,10 @@ import { RpcException } from "@nestjs/microservices";
 import { OAuth2Client } from "google-auth-library";
 import { status } from "@grpc/grpc-js";
 import { PrismaService } from "../../prisma/prisma.service.js";
-import { FieldOutputTypes } from "@/prisma/contract";
+import type { FieldOutputTypes } from "@/prisma/contract";
 
 type AuthUserRow = FieldOutputTypes["public"]["AuthUser"];
+type AuthIdentityRow = FieldOutputTypes["public"]["AuthIdentity"];
 
 @Injectable()
 export class AuthService {
@@ -60,5 +61,15 @@ export class AuthService {
       role: "USER",
     });
     return { user: created, created: true };
+  }
+
+  public async findLoginIdentityByEmail(
+    email: string,
+  ): Promise<AuthIdentityRow | null> {
+    return (
+      (await this.prisma.db.orm.public.AuthIdentity.first({
+        email: email.trim().toLowerCase(),
+      })) ?? null
+    );
   }
 }
