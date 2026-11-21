@@ -5,7 +5,6 @@ import {
   notificationEventSchema,
 } from "@kinvue/contracts";
 import amqp, { type ConfirmChannel } from "amqplib";
-import { SharedLogger } from "../shared-logger";
 import {
   DOMAIN_EXCHANGE,
   type NotificationPublisher,
@@ -15,8 +14,7 @@ type AmqpConnection = Awaited<ReturnType<typeof amqp.connect>>;
 
 /**
  * Publishes validated notification events to `kinvue.domain` with publisher
- * confirms. Connects lazily and reconnects after a drop; when RABBITMQ_URL is
- * not configured it is a logged no-op so local dev works without a broker.
+ * confirms. A failed or unroutable delivery stays pending in the outbox.
  */
 @Injectable()
 export class RabbitNotificationPublisher
@@ -26,36 +24,47 @@ export class RabbitNotificationPublisher
   private channel: ConfirmChannel | null = null;
   private connecting: Promise<ConfirmChannel> | null = null;
 
-  constructor(
-    private readonly config: ConfigService,
-    private readonly logger: SharedLogger,
-  ) {}
+  constructor(private readonly config: ConfigService) {}
 
   async publish(event: NotificationEvent): Promise<void> {
     const url = this.config.get<string>("RABBITMQ_URL");
-    if (!url) {
-      this.logger.warn("RABBITMQ_URL not set; notification event skipped", {
-        type: event.type,
-        eventId: event.eventId,
-      });
-      return;
-    }
+    if (!url) throw new Error("RABBITMQ_URL not configured");
     const body = notificationEventSchema.parse(event);
     const channel = await this.getChannel(url);
     await new Promise<void>((resolve, reject) => {
-      channel.publish(
-        DOMAIN_EXCHANGE,
-        body.type,
-        Buffer.from(JSON.stringify(body), "utf8"),
-        {
-          persistent: true,
-          contentType: "application/json",
-          messageId: body.eventId,
-          type: body.type,
-          timestamp: Date.now(),
-        },
-        (error) => (error ? reject(error) : resolve()),
+      const onReturn = (message: { properties: { messageId?: string } }) => {
+        if (message.properties.messageId === body.eventId)
+          finish(new Error("Notification event was unroutable"));
+      };
+      const timer = setTimeout(
+        () => finish(new Error("Broker confirmation timed out")),
+        5000,
       );
+      const finish = (error?: unknown) => {
+        clearTimeout(timer);
+        channel.off("return", onReturn);
+        if (error) reject(error);
+        else resolve();
+      };
+      channel.on("return", onReturn);
+      try {
+        channel.publish(
+          DOMAIN_EXCHANGE,
+          body.type,
+          Buffer.from(JSON.stringify(body), "utf8"),
+          {
+            persistent: true,
+            mandatory: true,
+            contentType: "application/json",
+            messageId: body.eventId,
+            type: body.type,
+            timestamp: Date.now(),
+          },
+          (error) => finish(error),
+        );
+      } catch (error) {
+        finish(error);
+      }
     });
   }
 
@@ -68,7 +77,7 @@ export class RabbitNotificationPublisher
   }
 
   private async connect(url: string): Promise<ConfirmChannel> {
-    const connection = await amqp.connect(url);
+    const connection = await amqp.connect(url, { timeout: 5000 });
     const reset = () => {
       if (this.connection === connection) {
         this.connection = null;

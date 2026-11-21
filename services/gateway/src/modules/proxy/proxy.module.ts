@@ -1,4 +1,11 @@
-import { Module } from "@nestjs/common";
+import {
+  type MiddlewareConsumer,
+  Module,
+  type NestModule,
+  RequestMethod,
+} from "@nestjs/common";
+import { RequestIdMiddleware } from "../../common/middleware/request-ids.middleware";
+import { RequestsLoggerMiddleware } from "../../common/middleware/requests-loger.middleware";
 import { GatewayProxyMiddleware } from "./gateway-proxy.middleware";
 import { JwksService } from "./jwks.service";
 import { JwtVerificationService } from "./jwt-verification.service";
@@ -15,6 +22,15 @@ import { WellKnownController } from "./well-known.controller";
     UpstreamService,
     GatewayProxyMiddleware,
   ],
-  exports: [GatewayProxyMiddleware],
 })
-export class ProxyModule {}
+export class ProxyModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(
+        RequestIdMiddleware,
+        RequestsLoggerMiddleware,
+        GatewayProxyMiddleware,
+      )
+      .forRoutes({ path: "{*path}", method: RequestMethod.ALL });
+  }
+}

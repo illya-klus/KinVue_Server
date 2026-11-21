@@ -1,12 +1,15 @@
 import { ConfigService } from "@nestjs/config";
-import { UsersMongoReadiness } from "./readiness";
+import { MongoService } from "./mongo/mongo.service";
 
 const mockConnect = jest.fn();
 const mockCommand = jest.fn();
 jest.mock("mongodb", () => ({
   MongoClient: jest.fn().mockImplementation(() => ({
     connect: mockConnect,
-    db: () => ({ command: mockCommand }),
+    db: () => ({
+      command: mockCommand,
+      collection: () => ({ createIndexes: jest.fn().mockResolvedValue([]) }),
+    }),
     close: jest.fn(),
   })),
 }));
@@ -19,9 +22,9 @@ it("recovers when MongoDB becomes available after the first probe failed", async
   });
   mockCommand.mockImplementation(async () => {
     if (!connected) throw new Error("Topology is closed");
-    return { ok: 1 };
+    return { ok: 1, isWritablePrimary: true, setName: "kinvue-users" };
   });
-  const readiness = new UsersMongoReadiness(
+  const readiness = new MongoService(
     new ConfigService({ USERS_MONGO_URL: "mongodb://localhost/kinvue_test" }),
   );
 
