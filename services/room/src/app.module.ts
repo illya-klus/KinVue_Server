@@ -7,11 +7,13 @@ import {
   HealthController,
   REDIS_READINESS,
   RoomsRedisReadiness,
+  ROOMS_REDIS,
 } from "./health.controller";
 import { SharedHttpErrorFilter } from "./errors.filters";
 import { SharedLogger } from "./shared-logger";
 import { MetricsController } from "./metrics.controller";
 import { WebSocketReservation } from "./websocket-reservation";
+import { RoomsService } from "./rooms.service";
 
 @Module({
   imports: [
@@ -23,6 +25,7 @@ import { WebSocketReservation } from "./websocket-reservation";
   controllers: [AppController, HealthController, MetricsController],
   providers: [
     AppService,
+    RoomsService,
     SharedLogger,
     SharedHttpErrorFilter,
     WebSocketReservation,
@@ -30,6 +33,11 @@ import { WebSocketReservation } from "./websocket-reservation";
     {
       provide: REDIS_READINESS,
       useExisting: RoomsRedisReadiness,
+    },
+    {
+      provide: ROOMS_REDIS,
+      useFactory: (readiness: RoomsRedisReadiness) => readiness.client,
+      inject: [RoomsRedisReadiness],
     },
   ],
 })

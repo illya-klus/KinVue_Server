@@ -85,7 +85,7 @@ export const PROXY_ROUTES: ProxyRoute[] = [
     rateLimit: "authenticated",
   },
   {
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "DELETE"],
     path: /^\/api\/rooms(\/.*)?$/,
     upstream: "rooms",
     auth: "required",

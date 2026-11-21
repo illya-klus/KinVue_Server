@@ -13,11 +13,17 @@ import { roomsRedisReachable } from "./room-observability.metrics";
 export const REDIS_READINESS = Symbol("REDIS_READINESS");
 export type RedisReadiness = Pick<Redis, "ping">;
 
+export const ROOMS_REDIS = Symbol("ROOMS_REDIS");
+export type RoomsRedisClient = Pick<
+  Redis,
+  "ping" | "eval" | "hgetall" | "hset" | "hlen" | "zadd" | "zrem" | "zrevrange"
+>;
+
 @Injectable()
 export class RoomsRedisReadiness
   implements RedisReadiness, OnApplicationShutdown
 {
-  private readonly client: Redis;
+  readonly client: Redis;
   constructor(config: ConfigService) {
     this.client = new Redis(config.getOrThrow<string>("REDIS_URL"), {
       lazyConnect: true,
