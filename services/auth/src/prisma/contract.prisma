@@ -12,3 +12,57 @@ model AuthUser {
 
   @@unique([provider, providerUserId])
 }
+
+enum AuthIdentityStatus {
+  @@type("pg/text@1")
+
+  PENDING
+  PROFILE_CREATING
+  ACTIVE
+  COMPENSATING
+  COMPENSATED
+  DISABLED
+}
+
+model AuthIdentity {
+  userId       Uuid               @id @default(uuid()) @map("user_id")
+  email        String?            @unique(map: "auth_identities_email_key")
+  passwordHash String?            @map("password_hash")
+  status       AuthIdentityStatus @default(PENDING)
+  createdAt    TimestamptzString  @default(now()) @map("created_at")
+  updatedAt    temporal.updatedAtString() @map("updated_at")
+
+  @@check(
+    expression: "(status = 'COMPENSATED' AND email IS NULL AND password_hash IS NULL) OR (status <> 'COMPENSATED' AND email IS NOT NULL)",
+    name: "auth_identities_compensated_credentials_check"
+  )
+  @@map("auth_identities")
+}
+
+model RefreshSession {
+  id                    Uuid              @id @default(uuid())
+  userId                Uuid              @map("user_id")
+  tokenHash             String            @unique(map: "refresh_sessions_token_hash_key") @map("token_hash")
+  rotatedFromSessionId  Uuid?             @map("rotated_from_session_id")
+  revokedAt             TimestamptzString? @map("revoked_at")
+  expiresAt             TimestamptzString @map("expires_at")
+  createdAt             TimestamptzString @default(now()) @map("created_at")
+  updatedAt             temporal.updatedAtString() @map("updated_at")
+
+  @@index([userId], map: "refresh_sessions_user_id_idx")
+  @@index([expiresAt], map: "refresh_sessions_expires_at_idx")
+  @@map("refresh_sessions")
+}
+
+model AuthOutboxEvent {
+  eventId     Uuid              @id @default(uuid()) @map("event_id")
+  type        String
+  payload     Jsonb
+  status      String            @default("PENDING")
+  createdAt   TimestamptzString @default(now()) @map("created_at")
+  publishedAt TimestamptzString? @map("published_at")
+  retryCount  Int               @default(0) @map("retry_count")
+
+  @@index([status], map: "auth_outbox_events_status_idx")
+  @@map("auth_outbox_events")
+}

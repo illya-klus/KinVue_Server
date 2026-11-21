@@ -79,7 +79,22 @@ You can customize how your environment variables are loaded by changing or remov
 pnpm prisma contract emit       # Update contract.json and contract.d.ts
 pnpm prisma db init             # Create tables in the database
 pnpm prisma migration status    # Show migration status
+pnpm --filter @kinvue/auth migrate:deploy # Apply pending Auth migrations safely
 ```
+
+### Applying Auth migrations
+
+Set `AUTH_DATABASE_URL` to the PostgreSQL `kinvue` database, then run
+`pnpm --filter @kinvue/auth migrate:deploy`. The runner rejects other database
+names and invokes Prisma Next's ordered, content-hashed migration graph. It
+does not print the connection URL. Review and apply migrations through this
+command rather than `db update` on shared environments.
+
+For a disposable empty-database check, run
+`pnpm --filter @kinvue/auth test:migrations`. Docker and the PostgreSQL 16
+image are required. The test binds local port 5433 by default; set
+`AUTH_TEST_PORT` if that port is already in use, or
+`AUTH_TEST_POSTGRES_IMAGE` to select an already available compatible image.
 
 ### Files
 
