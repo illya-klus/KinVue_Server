@@ -5,6 +5,10 @@ import { OAuth2Client } from "google-auth-library";
 import { status } from "@grpc/grpc-js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import type { FieldOutputTypes } from "@/prisma/contract";
+import { randomUUID } from "node:crypto";
+import { PasswordHasherService } from "./password-hasher.service.js";
+import { AuthIdentityRepository } from "./auth-identity.repository.js";
+import type { RegistrationInput } from "./registration-input.js";
 
 type AuthUserRow = FieldOutputTypes["public"]["AuthUser"];
 type AuthIdentityRow = FieldOutputTypes["public"]["AuthIdentity"];
@@ -14,6 +18,8 @@ export class AuthService {
   constructor(
     private readonly config: ConfigService,
     private readonly prisma: PrismaService,
+    private readonly passwordHasher: PasswordHasherService,
+    private readonly authIdentityRepository: AuthIdentityRepository,
   ) {}
   public async verifyGoogleToken(googleToken: string) {
     const client = new OAuth2Client(this.config.getOrThrow("GOOGLE_CLIENT_ID"));
@@ -71,5 +77,18 @@ export class AuthService {
         email: email.trim().toLowerCase(),
       })) ?? null
     );
+  }
+
+  public async createPendingRegistration(
+    input: RegistrationInput,
+  ): Promise<{ userId: string; status: "PENDING" }> {
+    const userId = randomUUID();
+    const passwordHash = await this.passwordHasher.hashPassword(input.password);
+    await this.authIdentityRepository.createPending(
+      userId,
+      input.email,
+      passwordHash,
+    );
+    return { userId, status: "PENDING" };
   }
 }
