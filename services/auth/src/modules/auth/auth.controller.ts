@@ -17,6 +17,7 @@ import {
 import { TokensService } from "../tokens/tokens.service.js";
 import { PasswordHasherService } from "./password-hasher.service.js";
 import { validateRegistrationInput } from "./registration-input.js";
+import { RegistrationSagaService } from "./registration-saga.service.js";
 import { status } from "@grpc/grpc-js";
 import {
   authLoginAttempts,
@@ -29,6 +30,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly tokensService: TokensService,
     private readonly passwordHasher: PasswordHasherService,
+    private readonly registrationSaga: RegistrationSagaService,
   ) {}
 
   @Post("auth/login")
@@ -68,10 +70,10 @@ export class AuthController {
   }
 
   @Post("auth/register")
-  @HttpCode(202)
+  @HttpCode(201)
   public async register(@Body() body: unknown) {
     const input = validateRegistrationInput(body);
-    return this.authService.createPendingRegistration(input);
+    return this.registrationSaga.register(input);
   }
 
   @Post("auth/refresh")

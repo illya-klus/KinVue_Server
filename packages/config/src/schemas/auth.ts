@@ -1,4 +1,4 @@
-import { base, postgres, nonempty, port } from "./base.ts";
+import { base, postgres, nonempty, port, http } from "./base.ts";
 export const authConfigSchema = base.extend({
   DATABASE_URL: postgres,
   GOOGLE_CLIENT_ID: nonempty,
@@ -8,4 +8,5 @@ export const authConfigSchema = base.extend({
   AUTH_GRPC_URL: nonempty.default("0.0.0.0:50051"),
   AUTH_HTTP_PORT: port.default(4001),
   AUTH_HTTP_HOST: nonempty.default("127.0.0.1"),
+  USERS_INTERNAL_URL: http.default("http://127.0.0.1:4002"),
 });
