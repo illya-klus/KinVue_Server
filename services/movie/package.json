@@ -14,9 +14,13 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --config ./test/jest-e2e.json",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p migrations/tsconfig.json",
     "test:process": "node ../../scripts/scaffold-process-smoke.cjs movie",
-    "search:rebuild": "nest build && node dist/scripts/search-rebuild.js"
+    "search:rebuild": "nest build && node dist/scripts/search-rebuild.js",
+    "migrate:deploy": "node scripts/migrate-movie.mjs",
+    "contract:emit": "prisma contract emit",
+    "test:integration": "pnpm build && node --test test/catalog.integration.test.cjs",
+    "test:migrations": "node --test test/migrate-movie.test.cjs"
   },
   "dependencies": {
     "@kinvue/config": "workspace:*",
@@ -40,6 +44,9 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
+    "@prisma/cli-engine": "^0.3.0",
+    "@prisma/orm-postgres": "8.0.0-rc.8",
+    "prisma": "8.0.0-rc.12",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
     "@nestjs/cli": "^12.0.0",

@@ -1,0 +1,448 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.movie_index_sync_state",
+    "label": "Create table \"movie_index_sync_state\"",
+    "summary": "Creates table \"movie_index_sync_state\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "movie_index_sync_state"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"movie_index_sync_state\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_index_sync_state\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"movie_index_sync_state\"",
+        "sql": "CREATE TABLE \"public\".\"movie_index_sync_state\" (\n  \"id\" text DEFAULT 'movies' NOT NULL,\n  \"last_successful_sync\" timestamptz,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"movie_index_sync_state\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_index_sync_state\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.movie_outbox_events",
+    "label": "Create table \"movie_outbox_events\"",
+    "summary": "Creates table \"movie_outbox_events\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "movie_outbox_events"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"movie_outbox_events\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_outbox_events\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"movie_outbox_events\"",
+        "sql": "CREATE TABLE \"public\".\"movie_outbox_events\" (\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"event_id\" uuid NOT NULL,\n  \"payload\" jsonb NOT NULL,\n  \"published_at\" timestamptz,\n  \"retry_count\" int4 DEFAULT 0 NOT NULL,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"type\" text NOT NULL,\n  PRIMARY KEY (\"event_id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"movie_outbox_events\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_outbox_events\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.movie_uploads",
+    "label": "Create table \"movie_uploads\"",
+    "summary": "Creates table \"movie_uploads\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "movie_uploads"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"movie_uploads\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_uploads\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"movie_uploads\"",
+        "sql": "CREATE TABLE \"public\".\"movie_uploads\" (\n  \"completed_at\" timestamptz,\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"expires_at\" timestamptz NOT NULL,\n  \"movie_id\" uuid NOT NULL,\n  \"object_key\" text NOT NULL,\n  \"part_count\" int4 DEFAULT 1 NOT NULL,\n  \"s3_upload_id\" text NOT NULL,\n  \"status\" text DEFAULT 'INITIATED' NOT NULL,\n  \"updated_at\" timestamptz NOT NULL,\n  \"upload_id\" uuid NOT NULL,\n  PRIMARY KEY (\"upload_id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"movie_uploads\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_uploads\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.movies",
+    "label": "Create table \"movies\"",
+    "summary": "Creates table \"movies\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "movies"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"movies\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movies\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"movies\"",
+        "sql": "CREATE TABLE \"public\".\"movies\" (\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"created_by_user_id\" uuid NOT NULL,\n  \"description\" text NOT NULL,\n  \"duration_seconds\" int4,\n  \"genres\" jsonb NOT NULL,\n  \"hls_master_key\" text,\n  \"media_status\" text DEFAULT 'NONE' NOT NULL,\n  \"movie_id\" uuid NOT NULL,\n  \"original_object_key\" text,\n  \"poster_key\" text,\n  \"publication_status\" text DEFAULT 'DRAFT' NOT NULL,\n  \"publish_at\" timestamptz,\n  \"title\" text NOT NULL,\n  \"updated_at\" timestamptz NOT NULL,\n  PRIMARY KEY (\"movie_id\"),\n  CONSTRAINT \"movies_media_status_check_9a280471\" CHECK (\"media_status\" IN ('NONE', 'UPLOADING', 'PROCESSING', 'READY', 'UPLOAD_FAILED', 'PROCESSING_FAILED', 'ABANDONED')),\n  CONSTRAINT \"movies_publication_status_check_ecb2d041\" CHECK (\"publication_status\" IN ('DRAFT', 'SCHEDULED', 'PUBLISHED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"movies\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movies\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.watchlist_items",
+    "label": "Create table \"watchlist_items\"",
+    "summary": "Creates table \"watchlist_items\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "watchlist_items"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"watchlist_items\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"watchlist_items\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"watchlist_items\"",
+        "sql": "CREATE TABLE \"public\".\"watchlist_items\" (\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"movie_id\" uuid NOT NULL,\n  \"user_id\" uuid NOT NULL,\n  PRIMARY KEY (\"user_id\", \"movie_id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"watchlist_items\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"watchlist_items\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.movie_outbox_events.movie_outbox_events_status_idx",
+    "label": "Create index \"movie_outbox_events_status_idx\" on \"movie_outbox_events\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "movie_outbox_events_status_idx",
+        "table": "movie_outbox_events"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"movie_outbox_events_status_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_outbox_events_status_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"movie_outbox_events_status_idx\"",
+        "sql": "CREATE INDEX \"movie_outbox_events_status_idx\" ON \"public\".\"movie_outbox_events\" (\"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"movie_outbox_events_status_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_outbox_events_status_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.movie_uploads.movie_uploads_movie_id_idx",
+    "label": "Create index \"movie_uploads_movie_id_idx\" on \"movie_uploads\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "movie_uploads_movie_id_idx",
+        "table": "movie_uploads"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"movie_uploads_movie_id_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_uploads_movie_id_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"movie_uploads_movie_id_idx\"",
+        "sql": "CREATE INDEX \"movie_uploads_movie_id_idx\" ON \"public\".\"movie_uploads\" (\"movie_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"movie_uploads_movie_id_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movie_uploads_movie_id_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.movies.movies_publication_status_idx",
+    "label": "Create index \"movies_publication_status_idx\" on \"movies\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "movies_publication_status_idx",
+        "table": "movies"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"movies_publication_status_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movies_publication_status_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"movies_publication_status_idx\"",
+        "sql": "CREATE INDEX \"movies_publication_status_idx\" ON \"public\".\"movies\" (\"publication_status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"movies_publication_status_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movies_publication_status_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.movies.movies_publish_at_idx",
+    "label": "Create index \"movies_publish_at_idx\" on \"movies\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "movies_publish_at_idx",
+        "table": "movies"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"movies_publish_at_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movies_publish_at_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"movies_publish_at_idx\"",
+        "sql": "CREATE INDEX \"movies_publish_at_idx\" ON \"public\".\"movies\" (\"publish_at\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"movies_publish_at_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movies_publish_at_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.movies.movies_updated_at_idx",
+    "label": "Create index \"movies_updated_at_idx\" on \"movies\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "movies_updated_at_idx",
+        "table": "movies"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"movies_updated_at_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movies_updated_at_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"movies_updated_at_idx\"",
+        "sql": "CREATE INDEX \"movies_updated_at_idx\" ON \"public\".\"movies\" (\"updated_at\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"movies_updated_at_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"movies_updated_at_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.watchlist_items.watchlist_items_user_id_idx",
+    "label": "Create index \"watchlist_items_user_id_idx\" on \"watchlist_items\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "watchlist_items_user_id_idx",
+        "table": "watchlist_items"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"watchlist_items_user_id_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"watchlist_items_user_id_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"watchlist_items_user_id_idx\"",
+        "sql": "CREATE INDEX \"watchlist_items_user_id_idx\" ON \"public\".\"watchlist_items\" (\"user_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"watchlist_items_user_id_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"watchlist_items_user_id_idx\""
+        ]
+      }
+    ]
+  }
+]

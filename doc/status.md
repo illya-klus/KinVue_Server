@@ -74,6 +74,10 @@ Shared-поставка першого спринту: `@kinvue/config`, `@kinvu
 
 Наявне обмеження lint підтверджене: typescript-eslint 8.64.0 падає на TypeScript 7 до аналізу файлів (0018). CI, версії TypeScript і політику build scripts не змінювали. Продуктові API, репозиторії даних та медіаворкер залишаються задачами наступних спринтів. Runbook: [users-movie-scaffolds](runbooks/users-movie-scaffolds.md).
 
+## Sprint 3: Movie і Web, 2026-11-21
+
+Реалізовано каталог, versioned Prisma Next міграції Movie, admin draft/edit, publish/schedule/worker, caller-only watchlist і відповідні клієнтські сценарії. Обсяг — 25 задач Анатолія Sprint 3; залежність від відкритих Sprint 2 PR #27/#1. Перевірено реальну PostgreSQL 16, Meilisearch, Gateway і веб-сценарій із тестовим Auth/JWKS. [Runbook](runbooks/movie-sprint-3.md), [докази](verification/2026-11-21-sprint-3.md), [журнал](log/2026-11-21.md). Приймання PR ще потрібне; медіапайплайн, Rooms і cloud не входять у цей результат.
+
 ## Sprint 2: Users, 2026-11-16
 
 Реалізовано профілі, пошук, дружбу та транзакційний outbox для KIN-29, KIN-32, KIN-35, KIN-38, KIN-41, KIN-45, KIN-49, KIN-53, KIN-331, KIN-333, KIN-335, KIN-337, KIN-339, KIN-341, KIN-343, KIN-345. Клієнт отримує наступні сторінки пошуку й списків дружби через Gateway. Виправлено старт і передачу JSON-запитів через наявний middleware Gateway. Див. [runbook](runbooks/users-sprint-2.md) і [журнал](log/2026-11-16.md).

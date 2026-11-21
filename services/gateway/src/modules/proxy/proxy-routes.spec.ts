@@ -17,6 +17,10 @@ describe("matchProxyRoute", () => {
     expect(route?.auth).toBe("admin");
   });
 
+  it("protects admin reads of drafts", () => {
+    expect(matchProxyRoute("GET", "/api/admin/movies/abc")?.auth).toBe("admin");
+  });
+
   it("skips google oauth path", () => {
     expect(matchProxyRoute("POST", "/api/auth/google")).toBeUndefined();
   });

@@ -57,6 +57,11 @@ test("documented request bodies validate without implementing endpoints", () => 
     durationSeconds: 10140,
     posterKey: "posters/movie.jpg",
   });
+  s.createMovieRequestSchema.parse({
+    title: "Draft",
+    description: "Metadata only",
+    genres: ["Drama"],
+  });
   s.scheduleMovieRequestSchema.parse({ publishAt: "2026-11-01T12:00:00Z" });
   s.scheduleRoomRequestSchema.parse({
     movieId: "movie_123",

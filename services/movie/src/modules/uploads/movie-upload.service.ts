@@ -51,6 +51,7 @@ export class MovieUploadService {
       movieId,
       objectKey,
       s3UploadId,
+      partCount: body.partCount,
     });
     await this.movies.setMediaUploading(movieId);
 

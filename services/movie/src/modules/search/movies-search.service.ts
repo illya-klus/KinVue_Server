@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { AppError } from "@kinvue/errors";
 import { MeilisearchClient } from "../meilisearch/meilisearch.client";
 import { MOVIES_INDEX } from "../meilisearch/meilisearch.constants";
@@ -13,6 +13,8 @@ export class MoviesSearchService {
   constructor(private readonly meili: MeilisearchClient) {}
 
   public async search(dto: SearchQueryDto) {
+    if ((dto.q?.trim().length ?? 0) < 2)
+      throw new BadRequestException("Search requires at least 2 characters");
     const started = process.hrtime.bigint();
     const filters = ['publicationStatus = "PUBLISHED"'];
     if (dto.genre?.trim()) {
@@ -21,7 +23,7 @@ export class MoviesSearchService {
 
     try {
       const index = this.meili.index(MOVIES_INDEX);
-      const result = await index.search(dto.q ?? "", {
+      const result = await index.search(dto.q.trim(), {
         filter: filters.join(" AND "),
         limit: dto.limit,
         offset: dto.offset,

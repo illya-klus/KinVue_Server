@@ -98,7 +98,7 @@ export const PROXY_ROUTES: ProxyRoute[] = [
     rateLimit: "authenticated",
   },
   {
-    methods: ["POST", "PATCH"],
+    methods: ["GET", "POST", "PATCH"],
     path: /^\/api\/admin\/movies(\/.*)?$/,
     upstream: "movie",
     auth: "admin",
