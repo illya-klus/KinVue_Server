@@ -77,6 +77,12 @@ test("documented request bodies validate without implementing endpoints", () => 
       .success,
     false,
   );
+  s.acceptRoomInviteRequestSchema.parse({ token: "one-time-link-token" });
+  s.changeRoomRoleRequestSchema.parse({ userId, role: "CONTROLLER" });
+  assert.equal(
+    s.changeRoomRoleRequestSchema.safeParse({ userId, role: "OWNER" }).success,
+    false,
+  );
 });
 
 test("upload rejects unsupported media, invalid part counts and byte bounds", () => {
@@ -87,6 +93,10 @@ test("upload rejects unsupported media, invalid part counts and byte bounds", ()
     partCount: 200,
   };
   s.uploadInitRequestSchema.parse(body);
+  s.uploadCompleteRequestSchema.parse({
+    uploadId: randomUUID(),
+    parts: [{ partNumber: 1, etag: "etag-1" }],
+  });
   for (const patch of [
     { contentType: "text/plain" },
     { fileSizeBytes: 1024 ** 2 },

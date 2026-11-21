@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, NestMiddleware } from "@nestjs/common";
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NestMiddleware,
+} from "@nestjs/common";
 import { NextFunction, Request, Response } from "express";
 import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
 import type { ClientRequest, IncomingMessage } from "http";
@@ -8,6 +13,7 @@ import { JwtVerificationService } from "./jwt-verification.service";
 import { RateLimitService } from "./rate-limit.service";
 import { UpstreamService } from "./upstream.service";
 import { sendUpstreamUnavailable } from "./upstream-unavailable";
+import { validateProxyRequestBody } from "./proxy-request-validation";
 
 @Injectable()
 export class GatewayProxyMiddleware implements NestMiddleware {
@@ -28,6 +34,13 @@ export class GatewayProxyMiddleware implements NestMiddleware {
       next();
       return;
     }
+
+    const validation = validateProxyRequestBody(req.method, req.path, req.body);
+    if (validation && "error" in validation) {
+      next(new BadRequestException(validation.error));
+      return;
+    }
+    if (validation) req.body = validation.data;
 
     void this.handle(req, res, route).catch((error) => next(error));
   }

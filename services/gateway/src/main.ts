@@ -6,10 +6,12 @@ import helmet from "helmet";
 import { GlobalExceptionsFilter } from "./common/filters";
 import { connectSwagger } from "./config/swagger";
 import { httpMetricsMiddleware, initPrometheus } from "@kinvue/http-metrics";
+import { installJsonBodyParser } from "./common/json-body-parser";
 
 async function bootstrap() {
   initPrometheus("gateway");
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bodyParser: false });
+  installJsonBodyParser(app);
   app.use(httpMetricsMiddleware("gateway"));
   //add config module
   const configService = app.get(ConfigService);

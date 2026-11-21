@@ -39,13 +39,13 @@ export class AppController {
   @Post("rooms/:id/invites")
   createDirectInvite(
     @Param("id") id: string,
-    @Body() body: { recipientId?: unknown; role?: unknown },
+    @Body() body: { targetUserId?: unknown; role?: unknown },
     @Headers("x-user-id") userId?: string,
   ) {
     if (body?.role !== undefined && body.role !== "VIEWER") {
       throw new BadRequestException("Invited users start as VIEWER");
     }
-    return this.rooms.createDirectInvite(id, body?.recipientId, userId);
+    return this.rooms.createDirectInvite(id, body?.targetUserId, userId);
   }
 
   @Post("rooms/:id/invites/link")
