@@ -1,5 +1,8 @@
 import type { ProxyRoute } from "./proxy.types";
 
+// This is an explicit public allowlist. Internal Users profile creation and
+// Movie transcode callbacks are intentionally absent: services call them over
+// the private service network and they must never be exposed through Gateway.
 export const PROXY_ROUTES: ProxyRoute[] = [
   {
     methods: ["POST"],

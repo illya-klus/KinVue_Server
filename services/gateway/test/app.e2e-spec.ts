@@ -66,6 +66,15 @@ describe("Health", () => {
       .expect(404);
   });
 
+  it("does not expose internal transcode callbacks through the Gateway", async () => {
+    await request(app.getHttpServer())
+      .post("/api/internal/movies/movie-123/transcode-complete")
+      .expect(404);
+    await request(app.getHttpServer())
+      .post("/api/internal/movies/movie-123/transcode-failed")
+      .expect(404);
+  });
+
   afterEach(async () => {
     await app.close();
   });
