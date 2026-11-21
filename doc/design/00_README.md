@@ -15,9 +15,10 @@ KinVue is currently at:
 - High-level architecture (HLA/HLD): v1
 - Service boundaries: v1
 - Core reliability patterns: selected
-- Detailed design / implementation: next stage
+- Detailed design: in progress; accepted policy gates are recorded in `doc/decisions/`
+- Implementation: active across the server and client repositories; completion is tracked in Jira and `doc/status.md`
 
-The main architecture is intentionally not over-engineered. Decisions that need real metrics, implementation feedback, or load testing are explicitly deferred.
+The design documents describe both target architecture and implemented slices. Check `doc/status.md`, Jira, and the referenced code before treating a planned capability as delivered. Decisions that need real metrics, implementation feedback, or load testing remain explicitly deferred.
 
 ## Core system idea
 

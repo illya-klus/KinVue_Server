@@ -51,6 +51,10 @@ Redis handles:
 - presence;
 - ephemeral chat.
 
+**Implementation evidence**
+
+The Rooms Redis slice in PR #28 implements live room state and membership with Redis-backed create/list/close operations. Durable invite and schedule records are still pending; see 0023 and the corresponding Jira work. This evidence does not change the decision boundary below.
+
 **Reason**
 
 Low-latency read/write workload and horizontal Rooms scaling.
@@ -64,6 +68,10 @@ Low-latency read/write workload and horizontal Rooms scaling.
 Do not introduce PostgreSQL for Rooms v1 simply because every service "needs a DB".
 
 Accepted exception, 2026-10-28: [decision 0023](../decisions/0023-rooms-durable-storage.md) introduces a Rooms-owned PostgreSQL database for durable invites, their transactional outbox, schedules and invitees. Live room state, playback, presence and chat remain ephemeral in Redis. Schedules do not belong to Movie PostgreSQL.
+
+**Implementation evidence**
+
+The current Rooms slice uses Redis for live room state. The accepted PostgreSQL exception, durable invitations, outbox, and schedules are not yet implemented; do not treat this ADR's exception as delivered infrastructure.
 
 **Reason**
 

@@ -39,6 +39,9 @@
 - At-least-once preferred over true exactly-once.
 - Transactional Outbox should be used for important durable producer events.
 - HLA v1 is frozen until detailed service design proves changes are needed.
+- Auth token, password, compensation, and operator-bootstrap policy: [0020](../decisions/0020-auth-password-rs256-and-sessions.md), [0021](../decisions/0021-auth-policy-gates.md).
+- Room lifecycle, durable Rooms data, registration username, and browser-session policy: [0022](../decisions/0022-room-policy-gates.md), [0023](../decisions/0023-rooms-durable-storage.md), [0024](../decisions/0024-registration-username-policy.md), [0025](../decisions/0025-browser-session-storage.md).
+- Users, movie publication/media state, playback version, search, and upload policy: [0026](../decisions/0026-sprint-1-users-movie-policies.md).
 
 ## Rejected / Not selected now
 

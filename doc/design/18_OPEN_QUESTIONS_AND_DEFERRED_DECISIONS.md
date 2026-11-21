@@ -8,7 +8,6 @@ Auth TTL, RS256/JWKS verification and refresh rotation/revocation are fixed by [
 
 - Subscribe each Rooms instance to every room channel or only rooms with locally connected users?
 - Exact Redis HA topology?
-- Do we need room-state version numbers in v1?
 
 ## Chat
 
@@ -23,8 +22,6 @@ Auth TTL, RS256/JWKS verification and refresh rotation/revocation are fixed by [
 
 ## Users
 
-- User search implementation?
-- Friendship pagination?
 - Mutual friends?
 - Watch-history ownership/location?
 - Recommendation projections?
@@ -33,23 +30,20 @@ Auth TTL, RS256/JWKS verification and refresh rotation/revocation are fixed by [
 
 - Exact movie schema?
 - Exact search ranking?
-- Debounce duration?
-- Minimum query length?
 - Cron interval: daily vs 5/15 minutes?
 - Full rebuild vs incremental sync default?
 - Exact scheduled-publish worker implementation?
 
 ## Media
 
-- HLS-only or HLS + DASH?
-- Exact bitrate ladder?
-- Exact video/audio codecs?
 - Cleanup thresholds for abandoned upload?
 - Worker retry count?
 - Transcoding provider: FFmpeg containers vs managed service?
 - Originals retention policy?
 - DRM future?
 - Signed URL vs signed cookie at CDN?
+
+The removed questions are settled by [0026](../decisions/0026-sprint-1-users-movie-policies.md): playback versioning; literal user search and cursor ordering; 300 ms movie-search debounce and a two-character minimum; and HLS/H.264/AAC upload and rendition limits. Their implementation status remains separate from the accepted policy.
 
 ## Notifications
 

@@ -4,6 +4,25 @@
 
 Validate assumptions instead of trusting architecture diagrams.
 
+## Repository commands
+
+Run from the repository root with Node 24 and pnpm 10.34.4:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm format:check
+pnpm typecheck:contracts
+pnpm test
+pnpm typecheck
+pnpm build
+pnpm test:integration:infra
+pnpm test:e2e
+pnpm load:gateway
+pnpm load:search
+```
+
+`pnpm test:integration:infra` checks the configured integration dependencies after they are available; start the local stack with `pnpm infra:up` and stop it with `pnpm infra:down`. Load commands need their documented environment and infrastructure. A command being listed here is a validation instruction, not evidence that it passed. Record the exact command, revision, environment, and result in the release acceptance log. CI currently runs install, formatting, contracts typecheck, unit tests, and typecheck; lint is disabled in CI while the TypeScript 7 compatibility issue is unresolved.
+
 ---
 
 ## 1. Gateway load test
