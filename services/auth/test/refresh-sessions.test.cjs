@@ -33,6 +33,12 @@ test("refresh tokens are opaque, stored only as hashes, and expire in 30 days", 
     jwt,
     { getPrivateKey: () => "unused", getKeyId: () => "test-key" },
     prisma,
+    {
+      async rotate() {
+        return null;
+      },
+      async revoke() {},
+    },
   );
 
   const before = Date.now();
@@ -83,6 +89,12 @@ test("refresh verification rejects revoked and expired sessions", async () => {
     {},
     { getPrivateKey: () => "unused", getKeyId: () => "test-key" },
     prisma,
+    {
+      async rotate() {
+        return null;
+      },
+      async revoke() {},
+    },
   );
   const token = "opaque-refresh-token";
   const tokenHash = createHash("sha256").update(token).digest("hex");

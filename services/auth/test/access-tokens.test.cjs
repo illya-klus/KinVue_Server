@@ -42,6 +42,15 @@ function createPrisma() {
   };
 }
 
+function createRefreshSessions() {
+  return {
+    async rotate() {
+      return null;
+    },
+    async revoke() {},
+  };
+}
+
 test("issues and verifies access tokens with the required RS256 claims", async () => {
   const { SigningKeyService, TokensService } = await loadTokenTypes();
   const privateKey = createKeys();
@@ -56,6 +65,7 @@ test("issues and verifies access tokens with the required RS256 claims", async (
     new JwtService(),
     signingKey,
     createPrisma(),
+    createRefreshSessions(),
   );
   const userId = "e3aa40c8-3fcf-4d96-9c6a-998c31ef54c3";
   const pair = await tokens.createTokenPair(userId, "ADMIN");
@@ -88,6 +98,7 @@ test("issues a scopes claim for a regular user", async () => {
     new JwtService(),
     signingKey,
     createPrisma(),
+    createRefreshSessions(),
   );
   const pair = await tokens.createTokenPair("regular-user", "USER");
   const claims = await tokens.verifyAccessToken(pair.accessToken);

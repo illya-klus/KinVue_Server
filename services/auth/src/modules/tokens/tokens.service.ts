@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { PrismaService } from "../../prisma/prisma.service.js";
+import { RefreshSessionRepository } from "./refresh-session.repository.js";
 import { SigningKeyService } from "./signing-key.service.js";
 
 export const REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60;
@@ -13,12 +14,12 @@ export const AUTH_ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
 @Injectable()
 export class TokensService {
   public constructor(
-    // Kept as a constructor dependency for backward-compatible callers; key
-    // material is owned and validated by SigningKeyService.
+    // Key material is owned and validated by SigningKeyService.
     _config: ConfigService,
     private readonly jwtService: JwtService,
     private readonly signingKey: SigningKeyService,
     private readonly prisma: PrismaService,
+    private readonly refreshSessions: RefreshSessionRepository,
   ) {}
 
   public verifyAccessToken(token: string): Promise<Record<string, unknown>> {
@@ -65,6 +66,28 @@ export class TokensService {
     });
 
     return { accessToken, refreshToken };
+  }
+
+  public async rotateRefreshToken(token: string) {
+    const refreshToken = randomBytes(32).toString("base64url");
+    const session = await this.refreshSessions.rotate(
+      this.hashRefreshToken(token),
+      this.hashRefreshToken(refreshToken),
+    );
+    if (!session) return null;
+
+    const user = await this.prisma.db.orm.public.AuthUser.first({
+      id: session.userId,
+    });
+    if (!user) return null;
+
+    const scopes = user.role === "ADMIN" ? ["admin"] : [];
+    const accessToken = await this.createAccessToken(user.id, scopes);
+    return { accessToken, refreshToken };
+  }
+
+  public revokeRefreshToken(token: string): Promise<void> {
+    return this.refreshSessions.revoke(this.hashRefreshToken(token));
   }
 
   public createAccessToken(
