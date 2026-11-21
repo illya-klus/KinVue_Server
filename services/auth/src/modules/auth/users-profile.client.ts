@@ -1,4 +1,5 @@
 import {
+  BadGatewayException,
   ConflictException,
   Injectable,
   ServiceUnavailableException,
@@ -37,28 +38,27 @@ export class UsersProfileClient {
     if (response.status === 409) {
       throw new ConflictException("Username is already taken");
     }
-    if (!response.ok) {
+    if (response.status === 503) {
       throw new ServiceUnavailableException(
         "Users profile service unavailable",
       );
+    }
+    if (!response.ok) {
+      throw new BadGatewayException("Users profile request failed");
     }
 
     let profile: unknown;
     try {
       profile = await response.json();
     } catch {
-      throw new ServiceUnavailableException(
-        "Users returned an invalid profile",
-      );
+      throw new BadGatewayException("Users returned an invalid profile");
     }
     if (
       !profile ||
       typeof profile !== "object" ||
       (profile as { userId?: unknown }).userId !== input.userId
     ) {
-      throw new ServiceUnavailableException(
-        "Users returned an invalid profile",
-      );
+      throw new BadGatewayException("Users returned an invalid profile");
     }
   }
 }

@@ -6,7 +6,10 @@ import { JwtModule } from "@nestjs/jwt";
 import { TokensModule } from "../tokens/tokens.module.js";
 import { PasswordHasherService } from "./password-hasher.service.js";
 import { AuthIdentityRepository } from "./auth-identity.repository.js";
-import { RegistrationSagaService } from "./registration-saga.service.js";
+import {
+  REGISTRATION_RETRY_SLEEP,
+  RegistrationSagaService,
+} from "./registration-saga.service.js";
 import { UsersProfileClient } from "./users-profile.client.js";
 
 @Module({
@@ -18,6 +21,11 @@ import { UsersProfileClient } from "./users-profile.client.js";
     AuthIdentityRepository,
     RegistrationSagaService,
     UsersProfileClient,
+    {
+      provide: REGISTRATION_RETRY_SLEEP,
+      useValue: (milliseconds: number) =>
+        new Promise<void>((resolve) => setTimeout(resolve, milliseconds)),
+    },
   ],
 })
 export class AuthModule {}
