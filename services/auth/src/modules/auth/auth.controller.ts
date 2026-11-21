@@ -23,9 +23,12 @@ import {
   authLoginAttempts,
   authRegistrationAttempts,
 } from "../../auth-observability.metrics.js";
+import { createLogger } from "@kinvue/logger";
 
 @Controller()
 export class AuthController {
+  private readonly logger = createLogger("auth");
+
   constructor(
     private readonly authService: AuthService,
     private readonly tokensService: TokensService,
@@ -57,6 +60,7 @@ export class AuthController {
     }
     if (!identity || identity.status !== "ACTIVE" || !passwordMatches) {
       authLoginAttempts.inc({ outcome: "failure" });
+      this.logger.warn("login rejected", { reason: "invalid_credentials" });
       throw new UnauthorizedException("Invalid email or password");
     }
 
@@ -67,6 +71,7 @@ export class AuthController {
     );
     this.setRefreshCookie(response, tokens.refreshToken);
     authLoginAttempts.inc({ outcome: "success" });
+    this.logger.info("login succeeded", { userId: identity.userId });
     return { accessToken: tokens.accessToken };
   }
 
@@ -74,7 +79,9 @@ export class AuthController {
   @HttpCode(201)
   public async register(@Body() body: unknown) {
     const input = validateRegistrationInput(body);
-    return this.registrationSaga.register(input);
+    const result = await this.registrationSaga.register(input);
+    this.logger.info("registration completed", { outcome: "success" });
+    return result;
   }
 
   @Post("auth/refresh")
@@ -88,6 +95,7 @@ export class AuthController {
     if (!tokens) throw new UnauthorizedException();
 
     this.setRefreshCookie(response, tokens.refreshToken);
+    this.logger.info("refresh succeeded");
     return { accessToken: tokens.accessToken };
   }
 
@@ -117,6 +125,7 @@ export class AuthController {
       sameSite: "strict",
       path: "/auth/refresh",
     });
+    this.logger.info("logout completed");
   }
 
   private readRefreshCookie(cookieHeader?: string): string | null {
