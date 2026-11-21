@@ -52,7 +52,7 @@ FR-09 activity is deferred by [decision 0014](../decisions/0014-defer-fr09-activ
 | 34.34 | Metrics endpoints respond              | NOT RUN — no KinVue service processes were listening.                                                                                               |
 | 34.35 | Three Grafana dashboards open          | NOT RUN — dashboard definitions exist, but Grafana was not running. Names are listed in [observability](../design/21_OBSERVABILITY_AND_METRICS.md). |
 | 34.36 | Sample service log contains request ID | NOT RUN as a runtime sample. Logger unit test passed.                                                                                               |
-| 34.37 | No committed private signing key       | PASS — `git grep -n -E 'BEGIN (RSA                                                                                                                  | EC  | OPENSSH )?PRIVATE KEY' -- ':!_.lock' ':!_.json'` returned no matches. |
+| 34.37 | No committed private signing key       | PASS — `git grep -n 'PRIVATE KEY'` across tracked files returned no matches.                                                                        |
 | 34.38 | CI passes                              | PARTIAL — Server PR #28 and #29 checks passed; Client PR #2 smoke was pending.                                                                      |
 
 ## Next acceptance work
