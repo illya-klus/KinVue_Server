@@ -1,11 +1,12 @@
-import { UsersService, decodeCursor, encodeCursor } from "./users.service";
+import { UsersService } from "./users.service";
+import { encodeCursor } from "../mongo/pagination";
 import type { ProfileDoc } from "./users.types";
 
 const ME = "550e8400-e29b-41d4-a716-446655440001";
 
 function profile(username: string): ProfileDoc {
   return {
-    _id: `550e8400-e29b-41d4-a716-4466554400${username.length}${username.charCodeAt(0)}`,
+    _id: `550e8400-e29b-41d4-a716-4466554400${username.charCodeAt(1)}`,
     username,
     displayName: username.toUpperCase(),
     avatarUrl: null,
@@ -45,28 +46,30 @@ describe("UsersService", () => {
     expect(repo.update).not.toHaveBeenCalled();
   });
 
-  it("paginates search with an opaque username cursor", async () => {
+  it("paginates search with a (createdAt, _id) cursor", async () => {
     repo.search.mockResolvedValue([
       profile("aa"),
       profile("ab"),
       profile("ac"),
     ]);
-    const page = await service.search(ME, { query: "a", limit: "2" });
+    const page = await service.search(ME, { query: "al", limit: "2" });
     expect(page.items.map((i) => i.username)).toEqual(["aa", "ab"]);
-    expect(page.nextCursor).toBe(encodeCursor("ab"));
+    expect(page.nextCursor).toBe(encodeCursor(profile("ab")));
     expect(repo.search).toHaveBeenCalledWith(
       expect.objectContaining({ limit: 3, excludeUserId: ME }),
     );
 
     repo.search.mockResolvedValue([profile("ac")]);
     const last = await service.search(ME, {
-      query: "a",
+      query: "al",
       limit: "2",
       cursor: page.nextCursor!,
     });
     expect(last.nextCursor).toBeNull();
     expect(repo.search).toHaveBeenLastCalledWith(
-      expect.objectContaining({ afterUsername: "ab" }),
+      expect.objectContaining({
+        after: { _id: profile("ab")._id, createdAt: profile("ab").createdAt },
+      }),
     );
   });
 
@@ -74,14 +77,14 @@ describe("UsersService", () => {
     for (const params of [
       {},
       { query: "  " },
-      { query: "a", limit: "0" },
-      { query: "a", limit: "abc" },
-      { query: "a", cursor: "***" },
+      { query: " a " },
+      { query: "al", limit: "0" },
+      { query: "al", limit: "abc" },
+      { query: "al", cursor: "***" },
     ]) {
       await expect(service.search(ME, params)).rejects.toMatchObject({
         code: "VALIDATION_FAILED",
       });
     }
-    expect(() => decodeCursor("")).toThrow();
   });
 });

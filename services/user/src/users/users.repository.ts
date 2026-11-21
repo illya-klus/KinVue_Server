@@ -6,6 +6,7 @@ import {
   type ProfileDoc,
 } from "./users.types";
 import { MongoService, isDuplicateKey } from "../mongo/mongo.service";
+import { type Cursor, cursorFilter } from "../mongo/pagination";
 
 export type ProfileUpdate = {
   displayName?: string;
@@ -21,21 +22,10 @@ function escapeRegex(value: string): string {
 
 @Injectable()
 export class UsersRepository {
-  private collectionPromise?: Promise<Collection<ProfileDoc>>;
-
   constructor(private readonly mongo: MongoService) {}
 
-  /** Indexes are created on first use so boot does not require MongoDB. */
-  private collection(): Promise<Collection<ProfileDoc>> {
-    this.collectionPromise ??= (async () => {
-      const col = (await this.mongo.db()).collection<ProfileDoc>("profiles");
-      await col.createIndex({ username: 1 }, { unique: true });
-      return col;
-    })().catch((error: unknown) => {
-      this.collectionPromise = undefined;
-      throw error;
-    });
-    return this.collectionPromise;
+  private async collection(): Promise<Collection<ProfileDoc>> {
+    return (await this.mongo.db()).collection<ProfileDoc>("users");
   }
 
   async findById(userId: string): Promise<ProfileDoc | null> {
@@ -95,24 +85,23 @@ export class UsersRepository {
     );
   }
 
-  /** Prefix match on username/displayName, ordered by username, keyset cursor. */
+  /** Literal, case-insensitive substring search and chronological pagination. */
   async search(params: {
     query: string;
     excludeUserId: string;
     limit: number;
-    afterUsername?: string;
+    after?: Cursor;
   }): Promise<ProfileDoc[]> {
-    const prefix = new RegExp(`^${escapeRegex(params.query)}`, "i");
-    const filter: Record<string, unknown> = {
-      _id: { $ne: params.excludeUserId },
-      $or: [{ username: prefix }, { displayName: prefix }],
-    };
-    if (params.afterUsername !== undefined) {
-      filter.username = { $gt: params.afterUsername };
-    }
+    const literal = new RegExp(escapeRegex(params.query), "i");
     return (await this.collection())
-      .find(filter)
-      .sort({ username: 1 })
+      .find({
+        _id: { $ne: params.excludeUserId },
+        $and: [
+          { $or: [{ username: literal }, { displayName: literal }] },
+          cursorFilter(params.after),
+        ],
+      })
+      .sort({ createdAt: 1, _id: 1 })
       .limit(params.limit)
       .toArray();
   }
