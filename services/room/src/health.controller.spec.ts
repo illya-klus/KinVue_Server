@@ -3,6 +3,7 @@ import type { INestApplication } from "@nestjs/common";
 import {
   HealthController,
   REDIS_READINESS,
+  ROOMS_DATABASE_READINESS,
   type RedisReadiness,
 } from "./health.controller";
 import { MetricsController } from "./metrics.controller";
@@ -13,11 +14,15 @@ import { initPrometheus } from "@kinvue/http-metrics";
 describe("Rooms scaffold diagnostics", () => {
   let app: INestApplication;
   const redis: Pick<RedisReadiness, "ping"> = { ping: jest.fn() };
+  const database = { ping: jest.fn() };
   beforeAll(async () => {
     initPrometheus("rooms");
     const module = await Test.createTestingModule({
       controllers: [HealthController, MetricsController],
-      providers: [{ provide: REDIS_READINESS, useValue: redis }],
+      providers: [
+        { provide: REDIS_READINESS, useValue: redis },
+        { provide: ROOMS_DATABASE_READINESS, useValue: database },
+      ],
     }).compile();
     app = module.createNestApplication();
     app.useGlobalFilters(new SharedHttpErrorFilter());
@@ -37,6 +42,7 @@ describe("Rooms scaffold diagnostics", () => {
   });
   it("reports only its own Redis readiness and a shared safe 404", async () => {
     (redis.ping as jest.Mock).mockResolvedValueOnce("PONG");
+    database.ping.mockResolvedValueOnce({ rows: [{ "?column?": 1 }] });
     await request(app.getHttpServer()).get("/health/ready").expect(200);
     (redis.ping as jest.Mock).mockRejectedValueOnce(new Error("redis secret"));
     const ready = await request(app.getHttpServer())

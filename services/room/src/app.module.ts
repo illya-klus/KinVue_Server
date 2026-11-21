@@ -14,6 +14,11 @@ import { SharedLogger } from "./shared-logger";
 import { MetricsController } from "./metrics.controller";
 import { WebSocketReservation } from "./websocket-reservation";
 import { RoomsService } from "./rooms.service";
+import { RoomsDatabaseService } from "./database/rooms-database.service";
+import { ROOMS_DATABASE_READINESS } from "./health.controller";
+import { RoomInvitesRepository } from "./invites/room-invites.repository";
+import { RoomInvitesPublisher } from "./invites/room-invites.publisher";
+import { RoomInvitesWorker } from "./invites/room-invites.worker";
 
 @Module({
   imports: [
@@ -26,6 +31,10 @@ import { RoomsService } from "./rooms.service";
   providers: [
     AppService,
     RoomsService,
+    RoomsDatabaseService,
+    RoomInvitesRepository,
+    RoomInvitesPublisher,
+    RoomInvitesWorker,
     SharedLogger,
     SharedHttpErrorFilter,
     WebSocketReservation,
@@ -38,6 +47,10 @@ import { RoomsService } from "./rooms.service";
       provide: ROOMS_REDIS,
       useFactory: (readiness: RoomsRedisReadiness) => readiness.client,
       inject: [RoomsRedisReadiness],
+    },
+    {
+      provide: ROOMS_DATABASE_READINESS,
+      useExisting: RoomsDatabaseService,
     },
   ],
 })

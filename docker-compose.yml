@@ -1,4 +1,4 @@
-# One local stack. Auth data is the service postgres (decision 0006).
+# One local stack. Auth and Rooms own separate PostgreSQL databases (decisions 0006 and 0023).
 # Start: pnpm infra:up
 name: kinvue_server
 
@@ -14,6 +14,7 @@ volumes:
     name: kinvue_server_postgres_data
   notifications-postgres-data:
   movie-postgres-data:
+  rooms-postgres-data:
   users-mongo-data:
   rooms-redis-data:
   rabbitmq-data:
@@ -64,6 +65,32 @@ services:
         [
           "CMD-SHELL",
           "pg_isready -U ${NOTIFICATIONS_POSTGRES_USER} -d ${NOTIFICATIONS_POSTGRES_DB}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+  rooms-postgres:
+    image: postgres:16
+    container_name: kinvue-rooms-postgres
+    environment:
+      POSTGRES_USER: ${ROOMS_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${ROOMS_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${ROOMS_POSTGRES_DB}
+    ports:
+      - "5436:5432"
+    volumes:
+      - rooms-postgres-data:/var/lib/postgresql/data
+    networks:
+      - kinvue-data
+      - kinvue-edge
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${ROOMS_POSTGRES_USER} -d ${ROOMS_POSTGRES_DB}",
         ]
       interval: 5s
       timeout: 5s
@@ -307,6 +334,7 @@ services:
       PORT: "4000"
       ORIGINS: http://localhost:3000
       AUTH_GRPC_URL: host.docker.internal:50051
+      ROOMS_SERVICE_URL: http://rooms:4004
       NODE_ENV: production
     ports:
       - "4000:4000"
@@ -320,6 +348,48 @@ services:
           "--no-verbose",
           "--spider",
           "http://127.0.0.1:4000/health/live",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    restart: unless-stopped
+    profiles:
+      - apps
+
+  rooms:
+    build:
+      context: .
+      dockerfile: docker/room/Dockerfile
+    container_name: kinvue-rooms
+    environment:
+      ROOMS_HTTP_PORT: "4004"
+      ROOMS_HTTP_HOST: 0.0.0.0
+      ROOMS_WS_PORT: "4014"
+      REDIS_URL: redis://rooms-redis:6379
+      ROOMS_DATABASE_URL: postgresql://${ROOMS_POSTGRES_USER}:${ROOMS_POSTGRES_PASSWORD}@rooms-postgres:5432/${ROOMS_POSTGRES_DB}
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672
+      NODE_ENV: production
+    ports:
+      - "4004:4004"
+      - "4014:4014"
+    depends_on:
+      rooms-postgres:
+        condition: service_healthy
+      rooms-redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - kinvue-data
+      - kinvue-edge
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4004/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       interval: 10s
       timeout: 5s

@@ -4,7 +4,12 @@
 import { setTimeout as sleep } from "node:timers/promises";
 
 const checks = [
-  { name: "postgres", url: "http://127.0.0.1:5432", tcp: true },
+  { name: "auth-postgres", tcpPort: 5432 },
+  { name: "movie-postgres", tcpPort: 5434 },
+  { name: "notifications-postgres", tcpPort: 5435 },
+  { name: "rooms-postgres", tcpPort: 5436 },
+  { name: "rooms-redis", tcpPort: 6379 },
+  { name: "rooms-http", url: "http://127.0.0.1:4004/health/ready" },
   { name: "meilisearch", url: "http://127.0.0.1:7700/health" },
   { name: "rabbitmq", tcpPort: 5672 },
 ];
