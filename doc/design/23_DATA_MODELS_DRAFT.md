@@ -1,6 +1,6 @@
 # KinVue — Draft Data Models
 
-These are conceptual models, not final schemas.
+These are conceptual models, not final schemas. The notes below record fields observed in the current repository and accepted policies; they do not imply that every associated feature is complete.
 
 ---
 
@@ -11,7 +11,7 @@ AuthIdentity
 - userId: UUID
 - email
 - passwordHash
-- status: PENDING | ACTIVE | DISABLED
+- status: PENDING | PROFILE_CREATING | ACTIVE | COMPENSATING | COMPENSATED | DISABLED
 - createdAt
 - updatedAt
 ```
@@ -20,6 +20,7 @@ Constraints:
 
 - unique(email)
 - userId immutable
+- Current Auth contract also has `AuthUser` (id, unique email, role, provider, providerUserId) and `RefreshSession` (userId, tokenHash, rotatedFromSessionId, revokedAt, expiresAt, timestamps). See `services/auth/src/prisma/contract.prisma` and migrations for implemented schema details.
 
 ---
 
@@ -30,7 +31,7 @@ User
 - userId
 - username
 - displayName
-- avatar
+- avatarUrl
 - preferences
 - createdAt
 - updatedAt
@@ -46,7 +47,7 @@ Friendship
 - user1Id
 - user2Id
 - requestedBy
-- status: PENDING | ACCEPTED | REJECTED/BLOCKED (future)
+- status: PENDING | ACCEPTED | REJECTED
 - createdAt
 - updatedAt
 ```
@@ -76,17 +77,9 @@ Movie
 - updatedAt
 ```
 
-Possible statuses:
+Current Movie schema separates `publication_status` from `media_status`; see [0026](../decisions/0026-sprint-1-users-movie-policies.md). Publication values are DRAFT, SCHEDULED, PUBLISHED. Media values include NONE, UPLOADING, UPLOAD_FAILED, ABANDONED, PROCESSING, READY, PROCESSING_FAILED. Do not collapse the two state machines.
 
-- DRAFT
-- SCHEDULED
-- UPLOADING
-- PROCESSING
-- READY
-- PUBLISHED
-- FAILED/ABANDONED
-
-Exact final state machine should be normalized in detailed design.
+The repository migrations define the concrete PostgreSQL columns and enum values; consult `services/movie/migrations/` before changing a schema. The state machine and allowed transitions are specified in 0026.
 
 ---
 
@@ -98,11 +91,11 @@ room:{roomId}:state
 - ownerId
 - visibility
 - movieId?
+- status: ACTIVE | CLOSED
 - playbackStatus: PLAYING | PAUSED
-- position
-- updatedAt
-- permissions/version? (optional)
-- expiresAt/TTL
+- positionSeconds
+- version (monotonic integer per room)
+- createdAt / TTL
 ```
 
 ---
@@ -112,8 +105,11 @@ room:{roomId}:state
 ```text
 room:{roomId}:members
 - userId
-- role/permissions
-- connection/presence metadata
+- role: OWNER | CONTROLLER | VIEWER
+- presence: ONLINE | DISCONNECTED | LEFT
+- joinedAt / lastHeartbeatAt
+
+Room invite token hashes, durable invitation rows, scheduled-view records, and outbox events belong in the accepted Rooms PostgreSQL design [0023](../decisions/0023-rooms-durable-storage.md). They are not implemented by the current Redis live-state slice.
 ```
 
 ---
