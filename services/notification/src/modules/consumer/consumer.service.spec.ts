@@ -1,6 +1,4 @@
 import { notificationEventSchema } from "@kinvue/contracts";
-import { ConsumerService } from "./consumer.service";
-
 describe("ConsumerService event parsing", () => {
   it("accepts a valid ROOM_INVITED envelope", () => {
     const body = {

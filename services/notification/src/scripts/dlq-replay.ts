@@ -1,8 +1,6 @@
 import amqp from "amqplib";
 import {
   NOTIFIER_DLQ_QUEUE,
-  NOTIFIER_DLQ_ROUTING_KEY,
-  NOTIFIER_DLX_EXCHANGE,
   NOTIFIER_DOMAIN_EXCHANGE,
 } from "../messaging/notifications-topology.constants";
 

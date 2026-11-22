@@ -110,8 +110,7 @@ test(
       );
       const authUrl = "http://127.0.0.1:" + jwksServer.address().port;
       const owner = randomUUID(),
-        viewer = randomUUID(),
-        outsider = randomUUID();
+        viewer = randomUUID();
       const tokens = async (userId, options = {}) =>
         new SignJWT({ scopes: [] })
           .setProtectedHeader({ alg: "RS256", kid: "rooms-test-key" })
