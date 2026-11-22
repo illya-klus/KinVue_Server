@@ -13,6 +13,16 @@ export class RequestIdMiddleware implements NestMiddleware {
 
     req.requestId = requestId;
     res.setHeader("x-request-id", requestId);
+    process.stdout.write(
+      `${JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "info",
+        event: "http_request_started",
+        requestId,
+        method: req.method,
+        path: req.originalUrl,
+      })}\n`,
+    );
 
     next();
   }
