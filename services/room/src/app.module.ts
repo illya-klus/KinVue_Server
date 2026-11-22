@@ -19,6 +19,8 @@ import { ROOMS_DATABASE_READINESS } from "./health.controller";
 import { RoomInvitesRepository } from "./invites/room-invites.repository";
 import { RoomInvitesPublisher } from "./invites/room-invites.publisher";
 import { RoomInvitesWorker } from "./invites/room-invites.worker";
+import { ScheduledRoomsRepository } from "./scheduled-rooms/scheduled-rooms.repository";
+import { ScheduledRoomsService } from "./scheduled-rooms/scheduled-rooms.service";
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { RoomInvitesWorker } from "./invites/room-invites.worker";
     RoomInvitesRepository,
     RoomInvitesPublisher,
     RoomInvitesWorker,
+    ScheduledRoomsRepository,
+    ScheduledRoomsService,
     SharedLogger,
     SharedHttpErrorFilter,
     WebSocketReservation,

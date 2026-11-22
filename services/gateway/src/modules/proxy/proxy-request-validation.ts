@@ -6,6 +6,7 @@ import {
   inviteRequestSchema,
   loginRequestSchema,
   registerRequestSchema,
+  scheduleRoomRequestSchema,
   updateProfileRequestSchema,
   uploadCompleteRequestSchema,
   uploadInitRequestSchema,
@@ -36,6 +37,11 @@ const bodyValidators = [
     method: "POST",
     path: /^\/api\/rooms\/?$/,
     schema: createRoomRequestSchema,
+  },
+  {
+    method: "POST",
+    path: /^\/api\/scheduled-rooms\/?$/,
+    schema: scheduleRoomRequestSchema,
   },
   {
     method: "POST",

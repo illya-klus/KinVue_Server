@@ -9,10 +9,41 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 import { RoomsService } from "./rooms.service";
+import { ScheduledRoomsService } from "./scheduled-rooms/scheduled-rooms.service";
 
 @Controller()
 export class AppController {
-  constructor(private readonly rooms: RoomsService) {}
+  constructor(
+    private readonly rooms: RoomsService,
+    private readonly scheduledRooms: ScheduledRoomsService,
+  ) {}
+
+  @Post("scheduled-rooms")
+  createScheduledRoom(
+    @Body()
+    body: {
+      movieId?: unknown;
+      visibility?: unknown;
+      scheduledFor?: unknown;
+      inviteeIds?: unknown;
+    },
+    @Headers("x-user-id") userId?: string,
+  ) {
+    return this.scheduledRooms.create(body, userId);
+  }
+
+  @Get("scheduled-rooms")
+  async listScheduledRooms(@Headers("x-user-id") userId?: string) {
+    return { items: await this.scheduledRooms.list(userId) };
+  }
+
+  @Post("scheduled-rooms/:id/cancel")
+  cancelScheduledRoom(
+    @Param("id") id: string,
+    @Headers("x-user-id") userId?: string,
+  ) {
+    return this.scheduledRooms.cancel(id, userId);
+  }
 
   @Post("rooms")
   createRoom(
