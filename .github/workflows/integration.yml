@@ -115,9 +115,16 @@ jobs:
           test "$status" = "401"
           grep --ignore-case --quiet "^x-request-id: ${request_id}" "$headers_file"
 
+          log_request_id="${request_id}-log"
+          log_status="$(curl --silent --show-error --dump-header "$headers_file" --output /dev/null \
+            --write-out '%{http_code}' --header "x-request-id: ${log_request_id}" \
+            http://127.0.0.1:4000/health/live)"
+          test "$log_status" = "200"
+          grep --ignore-case --quiet "^x-request-id: ${log_request_id}" "$headers_file"
+
           logged=0
           for attempt in {1..15}; do
-            if docker logs kinvue-gateway 2>&1 | grep --fixed-strings --quiet "${request_id}"; then
+            if docker logs kinvue-gateway 2>&1 | grep --fixed-strings --quiet "${log_request_id}"; then
               logged=1
               break
             fi
