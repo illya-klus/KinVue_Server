@@ -124,14 +124,15 @@ jobs:
 
           logged=0
           for attempt in {1..15}; do
-            if docker logs kinvue-gateway 2>&1 | grep --fixed-strings --quiet "${log_request_id}"; then
+            if docker compose --env-file .env.example --profile apps logs --no-color --since 2m gateway \
+              | grep --fixed-strings --quiet "${log_request_id}"; then
               logged=1
               break
             fi
             sleep 1
           done
           if [[ "$logged" != "1" ]]; then
-            docker logs kinvue-gateway 2>&1
+            docker compose --env-file .env.example --profile apps logs --no-color --since 2m gateway
           fi
           test "$logged" = "1"
       - name: Check committed files for private key material
