@@ -70,15 +70,19 @@ jobs:
           grep -q '^process_cpu_user_seconds_total' <<<"$worker_metrics"
 
           targets_ready=0
+          targets_json=""
           for attempt in {1..45}; do
-            if curl --fail --silent http://127.0.0.1:9090/api/v1/targets \
-              | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>{const targets=JSON.parse(s).data.activeTargets.filter(t=>t.labels.job==="kinvue-services");process.exit(targets.length===7&&targets.every(t=>t.health==="up")?0:1)})'; then
+            targets_json="$(curl --fail --silent http://127.0.0.1:9090/api/v1/targets)"
+            if node -e 'const targets=JSON.parse(process.argv[1]).data.activeTargets.filter(t=>t.labels.job==="kinvue-services");process.exit(targets.length===7&&targets.every(t=>t.health==="up")?0:1)' "$targets_json"; then
               targets_ready=1
               break
             fi
             sleep 2
           done
-          test "$targets_ready" = "1"
+          if [[ "$targets_ready" != "1" ]]; then
+            echo "$targets_json" | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>{for(const target of JSON.parse(s).data.activeTargets.filter(t=>t.labels.job==="kinvue-services")){console.log(JSON.stringify({scrapeUrl:target.scrapeUrl,health:target.health,lastError:target.lastError}))}})'
+            exit 1
+          fi
 
           curl --fail --silent http://127.0.0.1:9090/-/ready >/dev/null
           datasource_ready=0
