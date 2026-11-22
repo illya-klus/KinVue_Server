@@ -9,15 +9,33 @@ import {
 import { ConfigService } from "@nestjs/config";
 import Redis from "ioredis";
 import { roomsRedisReachable } from "./room-observability.metrics";
+import type { RoomsDatabaseService } from "./database/rooms-database.service";
 
 export const REDIS_READINESS = Symbol("REDIS_READINESS");
 export type RedisReadiness = Pick<Redis, "ping">;
+
+export const ROOMS_REDIS = Symbol("ROOMS_REDIS");
+export const ROOMS_DATABASE_READINESS = Symbol("ROOMS_DATABASE_READINESS");
+export type RoomsDatabaseReadiness = Pick<RoomsDatabaseService, "ping">;
+export type RoomsRedisClient = Pick<
+  Redis,
+  | "ping"
+  | "eval"
+  | "hget"
+  | "hgetall"
+  | "hset"
+  | "hlen"
+  | "ttl"
+  | "zadd"
+  | "zrem"
+  | "zrevrange"
+>;
 
 @Injectable()
 export class RoomsRedisReadiness
   implements RedisReadiness, OnApplicationShutdown
 {
-  private readonly client: Redis;
+  readonly client: Redis;
   constructor(config: ConfigService) {
     this.client = new Redis(config.getOrThrow<string>("REDIS_URL"), {
       lazyConnect: true,
@@ -40,6 +58,8 @@ export class RoomsRedisReadiness
 export class HealthController {
   constructor(
     @Inject(REDIS_READINESS) private readonly redis: RedisReadiness,
+    @Inject(ROOMS_DATABASE_READINESS)
+    private readonly database: RoomsDatabaseReadiness,
   ) {}
   @Get("live")
   live() {
@@ -49,6 +69,7 @@ export class HealthController {
   async ready() {
     try {
       await this.redis.ping();
+      await this.database.ping();
       roomsRedisReachable.set({ service: "rooms" }, 1);
       return { status: "ok", service: "rooms" };
     } catch {

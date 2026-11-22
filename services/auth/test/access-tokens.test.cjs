@@ -105,3 +105,39 @@ test("issues a scopes claim for a regular user", async () => {
 
   assert.deepEqual(claims.scopes, []);
 });
+
+test("keeps an existing access token valid after Auth is reinitialized with its configured key", async () => {
+  const { SigningKeyService, TokensService } = await loadTokenTypes();
+  const privateKey = createKeys();
+  const environment = {
+    getOrThrow: (name) =>
+      ({
+        AUTH_JWT_PRIVATE_KEY: privateKey,
+        AUTH_JWT_KEY_ID: "persistent-auth-key",
+      })[name],
+  };
+  const createAuthInstance = () => {
+    const signingKey = new SigningKeyService(environment);
+    const tokens = new TokensService(
+      { getOrThrow: () => "refresh-test-secret" },
+      new JwtService(),
+      signingKey,
+      createPrisma(),
+      createRefreshSessions(),
+    );
+    return { signingKey, tokens };
+  };
+
+  const beforeRestart = createAuthInstance();
+  const userId = "e3aa40c8-3fcf-4d96-9c6a-998c31ef54c3";
+  const token = await beforeRestart.tokens.createAccessToken(userId, []);
+
+  // A new service instance models a new Auth process reading the same secret
+  // configuration after a restart.
+  const afterRestart = createAuthInstance();
+  const claims = await afterRestart.tokens.verifyAccessToken(token);
+  const jwks = afterRestart.signingKey.getJwks();
+
+  assert.equal(claims.userId, userId);
+  assert.equal(jwks.keys[0].kid, "persistent-auth-key");
+});

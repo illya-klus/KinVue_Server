@@ -195,6 +195,34 @@ test("three Users failures reject registration without activating the identity",
   ]);
 });
 
+test("Users downtime rejects the HTTP registration path with 503 instead of a 201 result", async () => {
+  const [{ AuthController }, { ServiceUnavailableException }] =
+    await Promise.all([
+      import("../dist/modules/auth/auth.controller.js"),
+      import("@nestjs/common"),
+    ]);
+  const controller = new AuthController(
+    {},
+    {},
+    {},
+    {
+      async register() {
+        throw new ServiceUnavailableException();
+      },
+    },
+  );
+
+  await assert.rejects(
+    controller.register({
+      email: "offline@example.com",
+      password: "long-enough-password",
+      username: "offline_user",
+      displayName: "Offline User",
+    }),
+    { status: 503 },
+  );
+});
+
 test("Users client posts the same global user id to the internal profile endpoint", async () => {
   const { UsersProfileClient } =
     await import("../dist/modules/auth/users-profile.client.js");

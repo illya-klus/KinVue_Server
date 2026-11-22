@@ -170,3 +170,7 @@ Modify HLA only if:
 - a failure test proves it;
 - a bounded context genuinely separates;
 - operational cost/complexity justifies it.
+
+## Repository implementation status
+
+This sequence is a planning guide, not a claim that every phase is complete. Current code is a partial implementation: Auth and shared contracts have landed in `dev`; Rooms Redis create/list/close work is under review in PR #28; several client flows exist on `main`. Durable Rooms PostgreSQL invitations/outbox/schedules, complete invitation and role-management flows, remaining media and notification flows, and release acceptance are still tracked as open work. Use Jira and `doc/status.md` for current completion state; do not infer delivery from a phase heading.

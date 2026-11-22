@@ -67,12 +67,19 @@ export const scheduleRoomRequestSchema = z.strictObject({
   movieId: entityId,
   visibility: visibilitySchema,
   scheduledFor: timestamp,
-  inviteeIds: z.array(userId),
+  inviteeIds: z.array(userId).max(19),
 });
 export const roomRoleSchema = z.enum(["OWNER", "CONTROLLER", "VIEWER"]);
 export const inviteRequestSchema = z.strictObject({
   targetUserId: userId,
   role: z.literal("VIEWER").default("VIEWER"),
+});
+export const acceptRoomInviteRequestSchema = z.strictObject({
+  token: z.string().min(1),
+});
+export const changeRoomRoleRequestSchema = z.strictObject({
+  userId,
+  role: z.enum(["VIEWER", "CONTROLLER"]),
 });
 export const uploadInitRequestSchema = z.strictObject({
   fileName: z.string().min(1),
@@ -83,6 +90,17 @@ export const uploadInitRequestSchema = z.strictObject({
     .gt(1024 * 1024)
     .max(25 * 1024 ** 3),
   partCount: z.number().int().positive().max(10_000),
+});
+export const uploadCompleteRequestSchema = z.strictObject({
+  uploadId: userId,
+  parts: z
+    .array(
+      z.strictObject({
+        partNumber: z.number().int().positive(),
+        etag: z.string().trim().min(1),
+      }),
+    )
+    .min(1),
 });
 
 export const notificationEventNames = [

@@ -6,6 +6,7 @@ import request from "supertest";
 import { App } from "supertest/types";
 import { AppModule } from "../src/app.module";
 import { JwtVerificationService } from "../src/modules/proxy/jwt-verification.service";
+import { installJsonBodyParser } from "../src/common/json-body-parser";
 
 describe("Health", () => {
   let app: INestApplication<App>;
@@ -18,7 +19,8 @@ describe("Health", () => {
       .useValue(new ConfigService({ AUTH_GRPC_URL: "127.0.0.1:59999" }))
       .compile();
 
-    app = moduleFixture.createNestApplication();
+    app = moduleFixture.createNestApplication({ bodyParser: false });
+    installJsonBodyParser(app);
     app.setGlobalPrefix("api", {
       exclude: [
         { path: "health", method: RequestMethod.ALL },
@@ -64,6 +66,34 @@ describe("Health", () => {
     await request(app.getHttpServer())
       .post("/api/internal/users/profiles")
       .expect(404);
+  });
+
+  it("does not expose internal transcode callbacks through the Gateway", async () => {
+    await request(app.getHttpServer())
+      .post("/api/internal/movies/movie-123/transcode-complete")
+      .expect(404);
+    await request(app.getHttpServer())
+      .post("/api/internal/movies/movie-123/transcode-failed")
+      .expect(404);
+  });
+
+  it("rejects JSON requests larger than 1 MiB with 400", async () => {
+    await request(app.getHttpServer())
+      .post("/api/auth/register")
+      .set("content-type", "application/json")
+      .send(Buffer.alloc(1024 * 1024 + 1, 32))
+      .expect(400);
+  });
+
+  it("rejects writes that do not satisfy shared request contracts", async () => {
+    await request(app.getHttpServer())
+      .post("/api/auth/register")
+      .send({ email: "not-an-email", password: "short" })
+      .expect(400);
+    await request(app.getHttpServer())
+      .post("/api/rooms/550e8400-e29b-41d4-a716-446655440001/permissions")
+      .send({ userId: "550e8400-e29b-41d4-a716-446655440002", role: "OWNER" })
+      .expect(400);
   });
 
   afterEach(async () => {

@@ -142,6 +142,16 @@ Collect:
 
 ---
 
+## Provisioned Grafana dashboards
+
+The Compose Grafana provisioning currently names these dashboards:
+
+- **KinVue Overview** — HTTP request rate and HTTP 5xx rate (`infra/grafana/provisioning/dashboards/json/kinvue-overview.json`).
+- **KinVue Rooms** — WebSocket connections and Redis reachability (`infra/grafana/provisioning/dashboards/json/kinvue-rooms.json`).
+- **KinVue Media** — transcode jobs and media.transcode queue depth (`infra/grafana/provisioning/dashboards/json/kinvue-media.json`).
+
+These panels cover only part of the metrics listed above. Verify that all three dashboards open and that request IDs appear in sample logs as part of release acceptance; their presence in provisioning files alone does not establish runtime validation.
+
 ## Capacity decision rule
 
 Example:

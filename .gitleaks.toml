@@ -1,0 +1,9 @@
+title = "KinVue secret scan"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "The checked-in env file contains local-only example values."
+paths = ['''(^|[/\\])\.env\.example$''']
+regexes = ['''abc123def456''']

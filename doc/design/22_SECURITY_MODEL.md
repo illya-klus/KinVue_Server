@@ -85,6 +85,8 @@ Use:
 - expiration;
 - server-side metadata binding to movieId.
 
+Accepted media policy [0026](../decisions/0026-sprint-1-users-movie-policies.md) further limits uploads to `video/mp4`, `video/quicktime`, or `video/x-matroska`, with `1,000,000 < sizeBytes <= 25,000,000,000`; abandoned multipart uploads older than 24 hours are aborted and cleaned up. HLS access is signed for 600 seconds and must cover the master playlist, child playlists, and segments while keeping the bucket private. These are requirements; verify each against the Movie implementation and deployment before release.
+
 ---
 
 ## Service identity
@@ -96,6 +98,9 @@ At minimum:
 - services are not directly exposed without need;
 - internal network policies should restrict DB/broker access;
 - secrets are not committed to repositories.
+- Users profile bootstrap and Movie transcode callbacks stay on the private
+  service network; the public Gateway exposes only its explicit route allowlist.
+  This deployment boundary is assumed wherever those service endpoints run.
 
 ---
 
@@ -109,9 +114,9 @@ At minimum:
 
 ## Security items for later detailed design
 
-- Argon2id parameters are accepted in [0021](../decisions/0021-auth-policy-gates.md), implementation still required;
+- Argon2id parameters, compensation behavior, and first-admin operator command are fixed by [0021](../decisions/0021-auth-policy-gates.md); verify implementation and operator procedure against the decision;
 - cookie topology, SameSite and CSRF enforcement at implementation time (storage choice accepted in 0025);
-- key rotation/JWKS;
+- full signing-key rotation ceremony and JWKS refresh/distribution timing;
 - account recovery;
 - email verification;
 - rate limiting per endpoint;
@@ -120,3 +125,7 @@ At minimum:
 - admin provisioning policy accepted in 0021; operator command and scope enforcement still required;
 - upload malware/content validation;
 - DRM if required.
+
+## Implementation alignment
+
+The accepted browser policy in [0025](../decisions/0025-browser-session-storage.md) requires refresh-token in an HttpOnly cookie and access-token only in memory. The connected client currently stores both values in `sessionStorage` (`src/lib/auth/token-storage.ts`); this is an implementation gap and must be closed before claiming the browser session policy is satisfied. The policy also requires production `Secure`, logout revocation/cookie clearing, and same-origin invite return. Track these checks with the client tickets. Room invitation persistence and outbox publication require the Rooms-owned PostgreSQL in [0023](../decisions/0023-rooms-durable-storage.md); Redis-only persistence does not satisfy that decision.

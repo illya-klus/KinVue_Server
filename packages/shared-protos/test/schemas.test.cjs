@@ -69,6 +69,19 @@ test("documented request bodies validate without implementing endpoints", () => 
     scheduledFor: "2026-11-01T12:00:00Z",
     inviteeIds: [userId],
   });
+  assert.equal(
+    s.scheduleRoomRequestSchema.safeParse({
+      movieId: "movie_123",
+      visibility: "PRIVATE",
+      scheduledFor: "2026-11-01T12:00:00Z",
+      inviteeIds: Array.from(
+        { length: 20 },
+        (_, index) =>
+          `33333333-3333-4333-8333-${String(index).padStart(12, "0")}`,
+      ),
+    }).success,
+    false,
+  );
   s.createRoomRequestSchema.parse({
     movieId: "movie_123",
     visibility: "PUBLIC",
@@ -82,6 +95,12 @@ test("documented request bodies validate without implementing endpoints", () => 
       .success,
     false,
   );
+  s.acceptRoomInviteRequestSchema.parse({ token: "one-time-link-token" });
+  s.changeRoomRoleRequestSchema.parse({ userId, role: "CONTROLLER" });
+  assert.equal(
+    s.changeRoomRoleRequestSchema.safeParse({ userId, role: "OWNER" }).success,
+    false,
+  );
 });
 
 test("upload rejects unsupported media, invalid part counts and byte bounds", () => {
@@ -92,6 +111,10 @@ test("upload rejects unsupported media, invalid part counts and byte bounds", ()
     partCount: 200,
   };
   s.uploadInitRequestSchema.parse(body);
+  s.uploadCompleteRequestSchema.parse({
+    uploadId: randomUUID(),
+    parts: [{ partNumber: 1, etag: "etag-1" }],
+  });
   for (const patch of [
     { contentType: "text/plain" },
     { fileSizeBytes: 1024 ** 2 },

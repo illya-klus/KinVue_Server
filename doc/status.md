@@ -2,6 +2,17 @@
 
 Оновлюй цей файл, коли роботу завершено, покинуто або свідомо не зроблено. Журнал чатів при цьому не чисть.
 
+## Поточний зріз — 2026-11-22
+
+Jira показує призначені Богдану задачі в усіх спринтах. Історичні розділи нижче описують попередню роботу, а актуальні PR та блокери наведено тут.
+
+- Server PR #40–#52 змерджені в `dev`; відкритих Server PR немає. У PR #46 додано Gateway regression приватного входу та Rooms regression owner-only зміни ролей; у PR #50 — profile read із токеном, виданим до перезапуску Auth; у PR #52 — авторизований roster кімнати з ролями та присутністю. Цільові тести, типізація і CI пройшли.
+- Після перевірених і злитих PR у `Done` проведено KIN-101, KIN-105, KIN-109, KIN-120, KIN-124, KIN-134, KIN-136, KIN-138, KIN-139, KIN-142, KIN-143, KIN-145, KIN-147, KIN-172, KIN-176, KIN-179, KIN-195, KIN-199, KIN-203, KIN-208, KIN-217, KIN-221, KIN-228, KIN-281, KIN-324, KIN-326, KIN-328, KIN-330, KIN-332, KIN-334, KIN-336, KIN-338 і KIN-340.
+- KIN-213 лишається `In Progress`: немає playback-control handler із перевіркою ролі та підписаного media-access endpoint.
+- KIN-54 лишається `In Testing (by agent)` до фактичного Auth Docker image smoke. Docker Desktop після restart лишився у `starting`, а Windows service `com.docker.service` зупинений; запуск сервісу відхилено через відсутність доступу. Раніше Grafana API повернула три dashboards, але зараз Prometheus/Grafana endpoints timeout; Rooms `/metrics` і поточну доступність dashboards не підтверджено. Деталь записана в KIN-346.
+- KIN-342, KIN-344 і KIN-346 лишаються `In Progress`; повне приймання не завершене. Client PR #3 (KIN-141), #4 (KIN-248/KIN-251) і #5 (KIN-243 browser journey) змерджені в `main`; усі чотири тікети в `In Testing (by agent)` до перевірки з живим стеком. Лишаються відкритими KIN-247, KIN-250, KIN-264, KIN-268, KIN-272, KIN-275, KIN-279 і KIN-290.
+- KIN-285 потребує рішення про хостинг і секрети; MVP release tag KIN-347 не створювати до успішного приймання.
+
 ## Зроблено
 
 - Монорепозиторій pnpm, gateway і auth як окремі пакети.
@@ -23,7 +34,7 @@
 ## Не зроблено
 
 - Приймання Users у Sprint 2 ще попереду. Реалізація й перевірки описані нижче; підключення внутрішнього створення профілю до реальної саги Auth залишається окремою інтеграцією.
-- Перший спринт Богдана: PR #10 і #11 містять рішення та shared-пакети; PR #12 містить каркаси Auth/Rooms і відкритий до `dev`. CI PR #12 пройшов. П'ять із семи каркасних тікетів у Verifying (by developer); Docker-тікети KIN-54 і KIN-228 лишаються в In Testing (by agent), бо локальний Docker image smoke не перевірений: диск C заповнювався під час перевірки, і автоматична перевірка заблокувала видалення тимчасових Docker-бінарників.
+- Перший спринт Богдана: PR #10, #11 і #12 змерджені в `dev`; CI PR #12 пройшов. KIN-54 і KIN-228 лишаються в In Testing (by agent), доки не завершено Docker image build/run smoke. Попередня спроба була зупинена через нестачу місця на диску C; на 2026-11-21 лишалося 632 MB.
 - Збереження, ротація і відкликання refresh-токенів.
 - Інші RPC і proto, крім `SignInWithGoogle`.
 - ESLint у CI і на коміті вимкнений, доки `typescript-eslint` не підтримає TypeScript 7. Парсер зараз падає до перегляду файлів. Вимикати лінт назавжди не вирішували.
@@ -84,4 +95,8 @@ Shared-поставка першого спринту: `@kinvue/config`, `@kinvu
 
 Реалізовано профілі, пошук, дружбу та транзакційний outbox для KIN-29, KIN-32, KIN-35, KIN-38, KIN-41, KIN-45, KIN-49, KIN-53, KIN-331, KIN-333, KIN-335, KIN-337, KIN-339, KIN-341, KIN-343, KIN-345. Клієнт отримує наступні сторінки пошуку й списків дружби через Gateway. Виправлено старт і передачу JSON-запитів через наявний middleware Gateway. Див. [runbook](runbooks/users-sprint-2.md) і [журнал](log/2026-11-16.md).
 
-Здавання відновлено 2026-11-19: відкриті [Server PR #27 у dev](https://github.com/illya-klus/KinVue_Server/pull/27) і [Client PR #1 у main](https://github.com/illya-klus/KinVue_Client/pull/1). Попереднє обмеження авторизації Git усунуте явним вибором наявного акаунта; подробиці — [журнал публікації](log/2026-11-19.md). Приймання обох PR ще потрібне.
+Sprint 2 Users здано: [Server PR #27 у dev](https://github.com/illya-klus/KinVue_Server/pull/27) і [Client PR #1 у main](https://github.com/illya-klus/KinVue_Client/pull/1) змерджені 2026-11-21. Обмеження авторизації Git та історія публікації описані в [журналі](log/2026-11-19.md).
+
+## Sprint 4: Rooms, 2026-11-21
+
+Реалізовано KIN-101, KIN-105, KIN-109 і KIN-134 у гілці `feat/sprint-4-rooms`: Redis-модель кімнати/учасників, створення приватної чи публічної кімнати, список активних публічних кімнат і закриття лише власником. Застосовано TTL 6 годин, після закриття — 15 хвилин; створений власник має `OWNER/ONLINE`, відтворення — `PAUSED` на позиції 0. Валідація, Lua-атомарні операції та тести є в коді. Redis 7 HTTP smoke пройшов на одноразовому контейнері; root `pnpm format:check`, `pnpm typecheck`, `pnpm test` і PR CI (compose-health, форматування, unit-тести, typecheck) пройшли. [PR #28](https://github.com/illya-klus/KinVue_Server/pull/28) очікує рев’ю/злиття; ці чотири задачі в `Verifying (by developer)`. Клієнтський KIN-243 (сторінка публічних кімнат і перехід до кімнати) вже в `main`, build та Playwright CI пройшли; тікет у `In Testing (by agent)` до інтеграції API з PR #28. Docker image build окремо не запускався через 632 MB вільного місця на C:. Запрошення/outbox, місткість 20, WebSocket, KIN-147 повний lifecycle і решта клієнтських задач залишаються відкритими.

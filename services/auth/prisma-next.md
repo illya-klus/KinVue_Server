@@ -96,6 +96,19 @@ image are required. The test binds local port 5433 by default; set
 `AUTH_TEST_PORT` if that port is already in use, or
 `AUTH_TEST_POSTGRES_IMAGE` to select an already available compatible image.
 
+### Granting an admin role
+
+Admin access is granted only by the local operator command, never by a public
+HTTP endpoint. Use an ACTIVE password identity's UUID:
+
+```sh
+pnpm --filter @kinvue/auth admin:grant -- --user-id <uuid>
+```
+
+The command updates the AuthUser role in a transaction and rejects identities
+that are not ACTIVE. `AUTH_DATABASE_URL` or `DATABASE_URL` must target the
+PostgreSQL `kinvue` database.
+
 ### Files
 
 | File                                                       | Purpose                                                  |

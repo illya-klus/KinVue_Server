@@ -150,10 +150,12 @@ test(
         );
         return result.rows[0];
       };
+      let successfulUserId;
 
       await t.test("successful profile creation reaches ACTIVE", async () => {
         mode = "success";
         const result = await register("success@example.com", "success_user");
+        successfulUserId = result.userId;
         const row = await state(result.userId);
         assert.equal(result.status, "ACTIVE");
         assert.equal(row.status, "ACTIVE");
@@ -161,6 +163,22 @@ test(
         assert.equal(row.password_hash, "test-hash:test-password-value");
         assert.ok(profileStore.has(result.userId));
       });
+
+      await t.test(
+        "operator command grants admin only for the active identity",
+        async () => {
+          const { grantAdmin } = await import("../scripts/grant-admin.mjs");
+          await grantAdmin(pool, successfulUserId);
+          const result = await pool.query(
+            `SELECT "role", "provider" FROM public."authUser" WHERE "id" = $1`,
+            [successfulUserId],
+          );
+          assert.deepEqual(result.rows[0], {
+            role: "ADMIN",
+            provider: "PASSWORD",
+          });
+        },
+      );
 
       await t.test(
         "lost Users response retries idempotently with the same user ID",
@@ -197,6 +215,34 @@ test(
           );
           assert.equal(before.rows.length, 1);
           assert.deepEqual(after.rows, before.rows);
+        },
+      );
+
+      await t.test(
+        "concurrent registrations for one email create exactly one identity",
+        async () => {
+          mode = "success";
+          const results = await Promise.allSettled([
+            register("race@example.com", "race_user_one"),
+            register("race@example.com", "race_user_two"),
+          ]);
+          const fulfilled = results.filter(
+            (result) => result.status === "fulfilled",
+          );
+          const rejected = results.filter(
+            (result) => result.status === "rejected",
+          );
+          const rows = await pool.query(
+            "SELECT user_id, status FROM public.auth_identities WHERE email = $1",
+            ["race@example.com"],
+          );
+
+          assert.equal(fulfilled.length, 1);
+          assert.equal(rejected.length, 1);
+          assert.equal(rejected[0].reason.status, 409);
+          assert.equal(rows.rows.length, 1);
+          assert.equal(rows.rows[0].status, "ACTIVE");
+          assert.equal(profileStore.has(rows.rows[0].user_id), true);
         },
       );
 
