@@ -4,18 +4,18 @@ This is an updated, partial acceptance record for the Server repository. The MVP
 
 ## Automated commands
 
-| Command / check                  | Result                  | Recorded output or limitation                                                                                                                                                                                                                                         |
-| -------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm format:check`              | PASS in CI              | [PR #44 code-quality-check](https://github.com/illya-klus/KinVue_Server/actions/runs/45032519707) passed, including formatting.                                                                                                                                       |
-| `pnpm lint`                      | FAIL / excluded from CI | The current TypeScript 7 and `typescript-eslint` 8.64.0 combination crashes before linting (`Cannot read properties of undefined (reading 'Cjs')`). The CI workflow explicitly skips this step.                                                                       |
-| `pnpm typecheck`                 | PASS                    | Full monorepo typecheck passed in the local commit hook for PR #44 and in [PR #44 code-quality-check](https://github.com/illya-klus/KinVue_Server/actions/runs/45032519707).                                                                                          |
-| `pnpm test`                      | PASS in CI              | The full workspace unit-test step passed in [PR #44 code-quality-check](https://github.com/illya-klus/KinVue_Server/actions/runs/45032519707). Local Auth registration suite: 13 tests passed.                                                                        |
-| Rooms scheduled-room integration | PASS in CI              | [PR #42 compose-health](https://github.com/illya-klus/KinVue_Server/actions/runs/45031728002): 3 PostgreSQL + Redis integration tests passed, covering rollback on Redis failure, invites/outbox publication, and cancelled schedules.                                |
-| `pnpm test:integration:infra`    | NOT RUN locally         | Docker Desktop daemon was unavailable in this workspace. The CI compose-health job started the KinVue data plane and Rooms service successfully.                                                                                                                      |
-| `pnpm test:e2e`                  | BLOCKED                 | The command delegates to `KinVue_Client`, which is not present beside this repository in the workspace yet. The browser E2E record from 2026-11-21 reported one homepage smoke pass and 10 service journeys skipped because no E2E stack/credentials were configured. |
-| `pnpm load:gateway`              | NOT RUN                 | Requires a live Gateway and a valid `LOAD_JWT`; neither was available.                                                                                                                                                                                                |
-| `pnpm load:search`               | NOT RUN                 | Requires a live Gateway and Movie/Search stack; neither was available.                                                                                                                                                                                                |
-| Full CI                          | PASS                    | Security scans, code-quality, and compose-health checks passed for [PR #44](https://github.com/illya-klus/KinVue_Server/pull/44).                                                                                                                                     |
+| Command / check                  | Result          | Recorded output or limitation                                                                                                                                                                                                                                                                                                                |
+| -------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm format:check`              | PASS in CI      | Passed in [PR #59 code-quality-check](https://github.com/illya-klus/KinVue_Server/actions/runs/45065779559) and [PR #60 code-quality-check](https://github.com/illya-klus/KinVue_Server/actions/runs/45065644841).                                                                                                                           |
+| `pnpm lint`                      | PASS            | Fixed and restored in [PR #60](https://github.com/illya-klus/KinVue_Server/pull/60); zero errors, three non-blocking warnings locally. CI lint step passed.                                                                                                                                                                                  |
+| `pnpm typecheck`                 | PASS            | Full monorepo typecheck passed locally and in [PR #59 code-quality-check](https://github.com/illya-klus/KinVue_Server/actions/runs/45065779559) and [PR #60 code-quality-check](https://github.com/illya-klus/KinVue_Server/actions/runs/45065644841).                                                                                       |
+| `pnpm test`                      | PASS in CI      | Full workspace unit-test step passed in [PR #59 code-quality-check](https://github.com/illya-klus/KinVue_Server/actions/runs/45065779559) and [PR #60 code-quality-check](https://github.com/illya-klus/KinVue_Server/actions/runs/45065644841). Local Docker-backed registration integration could not run with the Windows daemon stopped. |
+| Rooms scheduled-room integration | PASS in CI      | [PR #42 compose-health](https://github.com/illya-klus/KinVue_Server/actions/runs/45031728002): 3 PostgreSQL + Redis integration tests passed, covering rollback on Redis failure, invites/outbox publication, and cancelled schedules.                                                                                                       |
+| `pnpm test:integration:infra`    | NOT RUN locally | Docker is unavailable locally. Its service-health coverage plus metrics, realtime regression, and scheduled-room PostgreSQL + Redis integration checks passed in [PR #59 compose-health](https://github.com/illya-klus/KinVue_Server/actions/runs/45065779605).                                                                              |
+| `pnpm test:e2e`                  | PARTIAL PASS    | KinVue_Client run on 2026-11-22: 8 passed, 10 skipped. The 10 live-service journeys still need `E2E_STACK=1`, test credentials, and a running full stack; stubbed room flows are not live acceptance.                                                                                                                                        |
+| `pnpm load:gateway`              | NOT RUN         | Requires a live Gateway and a valid `LOAD_JWT`; neither was available.                                                                                                                                                                                                                                                                       |
+| `pnpm load:search`               | NOT RUN         | Requires a live Gateway and Movie/Search stack; neither was available.                                                                                                                                                                                                                                                                       |
+| Full CI                          | PASS            | Security scans, code-quality, and compose-health passed for [PR #59](https://github.com/illya-klus/KinVue_Server/pull/59) and [PR #60](https://github.com/illya-klus/KinVue_Server/pull/60).                                                                                                                                                 |
 
 ## Product acceptance (steps 34.10–34.33)
 
@@ -23,32 +23,31 @@ Not verified in this run. Registration and account journeys, movie flows, browse
 
 ## Operational acceptance (steps 34.34–34.38)
 
-| Step  | Scenario                               | Result                                         |
-| ----- | -------------------------------------- | ---------------------------------------------- |
-| 34.34 | Metrics endpoints respond              | Pending current CI run for PR #59.             |
-| 34.35 | Three Grafana dashboards open          | Pending current CI run for PR #59.             |
-| 34.36 | Sample service log contains request ID | Pending current CI run for PR #59.             |
-| 34.37 | No committed private signing key       | PASS locally; CI secret scan is also required. |
-| 34.38 | CI passes                              | Pending current CI run for PR #59.             |
+| Step  | Scenario                               | Result                                                                                                                                                                                                            |
+| ----- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 34.34 | Metrics endpoints respond              | PASS — five HTTP endpoints and Worker metrics respond; Prometheus reports all seven targets `up` in [PR #59 compose-health](https://github.com/illya-klus/KinVue_Server/actions/runs/45065779605).                |
+| 34.35 | Three Grafana dashboards open          | PASS — `kinvue-overview`, `kinvue-rooms`, and `kinvue-media` APIs respond in [PR #59 compose-health](https://github.com/illya-klus/KinVue_Server/actions/runs/45065779605).                                       |
+| 34.36 | Sample service log contains request ID | PASS — Gateway unit coverage captures the structured log with request ID; runtime response echoes a supplied ID in [PR #59 compose-health](https://github.com/illya-klus/KinVue_Server/actions/runs/45065779605). |
+| 34.37 | No committed private signing key       | PASS — tracked-file scan and Gitleaks secret scan passed on the PR head.                                                                                                                                          |
+| 34.38 | CI passes                              | PASS — Code Quality, Integration, secret scan, and dependency audit passed for [PR #59](https://github.com/illya-klus/KinVue_Server/pull/59).                                                                     |
 
 ### KIN-346 observability checklist
 
 The Integration workflow exercises the running Compose stack and records each check as a required CI result:
 
-- [ ] Fetch `/metrics` from Auth, Gateway, Users, Movie, Rooms, Notifications, and Transcode Worker; confirm Prometheus reports all seven targets as `up`.
-- [ ] Query Grafana for the provisioned `kinvue-overview`, `kinvue-rooms`, and `kinvue-media` dashboards.
-- [ ] Send a request with a stable `x-request-id`; confirm the response echoes it. Gateway unit coverage captures a structured sample log and asserts that it includes the request ID.
-- [x] Search tracked files for committed signing-key material; local scan returned no matches. CI secret scan must pass on the PR head.
-- [ ] Confirm all CI and Integration checks pass before moving KIN-346 to Done.
+- [x] Fetch `/metrics` from Auth, Gateway, Users, Movie, Rooms, Notifications, and Transcode Worker; confirm Prometheus reports all seven targets as `up`.
+- [x] Query Grafana for the provisioned `kinvue-overview`, `kinvue-rooms`, and `kinvue-media` dashboards.
+- [x] Send a request with a stable `x-request-id`; confirm the response echoes it. Gateway unit coverage captures a structured sample log and asserts that it includes the request ID.
+- [x] Search tracked files for committed signing-key material; local scan returned no matches. CI Gitleaks secret scan passed on the PR head.
+- [x] Confirm all CI and Integration checks pass before moving KIN-346 to Done.
 
-PR: [#59 — observability acceptance](https://github.com/illya-klus/KinVue_Server/pull/59). Runtime checks have not passed yet; this checklist does not clear the release gate.
+PR: [#59 — observability acceptance](https://github.com/illya-klus/KinVue_Server/pull/59). The operational checklist passed. Product acceptance and load checks remain open, so this does not clear the full MVP release gate.
 
 ## Remaining acceptance work
 
-1. Restore a supported lint configuration or TypeScript toolchain and rerun `pnpm lint`.
-2. Add the Client repository beside Server, configure E2E credentials/services, and rerun all browser journeys.
-3. Start the full stack, run both bounded load smoke commands, and capture metrics/log evidence.
-4. Complete operational and product scenarios, then reassess the release gate. Do not tag or push `v0.1.0-mvp` while any required item remains failed or unverified.
+1. Configure E2E credentials/services and rerun the 10 skipped live browser journeys.
+2. Run both bounded load smoke commands against a live stack and capture metrics/log evidence.
+3. Complete remaining product scenarios, then reassess the release gate. Do not tag or push `v0.1.0-mvp` while any required item remains failed or unverified.
 
 ## Same-day update — Client tests available
 
