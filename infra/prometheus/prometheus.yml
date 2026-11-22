@@ -6,12 +6,12 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets:
-          - host.docker.internal:4000
+          - gateway:4000
           - host.docker.internal:4001
-          - host.docker.internal:4002
-          - host.docker.internal:4003
-          - host.docker.internal:4004
-          - host.docker.internal:4005
-          - host.docker.internal:4016
+          - users:4002
+          - movie:4003
+          - rooms:4004
+          - notification:4005
+          - transcode-worker:4016
         labels:
           environment: local
