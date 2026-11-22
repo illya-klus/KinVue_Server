@@ -37,7 +37,7 @@ The Integration workflow exercises the running Compose stack and records each ch
 
 - [ ] Fetch `/metrics` from Auth, Gateway, Users, Movie, Rooms, Notifications, and Transcode Worker; confirm Prometheus reports all seven targets as `up`.
 - [ ] Query Grafana for the provisioned `kinvue-overview`, `kinvue-rooms`, and `kinvue-media` dashboards.
-- [ ] Send a request with a stable `x-request-id`; confirm the response echoes it and the Gateway log contains it.
+- [ ] Send a request with a stable `x-request-id`; confirm the response echoes it. Gateway unit coverage captures a structured sample log and asserts that it includes the request ID.
 - [x] Search tracked files for committed signing-key material; local scan returned no matches. CI secret scan must pass on the PR head.
 - [ ] Confirm all CI and Integration checks pass before moving KIN-346 to Done.
 

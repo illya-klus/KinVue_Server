@@ -36,6 +36,28 @@ describe("RequestIdMiddleware", () => {
     expect(req.requestId).toBe("client-req-42");
   });
 
+  it("writes a structured sample log containing the request id", () => {
+    const req = {
+      header: () => "client-req-42",
+      method: "GET",
+      originalUrl: "/health/live",
+    } as unknown as Request;
+    const res = { setHeader: jest.fn() } as unknown as Response;
+    const stdout = jest
+      .spyOn(process.stdout, "write")
+      .mockImplementation(() => true);
+
+    try {
+      middleware.use(req, res, () => undefined);
+
+      expect(stdout).toHaveBeenCalledWith(
+        expect.stringContaining('"requestId":"client-req-42"'),
+      );
+    } finally {
+      stdout.mockRestore();
+    }
+  });
+
   it("replaces invalid request id", () => {
     const req = {
       header: () => "bad id with spaces",

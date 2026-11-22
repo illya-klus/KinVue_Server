@@ -1,5 +1,4 @@
 import { Injectable, NestMiddleware } from "@nestjs/common";
-import { writeSync } from "node:fs";
 import { NextFunction, Request, Response } from "express";
 import { randomUUID } from "node:crypto";
 
@@ -14,8 +13,7 @@ export class RequestIdMiddleware implements NestMiddleware {
 
     req.requestId = requestId;
     res.setHeader("x-request-id", requestId);
-    writeSync(
-      1,
+    process.stdout.write(
       `${JSON.stringify({
         timestamp: new Date().toISOString(),
         level: "info",
