@@ -251,7 +251,7 @@ test("Users client posts the same global user id to the internal profile endpoin
     global.fetch = originalFetch;
   }
 
-  assert.equal(request.url, "http://users.local:4002/internal/profiles");
+  assert.equal(request.url, "http://users.local:4002/internal/users/profiles");
   assert.equal(request.options.method, "POST");
   assert.deepEqual(JSON.parse(request.options.body), {
     userId: "global-user-id",
