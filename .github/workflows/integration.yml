@@ -61,11 +61,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for port in 4000 4002 4003 4004 4005 4016; do
+          for port in 4000 4002 4003 4004 4005; do
             echo "Checking metrics on port ${port}"
             metrics="$(curl --fail --silent --show-error "http://127.0.0.1:${port}/metrics")"
             grep -q '^process_cpu_user_seconds_total' <<<"$metrics"
           done
+          worker_metrics="$(docker exec kinvue-transcode-worker node -e 'fetch("http://127.0.0.1:4016/metrics").then(async r=>{const body=await r.text();if(!r.ok)process.exit(1);process.stdout.write(body)}).catch(()=>process.exit(1))')"
+          grep -q '^process_cpu_user_seconds_total' <<<"$worker_metrics"
 
           targets_ready=0
           for attempt in {1..45}; do
