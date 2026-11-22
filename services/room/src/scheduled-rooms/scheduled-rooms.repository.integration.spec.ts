@@ -3,8 +3,6 @@ import { ConfigService } from "@nestjs/config";
 import Redis from "ioredis";
 import { RoomsDatabaseService } from "../database/rooms-database.service";
 import { ScheduledRoomsRepository } from "./scheduled-rooms.repository";
-import { RoomsService } from "../rooms.service";
-import { RoomInvitesRepository } from "../invites/room-invites.repository";
 
 const testDatabaseUrl = process.env["ROOMS_DATABASE_URL"];
 const testRedisUrl = process.env["ROOMS_TEST_REDIS_URL"];
@@ -84,11 +82,6 @@ integration("ScheduledRoomsRepository persistence", () => {
     const ownerId = randomUUID();
     const movieId = randomUUID();
     const inviteeIds = [randomUUID(), randomUUID()];
-    const roomService = new RoomsService(
-      redis as never,
-      new RoomInvitesRepository(database),
-    );
-
     try {
       await repository.create({
         scheduledRoomId,
@@ -110,12 +103,19 @@ integration("ScheduledRoomsRepository persistence", () => {
       );
 
       const opened = await repository.openDue(async (schedule) => {
-        await roomService.openScheduledRoom({
-          roomId: schedule.roomId,
-          movieId: schedule.movieId,
-          visibility: schedule.visibility,
-          ownerId: schedule.ownerId,
-        });
+        await redis.hset(
+          `room:${schedule.roomId}`,
+          "id",
+          schedule.roomId,
+          "movieId",
+          schedule.movieId,
+          "visibility",
+          schedule.visibility,
+          "ownerId",
+          schedule.ownerId,
+          "status",
+          "ACTIVE",
+        );
       });
       expect(opened).toBe(1);
       expect((await repository.findById(scheduledRoomId))?.status).toBe(
