@@ -28,6 +28,11 @@ export class RoomsDatabaseService implements OnModuleInit, OnModuleDestroy {
       "utf8",
     );
     await this.pool.query(sql);
+    const scheduledRoomsSql = await readFile(
+      join(process.cwd(), "migrations", "002_scheduled_rooms.sql"),
+      "utf8",
+    );
+    await this.pool.query(scheduledRoomsSql);
     this.logger.log("Rooms database migrations applied");
   }
 
