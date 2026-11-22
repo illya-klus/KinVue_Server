@@ -44,6 +44,8 @@ Publication worker виконується кожну хвилину, макси�
 
 Клієнт: `/admin/movies` створює, `/admin/movies/:id/edit` читає/редагує чернетку; пошук має debounce 300 ms; watchlist доступний після входу. Відтворення, Rooms і повний S3/FFmpeg pipeline — наступні задачі, не критерій готовності цього каталожного спринту.
 
+Сесія за 0025: access-token зберігається тільки в пам'яті; reload відновлює його через POST /api/auth/refresh з credentials include. Refresh-token не читається JavaScript і не передається JSON. Gateway переписує внутрішній cookie Path /auth/refresh у /api/auth для refresh і logout; SameSite/HttpOnly/Secure атрибути зберігаються. Кілька одночасних 401 ділять одне оновлення сесії.
+
 ## Перевірки
 
 ```sh

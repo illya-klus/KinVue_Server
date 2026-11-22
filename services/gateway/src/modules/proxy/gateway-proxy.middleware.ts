@@ -69,6 +69,11 @@ export class GatewayProxyMiddleware implements NestMiddleware {
       target,
       changeOrigin: true,
       pathRewrite: () => upstreamPath,
+      // Public cookie scope must include both refresh and logout behind /api.
+      cookiePathRewrite:
+        route.upstream === "auth"
+          ? { "/auth/refresh": "/api/auth" }
+          : undefined,
       on: {
         proxyReq: (proxyReq: ClientRequest, incoming: IncomingMessage) => {
           const r = incoming as Request;

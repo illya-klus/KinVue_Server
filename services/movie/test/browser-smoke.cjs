@@ -43,8 +43,31 @@ async function main() {
     res.setHeader("content-type", "application/json");
     if (req.url === "/.well-known/jwks.json")
       return res.end(JSON.stringify({ keys: [jwk] }));
-    if (req.url === "/auth/login")
+    if (req.url === "/auth/login") {
+      res.setHeader(
+        "set-cookie",
+        "kinvue_refresh=fixture-session; HttpOnly; SameSite=Strict; Path=/auth/refresh",
+      );
       return res.end(JSON.stringify({ accessToken: token }));
+    }
+    if (
+      req.url === "/auth/refresh" &&
+      req.headers.cookie?.includes("kinvue_refresh=fixture-session")
+    )
+      return res.end(JSON.stringify({ accessToken: token }));
+    if (req.url === "/auth/refresh") {
+      res.statusCode = 401;
+      return res.end("{}");
+    }
+    if (req.url === "/auth/logout") {
+      assert.ok(req.headers.cookie?.includes("kinvue_refresh=fixture-session"));
+      res.setHeader(
+        "set-cookie",
+        "kinvue_refresh=; HttpOnly; SameSite=Strict; Path=/auth/refresh; Max-Age=0",
+      );
+      res.statusCode = 204;
+      return res.end();
+    }
     if (req.url?.startsWith("/notifications"))
       return res.end(JSON.stringify({ items: [] }));
     res.statusCode = 404;
@@ -97,6 +120,11 @@ async function main() {
     await page.getByLabel("Password").fill("fixture-passphrase");
     await page.getByRole("button", { name: "Sign in", exact: true }).click();
     await expect(page).toHaveURL(/movies\/search/, { timeout: 20000 });
+    const cookie = (await page.context().cookies()).find(
+      (c) => c.name === "kinvue_refresh",
+    );
+    assert.equal(cookie?.httpOnly, true);
+    assert.equal(cookie?.path, "/api/auth");
     await page.goto(base + "/admin/movies");
     const title = "Sprint Three " + randomUUID().slice(0, 8);
     await page.getByLabel("Title", { exact: true }).fill(title);
@@ -130,6 +158,10 @@ async function main() {
     await page.getByPlaceholder("Search (min 2 chars)…").fill(title);
     await expect(page.getByRole("link", { name: title })).toBeVisible();
     await page.getByRole("link", { name: title }).click();
+    await expect(page).toHaveURL(new RegExp("/movies/" + id + "$"));
+    await expect(
+      page.getByRole("heading", { name: title, exact: true }),
+    ).toBeVisible();
     await expect(page.getByText("Edited through Gateway")).toBeVisible();
     await page.getByRole("button", { name: "Add to watchlist" }).click();
     await expect(
@@ -146,6 +178,14 @@ async function main() {
     });
     assert.equal(spoof.status, 401);
     assert.deepEqual(failures, []);
+    await page.getByRole("button", { name: "Log out", exact: true }).click();
+    await expect
+      .poll(async () =>
+        (await page.context().cookies()).some(
+          (c) => c.name === "kinvue_refresh",
+        ),
+      )
+      .toBe(false);
     console.log(
       "PASS browser -> Gateway (RS256/JWKS fixture) -> Movie -> PostgreSQL 16 -> Meilisearch -> browser",
     );

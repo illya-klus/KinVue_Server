@@ -78,7 +78,7 @@ Shared-поставка першого спринту: `@kinvue/config`, `@kinvu
 
 ## Sprint 3: Movie і Web, 2026-11-21
 
-Реалізовано каталог, versioned Prisma Next міграції Movie, admin draft/edit, publish/schedule/worker, caller-only watchlist і відповідні клієнтські сценарії. Обсяг — 25 задач Анатолія Sprint 3; залежність від відкритих Sprint 2 PR #27/#1. Перевірено реальну PostgreSQL 16, Meilisearch, Gateway і веб-сценарій із тестовим Auth/JWKS. [Runbook](runbooks/movie-sprint-3.md), [докази](verification/2026-11-21-sprint-3.md), [журнал](log/2026-11-21.md). Приймання PR ще потрібне; медіапайплайн, Rooms і cloud не входять у цей результат.
+Реалізовано каталог, versioned Prisma Next міграції Movie, admin draft/edit, publish/schedule/worker, caller-only watchlist і відповідні клієнтські сценарії. Обсяг — 25 задач Анатолія Sprint 3. Server оновлено до dev 6c80caf із уже злитим Sprint 2 PR #27; Client залежить від PR #1. Перевірено реальну PostgreSQL 16, Meilisearch, Gateway і веб-сценарій із тестовим Auth/JWKS. Клієнт узгоджено з cookie refresh нового Auth за 0025; Gateway переписує cookie path для refresh/logout. [Runbook](runbooks/movie-sprint-3.md), [докази](verification/2026-11-21-sprint-3.md), [журнал](log/2026-11-21.md). Приймання PR ще потрібне; медіапайплайн, Rooms і cloud не входять у цей результат.
 
 ## Sprint 2: Users, 2026-11-16
 
