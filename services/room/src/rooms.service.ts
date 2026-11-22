@@ -14,6 +14,15 @@ const ROOM_TTL_SECONDS = 6 * 60 * 60;
 const CLOSED_ROOM_TTL_SECONDS = 15 * 60;
 const MAX_ROOM_MEMBERS = 20;
 const CREATE_ROOM_SCRIPT = `
+  if redis.call('EXISTS', KEYS[1]) == 1 then
+    if redis.call('HGET', KEYS[1], 'status') == 'ACTIVE'
+      and redis.call('HGET', KEYS[1], 'movieId') == ARGV[2]
+      and redis.call('HGET', KEYS[1], 'visibility') == ARGV[3]
+      and redis.call('HGET', KEYS[1], 'ownerId') == ARGV[4] then
+      return 1
+    end
+    return -1
+  end
   redis.call('HSET', KEYS[1],
     'id', ARGV[1], 'movieId', ARGV[2], 'visibility', ARGV[3],
     'ownerId', ARGV[4], 'status', 'ACTIVE', 'playbackStatus', 'PAUSED',
@@ -91,7 +100,39 @@ export class RoomsService {
       throw new BadRequestException("visibility must be PRIVATE or PUBLIC");
     }
 
-    const id = randomUUID();
+    return this.createRoomWithId(
+      randomUUID(),
+      movieId.trim(),
+      visibility,
+      ownerId,
+    );
+  }
+
+  async openScheduledRoom(input: {
+    roomId: string;
+    movieId: string;
+    visibility: RoomVisibility;
+    ownerId: string;
+  }) {
+    if (!uuidPattern.test(input.roomId) || !uuidPattern.test(input.ownerId)) {
+      throw new BadRequestException(
+        "Scheduled room and owner IDs must be UUIDs",
+      );
+    }
+    return this.createRoomWithId(
+      input.roomId,
+      input.movieId,
+      input.visibility,
+      input.ownerId,
+    );
+  }
+
+  private async createRoomWithId(
+    id: string,
+    movieId: string,
+    visibility: RoomVisibility,
+    ownerId: string,
+  ) {
     const createdAt = Date.now();
     const membership = JSON.stringify({
       userId: ownerId,
@@ -100,21 +141,26 @@ export class RoomsService {
       joinedAt: new Date(createdAt).toISOString(),
       lastHeartbeatAt: createdAt,
     });
-    await this.redis.eval(
-      CREATE_ROOM_SCRIPT,
-      3,
-      this.roomKey(id),
-      this.membersKey(id),
-      "rooms:public",
-      id,
-      movieId.trim(),
-      visibility,
-      ownerId,
-      String(createdAt),
-      membership,
-      String(ROOM_TTL_SECONDS),
+    const created = Number(
+      await this.redis.eval(
+        CREATE_ROOM_SCRIPT,
+        3,
+        this.roomKey(id),
+        this.membersKey(id),
+        "rooms:public",
+        id,
+        movieId,
+        visibility,
+        ownerId,
+        String(createdAt),
+        membership,
+        String(ROOM_TTL_SECONDS),
+      ),
     );
-    return { id, movieId: movieId.trim(), visibility };
+    if (created === -1) {
+      throw new ConflictException("Room ID is already used by another room");
+    }
+    return { id, movieId, visibility };
   }
 
   async listPublicRooms(): Promise<RoomSummary[]> {

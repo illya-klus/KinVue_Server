@@ -67,7 +67,7 @@ export const scheduleRoomRequestSchema = z.strictObject({
   movieId: entityId,
   visibility: visibilitySchema,
   scheduledFor: timestamp,
-  inviteeIds: z.array(userId),
+  inviteeIds: z.array(userId).max(19),
 });
 export const roomRoleSchema = z.enum(["OWNER", "CONTROLLER", "VIEWER"]);
 export const inviteRequestSchema = z.strictObject({
