@@ -23,6 +23,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Wait for infra health
         run: node tests/integration/wait-infra-health.mjs
+      - name: Verify realtime authorization and playback regressions
+        run: pnpm --filter @kinvue/rooms test:realtime
       - name: Verify scheduled rooms survive Redis loss
         env:
           ROOMS_DATABASE_URL: postgresql://kinvue_rooms:kinvue_rooms@localhost:5436/kinvue_rooms
