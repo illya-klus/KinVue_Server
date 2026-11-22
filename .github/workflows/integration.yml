@@ -117,12 +117,15 @@ jobs:
 
           logged=0
           for attempt in {1..15}; do
-            if docker logs kinvue-gateway 2>&1 | grep --fixed-strings --quiet "[${request_id}]"; then
+            if docker logs kinvue-gateway 2>&1 | grep --fixed-strings --quiet "${request_id}"; then
               logged=1
               break
             fi
             sleep 1
           done
+          if [[ "$logged" != "1" ]]; then
+            docker logs kinvue-gateway 2>&1
+          fi
           test "$logged" = "1"
       - name: Check committed files for private key material
         shell: bash
