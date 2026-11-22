@@ -586,13 +586,13 @@ importers:
     devDependencies:
       '@prisma/cli-engine':
         specifier: ^0.3.0
-        version: 0.3.0(@prisma/management-api-sdk@1.71.0)(magicast@0.5.4)
+        version: 0.3.0(@prisma/management-api-sdk@1.71.0)(magicast@0.5.5)
       '@prisma/orm-postgres':
         specifier: 8.0.0-rc.8
-        version: 8.0.0-rc.8(@prisma/cli-engine@0.3.0(@prisma/management-api-sdk@1.71.0)(magicast@0.5.4))(magicast@0.5.4)(typanion@3.14.0)(typescript@5.9.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0))
+        version: 8.0.0-rc.8(@prisma/cli-engine@0.3.0(@prisma/management-api-sdk@1.71.0)(magicast@0.5.5))(magicast@0.5.5)(typanion@3.14.0)(typescript@5.9.3)(vite@8.2.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.4)(yaml@2.9.1))
       prisma:
         specifier: 8.0.0-rc.12
-        version: 8.0.0-rc.12(@types/node@24.13.3)(@vercel/nft@1.11.0)(magicast@0.5.4)(mongodb@6.22.0(@aws-sdk/credential-providers@3.1122.0))(pg@8.22.0)(typanion@3.14.0)(typescript@5.9.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0))(vitest@4.1.11(@opentelemetry/api@1.10.0)(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0)))(ws@8.21.3)
+        version: 8.0.0-rc.12(@types/node@24.19.2)(@vercel/nft@1.11.11)(bare-buffer@3.7.3)(magicast@0.5.5)(mongodb@6.22.0(@aws-sdk/credential-providers@3.1175.0))(pg@8.23.1)(typanion@3.14.0)(typescript@5.9.3)(vite@8.2.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.4)(yaml@2.9.1))(vitest@4.1.11(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(vite@8.2.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.4)(yaml@2.9.1)))(ws@8.23.0)
       '@eslint/eslintrc':
         specifier: ^3.2.0
         version: 3.3.7
