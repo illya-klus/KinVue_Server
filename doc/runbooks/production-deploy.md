@@ -31,6 +31,13 @@ See `.env.example` and `local-dev.md` for port map. Production adds:
 - Private network: Auth, Users, Movie, Notifications, transcode-worker.
 - Video bytes: signed URLs to object storage/CDN — **not** proxied through Gateway.
 
+## TLS termination and browser origins (KIN-203)
+
+- Terminate public TLS at the managed ingress or reverse proxy in front of Gateway and Rooms. Use a valid certificate with automated renewal, redirect public HTTP to HTTPS, and expose Gateway as HTTPS and the Rooms WebSocket as WSS. The ingress must pass WebSocket upgrade headers to Rooms.
+- Keep application ports private behind the ingress. Configure `ORIGINS` on Gateway as the comma-separated exact browser origins, including scheme and port when non-default. For example, local development uses `http://localhost:3000,http://localhost:5173`; production uses the deployed web origin with `https://`. Do not use `*` with credentialed requests.
+- Localhost development may use plain HTTP and WS. Do not require certificates for localhost. Production browser cookies are marked Secure when `NODE_ENV=production`; TLS must cover the public request path before traffic reaches the services.
+- Gateway returns 403 for a request carrying an Origin that is not in `ORIGINS`. Requests without an Origin (for example, server-to-server calls) are not rejected by the CORS origin guard.
+
 ## Migrations and search (KIN-311)
 
 1. Auth migrations (forward only).

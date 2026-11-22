@@ -7,6 +7,7 @@ import { GlobalExceptionsFilter } from "./common/filters";
 import { connectSwagger } from "./config/swagger";
 import { httpMetricsMiddleware, initPrometheus } from "@kinvue/http-metrics";
 import { installJsonBodyParser } from "./common/json-body-parser";
+import { configureGatewayCors } from "./cors";
 
 async function bootstrap() {
   initPrometheus("gateway");
@@ -38,19 +39,7 @@ async function bootstrap() {
     }),
   );
 
-  //CORS
-  const origins = configService
-    .getOrThrow<string>("ORIGINS")
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-
-  app.enableCors({
-    origin: [origins],
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,
-    allowedHeaders: "Content-Type, Authorization",
-  });
+  configureGatewayCors(app, configService.getOrThrow<string>("ORIGINS"));
 
   //Helmet
   app.use(helmet());
