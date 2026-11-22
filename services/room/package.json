@@ -19,7 +19,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typecheck": "tsc --noEmit",
-    "test:scaffold": "node --test test/scaffold.test.cjs"
+    "test:scaffold": "node --test test/scaffold.test.cjs",
+    "test:realtime": "pnpm build && node --test test/realtime.integration.test.cjs"
   },
   "dependencies": {
     "@kinvue/config": "workspace:*",
@@ -27,6 +28,7 @@
     "@kinvue/errors": "workspace:*",
     "@kinvue/http-metrics": "workspace:*",
     "@kinvue/logger": "workspace:*",
+    "@kinvue/jwt": "workspace:*",
     "@nestjs/common": "^12.0.1",
     "@nestjs/config": "^12.0.0",
     "@nestjs/core": "^12.0.1",

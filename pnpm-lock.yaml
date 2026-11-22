@@ -786,6 +786,9 @@ importers:
 
   services/room:
     dependencies:
+      '@kinvue/jwt':
+        specifier: workspace:*
+        version: link:../../packages/jwt
       '@kinvue/config':
         specifier: workspace:*
         version: link:../../packages/config

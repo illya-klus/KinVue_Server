@@ -46,7 +46,9 @@ export class RoomsRedisReadiness
       retryStrategy: () => null,
     });
   }
-  ping() {
+  async ping() {
+    if (this.client.status === "wait" || this.client.status === "end")
+      await this.client.connect();
     return this.client.ping();
   }
   onApplicationShutdown() {

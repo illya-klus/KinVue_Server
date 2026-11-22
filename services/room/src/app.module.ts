@@ -13,6 +13,8 @@ import { SharedHttpErrorFilter } from "./errors.filters";
 import { SharedLogger } from "./shared-logger";
 import { MetricsController } from "./metrics.controller";
 import { WebSocketReservation } from "./websocket-reservation";
+import { RoomRealtimeStore } from "./realtime/room-store";
+import { RoomJwtService } from "./realtime/room-jwt.service";
 import { RoomsService } from "./rooms.service";
 import { RoomsDatabaseService } from "./database/rooms-database.service";
 import { ROOMS_DATABASE_READINESS } from "./health.controller";
@@ -44,6 +46,8 @@ import { ScheduledRoomsWorker } from "./scheduled-rooms/scheduled-rooms.worker";
     SharedLogger,
     SharedHttpErrorFilter,
     WebSocketReservation,
+    RoomRealtimeStore,
+    RoomJwtService,
     RoomsRedisReadiness,
     {
       provide: REDIS_READINESS,
