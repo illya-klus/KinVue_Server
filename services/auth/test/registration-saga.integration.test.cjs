@@ -219,6 +219,34 @@ test(
       );
 
       await t.test(
+        "concurrent registrations for one email create exactly one identity",
+        async () => {
+          mode = "success";
+          const results = await Promise.allSettled([
+            register("race@example.com", "race_user_one"),
+            register("race@example.com", "race_user_two"),
+          ]);
+          const fulfilled = results.filter(
+            (result) => result.status === "fulfilled",
+          );
+          const rejected = results.filter(
+            (result) => result.status === "rejected",
+          );
+          const rows = await pool.query(
+            "SELECT user_id, status FROM public.auth_identities WHERE email = $1",
+            ["race@example.com"],
+          );
+
+          assert.equal(fulfilled.length, 1);
+          assert.equal(rejected.length, 1);
+          assert.equal(rejected[0].reason.status, 409);
+          assert.equal(rows.rows.length, 1);
+          assert.equal(rows.rows[0].status, "ACTIVE");
+          assert.equal(profileStore.has(rows.rows[0].user_id), true);
+        },
+      );
+
+      await t.test(
         "three unavailable responses compensate and release credentials",
         async () => {
           mode = "unavailable";
