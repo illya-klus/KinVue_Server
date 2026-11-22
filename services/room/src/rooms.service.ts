@@ -73,6 +73,11 @@ export type RoomSummary = {
   visibility: RoomVisibility;
   memberCount: number;
 };
+export type RoomMember = {
+  userId: string;
+  role: "OWNER" | "CONTROLLER" | "VIEWER";
+  presence: "ONLINE" | "OFFLINE";
+};
 
 @Injectable()
 export class RoomsService {
@@ -180,6 +185,61 @@ export class RoomsService {
       });
     }
     return rooms;
+  }
+
+  async getRoomMembers(id: string, userId: string | undefined) {
+    if (!userId || !uuidPattern.test(userId)) {
+      throw new ForbiddenException(
+        "Authenticated user with a valid UUID is required",
+      );
+    }
+    if (!uuidPattern.test(id))
+      throw new BadRequestException("room id is invalid");
+    const state = await this.redis.hgetall(this.roomKey(id));
+    if (!state.id) throw new NotFoundException("Room not found");
+    if (state.status !== "ACTIVE")
+      throw new BadRequestException("Room is closed");
+    if ((await this.redis.ttl(this.roomKey(id))) <= 0) {
+      throw new NotFoundException("Room not found");
+    }
+
+    const memberRows = await this.redis.hgetall(this.membersKey(id));
+    const currentMember = memberRows[userId];
+    if (!currentMember)
+      throw new ForbiddenException("Room membership required");
+    const members = Object.entries(memberRows).flatMap(([memberId, raw]) => {
+      try {
+        const membership = JSON.parse(raw) as {
+          role: RoomMember["role"];
+          lastHeartbeatAt?: number;
+        };
+        if (!["OWNER", "CONTROLLER", "VIEWER"].includes(membership.role))
+          return [];
+        return [
+          {
+            userId: memberId,
+            role: membership.role,
+            presence:
+              typeof membership.lastHeartbeatAt === "number" &&
+              Date.now() - membership.lastHeartbeatAt <= 75_000
+                ? ("ONLINE" as const)
+                : ("OFFLINE" as const),
+          },
+        ];
+      } catch {
+        return [];
+      }
+    });
+    const self = members.find((member) => member.userId === userId);
+    if (!self) throw new ForbiddenException("Room membership required");
+    return {
+      roomId: id,
+      movieId: state.movieId,
+      visibility: state.visibility,
+      ownerId: state.ownerId,
+      currentUserRole: self.role,
+      members,
+    };
   }
 
   async closeRoom(id: string, ownerId: string | undefined): Promise<void> {

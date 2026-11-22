@@ -58,6 +58,14 @@ export class AppController {
     return { items: await this.rooms.listPublicRooms() };
   }
 
+  @Get("rooms/:id/members")
+  getRoomMembers(
+    @Param("id") id: string,
+    @Headers("x-user-id") userId?: string,
+  ) {
+    return this.rooms.getRoomMembers(id, userId);
+  }
+
   @Delete("rooms/:id")
   async closeRoom(
     @Param("id") id: string,

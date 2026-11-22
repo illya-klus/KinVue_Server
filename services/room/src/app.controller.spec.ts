@@ -15,6 +15,7 @@ describe("Rooms HTTP authorization", () => {
   const rooms = {
     createRoom: jest.fn(),
     listPublicRooms: jest.fn(),
+    getRoomMembers: jest.fn(),
     closeRoom: jest.fn(),
     createDirectInvite: jest.fn(),
     createInviteLink: jest.fn(),
@@ -96,6 +97,21 @@ describe("Rooms HTTP authorization", () => {
       .expect(403);
 
     expect(rooms.closeRoom).toHaveBeenCalledWith("room-1", "member-1");
+  });
+
+  it("returns room membership and current role to a member", async () => {
+    const result = {
+      roomId: "room-1",
+      ownerId: "owner-1",
+      currentUserRole: "VIEWER",
+      members: [{ userId: "member-1", role: "VIEWER", presence: "ONLINE" }],
+    };
+    rooms.getRoomMembers.mockResolvedValue(result);
+    await request(app.getHttpServer())
+      .get("/api/rooms/room-1/members")
+      .set("x-user-id", "member-1")
+      .expect(200, result);
+    expect(rooms.getRoomMembers).toHaveBeenCalledWith("room-1", "member-1");
   });
 
   it("routes owner permission changes and rejects OWNER as a target role", async () => {

@@ -106,6 +106,57 @@ describe("RoomsService", () => {
     expect(redis.zrem).toHaveBeenCalledWith("rooms:public", "stale");
   });
 
+  it("lists members and derives presence only for an active room member", async () => {
+    const ownerId = "e080c5e5-440e-4140-9617-a526748669d1";
+    const viewerId = "3f8632a5-0bb2-46e6-8c34-0efad23a4d86";
+    redis.hgetall
+      .mockResolvedValueOnce({
+        id: "b8c9dbfa-8ec0-4500-a47c-a708d4983332",
+        movieId: "movie-1",
+        visibility: "PRIVATE",
+        status: "ACTIVE",
+        ownerId,
+      })
+      .mockResolvedValueOnce({
+        [ownerId]: JSON.stringify({
+          userId: ownerId,
+          role: "OWNER",
+          lastHeartbeatAt: Date.now(),
+        }),
+        [viewerId]: JSON.stringify({
+          userId: viewerId,
+          role: "VIEWER",
+          lastHeartbeatAt: Date.now() - 80_000,
+        }),
+      });
+
+    await expect(
+      service.getRoomMembers("b8c9dbfa-8ec0-4500-a47c-a708d4983332", ownerId),
+    ).resolves.toMatchObject({
+      ownerId,
+      currentUserRole: "OWNER",
+      members: [
+        { userId: ownerId, role: "OWNER", presence: "ONLINE" },
+        { userId: viewerId, role: "VIEWER", presence: "OFFLINE" },
+      ],
+    });
+    expect(redis.ttl).toHaveBeenCalledWith(
+      "room:b8c9dbfa-8ec0-4500-a47c-a708d4983332",
+    );
+  });
+
+  it("does not disclose members to a non-member", async () => {
+    redis.hgetall
+      .mockResolvedValueOnce({ id: "room-1", status: "ACTIVE" })
+      .mockResolvedValueOnce({});
+    await expect(
+      service.getRoomMembers(
+        "b8c9dbfa-8ec0-4500-a47c-a708d4983332",
+        "e080c5e5-440e-4140-9617-a526748669d1",
+      ),
+    ).rejects.toThrow(ForbiddenException);
+  });
+
   it("allows only the owner to close a room and applies the 15 minute grace TTL", async () => {
     await service.closeRoom("room-1", "owner-1");
     expect(redis.eval.mock.calls[0]?.[0]).toContain("'status', 'CLOSED'");
