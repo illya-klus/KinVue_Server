@@ -12,7 +12,7 @@ test("login, registration, refresh, and logout logs never contain credentials", 
   ];
   const lines = [];
   const write = process.stdout.write;
-  process.stdout.write = function (chunk, ...args) {
+  process.stdout.write = function (chunk) {
     lines.push(Buffer.isBuffer(chunk) ? chunk.toString() : String(chunk));
     return true;
   };
