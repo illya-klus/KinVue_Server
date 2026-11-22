@@ -1,0 +1,87 @@
+// use prisma-next
+
+enum PublicationStatus {
+  @@type("pg/text@1")
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+}
+
+enum MediaStatus {
+  @@type("pg/text@1")
+  NONE
+  UPLOADING
+  PROCESSING
+  READY
+  UPLOAD_FAILED
+  PROCESSING_FAILED
+  ABANDONED
+}
+
+model Movie {
+  movieId Uuid @id @default(uuid()) @map("movie_id")
+  title String
+  description String
+  genres Jsonb
+  durationSeconds Int? @map("duration_seconds")
+  posterKey String? @map("poster_key")
+  createdByUserId Uuid @map("created_by_user_id")
+  publicationStatus PublicationStatus @default(DRAFT) @map("publication_status")
+  mediaStatus MediaStatus @default(NONE) @map("media_status")
+  publishAt TimestamptzString? @map("publish_at")
+  originalObjectKey String? @map("original_object_key")
+  hlsMasterKey String? @map("hls_master_key")
+  createdAt TimestamptzString @default(now()) @map("created_at")
+  updatedAt temporal.updatedAtString() @map("updated_at")
+  @@index([publicationStatus], map: "movies_publication_status_idx")
+  @@index([publishAt], map: "movies_publish_at_idx")
+  @@index([updatedAt], map: "movies_updated_at_idx")
+  @@map("movies")
+  @@check(expression: "jsonb_typeof(genres) = 'array'", name: "genres_array")
+  @@check(expression: "duration_seconds IS NULL OR duration_seconds > 0", name: "duration_positive")
+  @@check(expression: "publication_status <> 'SCHEDULED' OR publish_at IS NOT NULL", name: "scheduled_time")
+}
+
+model MovieUpload {
+  uploadId Uuid @id @default(uuid()) @map("upload_id")
+  movieId Uuid @map("movie_id")
+  objectKey String @map("object_key")
+  s3UploadId String @map("s3_upload_id")
+  partCount Int @default(1) @map("part_count")
+  status String @default("INITIATED")
+  expiresAt TimestamptzString @map("expires_at")
+  completedAt TimestamptzString? @map("completed_at")
+  createdAt TimestamptzString @default(now()) @map("created_at")
+  updatedAt temporal.updatedAtString() @map("updated_at")
+  @@index([movieId], map: "movie_uploads_movie_id_idx")
+  @@map("movie_uploads")
+  @@check(expression: "part_count > 0", name: "part_count_positive")
+}
+
+model WatchlistItem {
+  userId Uuid @map("user_id")
+  movieId Uuid @map("movie_id")
+  createdAt TimestamptzString @default(now()) @map("created_at")
+  @@id([userId, movieId])
+  @@index([userId], map: "watchlist_items_user_id_idx")
+  @@map("watchlist_items")
+}
+
+model MovieIndexSyncState {
+  id String @id @default("movies")
+  lastSuccessfulSync TimestamptzString? @map("last_successful_sync")
+  @@map("movie_index_sync_state")
+  @@check(expression: "id = 'movies'", name: "singleton")
+}
+
+model MovieOutboxEvent {
+  eventId Uuid @id @default(uuid()) @map("event_id")
+  type String
+  payload Jsonb
+  status String @default("PENDING")
+  createdAt TimestamptzString @default(now()) @map("created_at")
+  publishedAt TimestamptzString? @map("published_at")
+  retryCount Int @default(0) @map("retry_count")
+  @@index([status], map: "movie_outbox_events_status_idx")
+  @@map("movie_outbox_events")
+}

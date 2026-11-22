@@ -49,11 +49,11 @@ export const updateProfileRequestSchema = z.strictObject({
 });
 export const friendRequestSchema = z.strictObject({ targetUserId: userId });
 export const createMovieRequestSchema = z.strictObject({
-  title: z.string().trim().min(1),
-  description: z.string(),
-  genres: z.array(z.string()),
-  durationSeconds: z.number().int().positive(),
-  posterKey: z.string().min(1),
+  title: z.string().trim().min(1).max(300),
+  description: z.string().trim().min(1).max(20000),
+  genres: z.array(z.string().min(1).max(100)).min(1).max(30),
+  durationSeconds: z.number().int().positive().optional(),
+  posterKey: z.string().max(2048).optional(),
 });
 export const scheduleMovieRequestSchema = z.strictObject({
   publishAt: timestamp,

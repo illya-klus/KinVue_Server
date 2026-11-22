@@ -1,0 +1,212 @@
+[
+  {
+    "id": "checkConstraint.movie_index_sync_state.singleton_efc917f2",
+    "label": "Add check constraint \"singleton_efc917f2\" on \"movie_index_sync_state\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "singleton_efc917f2",
+        "table": "movie_index_sync_state"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"singleton_efc917f2\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "singleton_efc917f2",
+          "public",
+          "\"public\".\"movie_index_sync_state\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"singleton_efc917f2\"",
+        "sql": "ALTER TABLE \"public\".\"movie_index_sync_state\" ADD CONSTRAINT \"singleton_efc917f2\" CHECK (id = 'movies')"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"singleton_efc917f2\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "singleton_efc917f2",
+          "public",
+          "\"public\".\"movie_index_sync_state\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.movie_uploads.part_count_positive_1e73b9f9",
+    "label": "Add check constraint \"part_count_positive_1e73b9f9\" on \"movie_uploads\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "part_count_positive_1e73b9f9",
+        "table": "movie_uploads"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"part_count_positive_1e73b9f9\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "part_count_positive_1e73b9f9",
+          "public",
+          "\"public\".\"movie_uploads\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"part_count_positive_1e73b9f9\"",
+        "sql": "ALTER TABLE \"public\".\"movie_uploads\" ADD CONSTRAINT \"part_count_positive_1e73b9f9\" CHECK (part_count > 0)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"part_count_positive_1e73b9f9\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "part_count_positive_1e73b9f9",
+          "public",
+          "\"public\".\"movie_uploads\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.movies.duration_positive_e3f8f01a",
+    "label": "Add check constraint \"duration_positive_e3f8f01a\" on \"movies\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "duration_positive_e3f8f01a",
+        "table": "movies"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"duration_positive_e3f8f01a\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "duration_positive_e3f8f01a",
+          "public",
+          "\"public\".\"movies\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"duration_positive_e3f8f01a\"",
+        "sql": "ALTER TABLE \"public\".\"movies\" ADD CONSTRAINT \"duration_positive_e3f8f01a\" CHECK (duration_seconds IS NULL OR duration_seconds > 0)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"duration_positive_e3f8f01a\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "duration_positive_e3f8f01a",
+          "public",
+          "\"public\".\"movies\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.movies.genres_array_07f39a9a",
+    "label": "Add check constraint \"genres_array_07f39a9a\" on \"movies\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "genres_array_07f39a9a",
+        "table": "movies"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"genres_array_07f39a9a\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "genres_array_07f39a9a",
+          "public",
+          "\"public\".\"movies\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"genres_array_07f39a9a\"",
+        "sql": "ALTER TABLE \"public\".\"movies\" ADD CONSTRAINT \"genres_array_07f39a9a\" CHECK (jsonb_typeof(genres) = 'array')"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"genres_array_07f39a9a\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "genres_array_07f39a9a",
+          "public",
+          "\"public\".\"movies\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.movies.scheduled_time_4d6f34fc",
+    "label": "Add check constraint \"scheduled_time_4d6f34fc\" on \"movies\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "scheduled_time_4d6f34fc",
+        "table": "movies"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"scheduled_time_4d6f34fc\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scheduled_time_4d6f34fc",
+          "public",
+          "\"public\".\"movies\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"scheduled_time_4d6f34fc\"",
+        "sql": "ALTER TABLE \"public\".\"movies\" ADD CONSTRAINT \"scheduled_time_4d6f34fc\" CHECK (publication_status <> 'SCHEDULED' OR publish_at IS NOT NULL)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"scheduled_time_4d6f34fc\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "scheduled_time_4d6f34fc",
+          "public",
+          "\"public\".\"movies\""
+        ]
+      }
+    ]
+  }
+]

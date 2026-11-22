@@ -1,10 +1,13 @@
-import { Type } from "class-transformer";
-import { IsInt, IsOptional, IsString, Max, Min } from "class-validator";
+import { Transform, Type } from "class-transformer";
+import { IsInt, IsOptional, IsString, Length, Max, Min } from "class-validator";
 
 export class SearchQueryDto {
   @IsString()
-  @IsOptional()
-  q?: string;
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === "string" ? value.trim() : value,
+  )
+  @Length(2, 300)
+  q!: string;
 
   @IsString()
   @IsOptional()

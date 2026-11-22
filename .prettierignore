@@ -18,3 +18,7 @@ services/auth/src/prisma/contract.d.ts
 services/auth/migrations/**/migration.json
 services/auth/migrations/**/snapshot.json
 services/auth/migrations/**/ops.json
+services/movie/src/prisma/contract.json
+services/movie/src/prisma/contract.d.ts
+services/movie/migrations/**/migration.json
+services/movie/migrations/**/ops.json

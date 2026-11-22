@@ -75,6 +75,10 @@ Rooms створює та закриває кімнати, показує пуб
 
 Каркаси Users і Movie мають safe errors, JSON-логи, live/ready/metrics; інструкція — [users-movie-scaffolds](runbooks/users-movie-scaffolds.md). Docker build/run підтверджено в тимчасовому Linux-середовищі 2026-11-01: Node 24, USER node/uid 1000, ready з живими MongoDB 7 і PostgreSQL 16 та відновлення після відмови БД. Users явно повторює connect перед ping, тому відновлюється навіть після невдалого першого підключення. Звіт — [перевірка контейнерів](verification/2026-11-01-users-movie.md).
 
+## Movie у Sprint 3
+
+Movie має окремий Prisma Next graph для PostgreSQL 16, admin metadata create/read/edit, незалежні publication/media states, публічні published-only read/search та caller-only watchlist із live join metadata. Публікація спочатку комітить PostgreSQL, потім ставить upsert у Meilisearch; збої наздоганяє reconcile. Scheduled worker раз на 60 секунд умовно публікує due READY записи. Gateway перевіряє admin GET і перезаписує caller context. Деталі контрактів, міграцій і запуску: [Movie Sprint 3](runbooks/movie-sprint-3.md). Це ще не реалізація S3/FFmpeg playback чи Rooms.
+
 ## Users у Sprint 2
 
 Gateway передає HTTP запити профілю, пошуку та дружби в приватний Users. Users зберігає профілі, канонічні пари дружби й події outbox у власній MongoDB. Створення та прийняття запиту пишуть подію в тій самій транзакції; воркер передає її в RabbitMQ і позначає опублікованою після підтвердження. Профільний bootstrap лишається внутрішнім. Вказівки щодо replica set, індексів і запуску: [Users Sprint 2](runbooks/users-sprint-2.md).

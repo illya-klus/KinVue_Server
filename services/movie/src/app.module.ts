@@ -13,6 +13,7 @@ import { SearchModule } from "./modules/search/search.module";
 import { UploadsModule } from "./modules/uploads/uploads.module";
 import { MoviePostgresReadiness } from "./readiness";
 import { SharedLogger } from "./shared-logger";
+import { CatalogModule } from "./modules/catalog/catalog.module";
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { SharedLogger } from "./shared-logger";
     DatabaseModule,
     MeilisearchModule,
     SearchModule,
+    CatalogModule,
     ReconcileModule,
     InternalModule,
     UploadsModule,
