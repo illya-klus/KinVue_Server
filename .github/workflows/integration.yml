@@ -19,7 +19,8 @@ jobs:
             postgres movie-postgres notifications-postgres rooms-postgres \
             users-mongo meilisearch rabbitmq rooms-redis \
             prometheus grafana gateway users movie rooms notification transcode-worker; then
-            docker compose --env-file .env.example --profile apps logs --no-color --tail 100 gateway
+            docker compose --env-file .env.example --profile apps ps --all
+            docker compose --env-file .env.example --profile apps logs --no-color --tail 100 gateway transcode-worker
             exit 1
           fi
       - uses: pnpm/action-setup@v6
