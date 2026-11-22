@@ -48,6 +48,12 @@ export class ScheduledRoomsService {
     ) {
       throw new BadRequestException("inviteeIds must be an array of UUIDs");
     }
+    const inviteeIds = [...new Set(input.inviteeIds as string[])];
+    if (inviteeIds.length > 19) {
+      throw new BadRequestException(
+        "A scheduled room supports at most 19 invitees",
+      );
+    }
     if (input.inviteeIds.includes(owner)) {
       throw new BadRequestException("The owner cannot be listed as an invitee");
     }
@@ -58,7 +64,7 @@ export class ScheduledRoomsService {
       movieId: input.movieId.trim(),
       visibility: input.visibility as ScheduledRoomVisibility,
       scheduledFor,
-      inviteeIds: [...new Set(input.inviteeIds as string[])],
+      inviteeIds,
     });
   }
 

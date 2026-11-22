@@ -76,4 +76,23 @@ describe("ScheduledRoomsService", () => {
     );
     expect(repository.cancel).not.toHaveBeenCalled();
   });
+
+  it("rejects schedules with more invitees than the room capacity", async () => {
+    const inviteeIds = Array.from(
+      { length: 20 },
+      (_, index) =>
+        `33333333-3333-4333-8333-${String(index).padStart(12, "0")}`,
+    );
+    await expect(
+      service.create(
+        {
+          movieId: "movie-1",
+          visibility: "PRIVATE",
+          scheduledFor: new Date(Date.now() + 60_000).toISOString(),
+          inviteeIds,
+        },
+        owner,
+      ),
+    ).rejects.toThrow(BadRequestException);
+  });
 });

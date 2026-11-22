@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { randomUUID } from "node:crypto";
 import { RoomsDatabaseService } from "../database/rooms-database.service";
 
 export type ScheduledRoomStatus = "SCHEDULED" | "OPENED" | "CANCELLED";
@@ -117,6 +118,89 @@ export class ScheduledRoomsRepository {
       [scheduledRoomId],
     );
     return result.rowCount ? this.findById(scheduledRoomId) : null;
+  }
+
+  async openDue(
+    openRoom: (schedule: ScheduledRoom) => Promise<void>,
+  ): Promise<number> {
+    const client = await this.database.connect();
+    try {
+      await client.query("BEGIN");
+      const due = await client.query<Omit<ScheduledRoomRow, "invitee_ids">>(
+        `SELECT scheduled_room_id, room_id, owner_id, movie_id, visibility,
+                scheduled_for, status, created_at, updated_at
+         FROM scheduled_rooms
+         WHERE status = 'SCHEDULED' AND scheduled_for <= now()
+         ORDER BY scheduled_for, scheduled_room_id
+         LIMIT 10 FOR UPDATE SKIP LOCKED`,
+      );
+      for (const row of due.rows) {
+        const invitees = await client.query<{ user_id: string }>(
+          `SELECT user_id FROM scheduled_room_invitees
+           WHERE scheduled_room_id = $1 ORDER BY user_id`,
+          [row.scheduled_room_id],
+        );
+        const schedule = this.toScheduledRoom({
+          ...row,
+          invitee_ids: invitees.rows.map((invitee) => invitee.user_id),
+        });
+
+        // The row lock makes competing workers skip this schedule. If Redis
+        // fails, rollback leaves it SCHEDULED; Redis setup itself is idempotent
+        // by the durable room ID, so a commit retry cannot create a second room.
+        await openRoom(schedule);
+
+        const expiresAt = new Date(Date.now() + 6 * 60 * 60 * 1000);
+        for (const recipientId of schedule.inviteeIds) {
+          const invite = await client.query<{ id: string }>(
+            `INSERT INTO room_invites
+               (id, room_id, inviter_id, recipient_id, role, expires_at)
+             VALUES ($1, $2, $3, $4, 'VIEWER', $5)
+             ON CONFLICT (room_id, recipient_id)
+               WHERE recipient_id IS NOT NULL AND status = 'PENDING'
+             DO NOTHING
+             RETURNING id`,
+            [
+              randomUUID(),
+              schedule.roomId,
+              schedule.ownerId,
+              recipientId,
+              expiresAt,
+            ],
+          );
+          if (invite.rowCount) {
+            const event = {
+              eventId: randomUUID(),
+              type: "ROOM_INVITED" as const,
+              producer: "rooms" as const,
+              occurredAt: new Date().toISOString(),
+              recipientId,
+              payload: {
+                roomId: schedule.roomId,
+                fromUserId: schedule.ownerId,
+              },
+            };
+            await client.query(
+              `INSERT INTO rooms_outbox_events (event_id, type, recipient_id, payload)
+               VALUES ($1, 'ROOM_INVITED', $2, $3::jsonb)`,
+              [event.eventId, recipientId, JSON.stringify(event)],
+            );
+          }
+        }
+        await client.query(
+          `UPDATE scheduled_rooms SET status = 'OPENED', updated_at = now()
+           WHERE scheduled_room_id = $1 AND status = 'SCHEDULED'`,
+          [schedule.scheduledRoomId],
+        );
+      }
+      await client.query("COMMIT");
+      return due.rowCount ?? 0;
+    } catch (error) {
+      await client.query("ROLLBACK").catch(() => undefined);
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   private selectByIdSql(): string {

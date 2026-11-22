@@ -64,6 +64,19 @@ test("documented request bodies validate without implementing endpoints", () => 
     scheduledFor: "2026-11-01T12:00:00Z",
     inviteeIds: [userId],
   });
+  assert.equal(
+    s.scheduleRoomRequestSchema.safeParse({
+      movieId: "movie_123",
+      visibility: "PRIVATE",
+      scheduledFor: "2026-11-01T12:00:00Z",
+      inviteeIds: Array.from(
+        { length: 20 },
+        (_, index) =>
+          `33333333-3333-4333-8333-${String(index).padStart(12, "0")}`,
+      ),
+    }).success,
+    false,
+  );
   s.createRoomRequestSchema.parse({
     movieId: "movie_123",
     visibility: "PUBLIC",

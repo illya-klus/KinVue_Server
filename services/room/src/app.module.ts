@@ -21,6 +21,7 @@ import { RoomInvitesPublisher } from "./invites/room-invites.publisher";
 import { RoomInvitesWorker } from "./invites/room-invites.worker";
 import { ScheduledRoomsRepository } from "./scheduled-rooms/scheduled-rooms.repository";
 import { ScheduledRoomsService } from "./scheduled-rooms/scheduled-rooms.service";
+import { ScheduledRoomsWorker } from "./scheduled-rooms/scheduled-rooms.worker";
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ScheduledRoomsService } from "./scheduled-rooms/scheduled-rooms.service
     RoomInvitesWorker,
     ScheduledRoomsRepository,
     ScheduledRoomsService,
+    ScheduledRoomsWorker,
     SharedLogger,
     SharedHttpErrorFilter,
     WebSocketReservation,
