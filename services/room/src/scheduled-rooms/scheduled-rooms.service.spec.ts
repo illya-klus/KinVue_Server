@@ -95,4 +95,13 @@ describe("ScheduledRoomsService", () => {
       ),
     ).rejects.toThrow(BadRequestException);
   });
+
+  it("allows only the owner to cancel and returns the cancelled schedule", async () => {
+    const cancelled = { ...schedule, status: "CANCELLED" as const };
+    repository.findById.mockResolvedValue(schedule);
+    repository.cancel.mockResolvedValue(cancelled);
+
+    await expect(service.cancel(scheduleId, owner)).resolves.toEqual(cancelled);
+    expect(repository.cancel).toHaveBeenCalledWith(scheduleId);
+  });
 });
