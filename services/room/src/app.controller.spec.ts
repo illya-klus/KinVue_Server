@@ -8,6 +8,7 @@ import request from "supertest";
 import type { App } from "supertest/types";
 import { AppController } from "./app.controller";
 import { RoomsService } from "./rooms.service";
+import { ScheduledRoomsService } from "./scheduled-rooms/scheduled-rooms.service";
 
 describe("Rooms HTTP authorization", () => {
   let app: INestApplication<App>;
@@ -20,12 +21,20 @@ describe("Rooms HTTP authorization", () => {
     acceptInvite: jest.fn(),
     changeMemberRole: jest.fn(),
   };
+  const scheduledRooms = {
+    create: jest.fn(),
+    list: jest.fn(),
+    cancel: jest.fn(),
+  };
 
   beforeEach(async () => {
     jest.resetAllMocks();
     const module = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [{ provide: RoomsService, useValue: rooms }],
+      providers: [
+        { provide: RoomsService, useValue: rooms },
+        { provide: ScheduledRoomsService, useValue: scheduledRooms },
+      ],
     }).compile();
     app = module.createNestApplication();
     app.setGlobalPrefix("api");

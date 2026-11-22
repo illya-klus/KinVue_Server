@@ -108,6 +108,17 @@ export class ScheduledRoomsRepository {
     return result.rows.map((row) => this.toScheduledRoom(row));
   }
 
+  async cancel(scheduledRoomId: string): Promise<ScheduledRoom | null> {
+    const result = await this.database.query<{ scheduled_room_id: string }>(
+      `UPDATE scheduled_rooms
+       SET status = 'CANCELLED', updated_at = now()
+       WHERE scheduled_room_id = $1 AND status = 'SCHEDULED'
+       RETURNING scheduled_room_id`,
+      [scheduledRoomId],
+    );
+    return result.rowCount ? this.findById(scheduledRoomId) : null;
+  }
+
   private selectByIdSql(): string {
     return `SELECT scheduled.scheduled_room_id, scheduled.room_id,
               scheduled.owner_id, scheduled.movie_id, scheduled.visibility,

@@ -94,6 +94,20 @@ export const PROXY_ROUTES: ProxyRoute[] = [
     auth: "required",
   },
   {
+    methods: ["GET", "POST"],
+    path: /^\/api\/scheduled-rooms\/?$/,
+    upstream: "rooms",
+    auth: "required",
+    rateLimit: "authenticated",
+  },
+  {
+    methods: ["POST"],
+    path: /^\/api\/scheduled-rooms\/[^/]+\/cancel\/?$/,
+    upstream: "rooms",
+    auth: "required",
+    rateLimit: "authenticated",
+  },
+  {
     methods: ["POST"],
     path: /^\/api\/movies\/[^/]+\/media-access\/?$/,
     upstream: "movie",

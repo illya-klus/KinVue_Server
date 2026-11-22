@@ -12,6 +12,18 @@ describe("matchProxyRoute", () => {
     expect(route?.auth).toBe("required");
   });
 
+  it("matches authenticated scheduled-room endpoints", () => {
+    expect(matchProxyRoute("POST", "/api/scheduled-rooms")?.auth).toBe(
+      "required",
+    );
+    expect(matchProxyRoute("GET", "/api/scheduled-rooms")?.upstream).toBe(
+      "rooms",
+    );
+    expect(matchProxyRoute("POST", "/api/scheduled-rooms/a/cancel")?.auth).toBe(
+      "required",
+    );
+  });
+
   it("matches admin movie routes", () => {
     const route = matchProxyRoute("POST", "/api/admin/movies/abc/publish");
     expect(route?.auth).toBe("admin");
