@@ -62,7 +62,8 @@ jobs:
         run: |
           set -euo pipefail
           for port in 4000 4002 4003 4004 4005 4016; do
-            metrics="$(curl --fail --silent "http://127.0.0.1:${port}/metrics")"
+            echo "Checking metrics on port ${port}"
+            metrics="$(curl --fail --silent --show-error "http://127.0.0.1:${port}/metrics")"
             grep -q '^process_cpu_user_seconds_total' <<<"$metrics"
           done
 
