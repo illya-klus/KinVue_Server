@@ -24,6 +24,7 @@ describe("security regression cases", () => {
       { baseUrl } as unknown as UpstreamService,
     );
     const app = express();
+    app.use(express.json());
     app.use((req, res, next) => {
       Object.assign(req, { requestId: "request-1" });
       middleware.use(req, res, next);
@@ -47,6 +48,45 @@ describe("security regression cases", () => {
       .expect(401, { statusCode: 401 });
 
     expect(verifyBearer).toHaveBeenCalledWith("Bearer expired-token");
+    expect(baseUrl).not.toHaveBeenCalled();
+  });
+
+  it("rejects unauthenticated direct access to a private room before proxying", async () => {
+    const verifyBearer = jest.fn().mockResolvedValue(undefined);
+    const verifyRequired = jest
+      .fn()
+      .mockRejectedValue(new UnauthorizedException("AUTH_REQUIRED"));
+    const baseUrl = jest.fn(() => "http://127.0.0.1:9");
+    const middleware = new GatewayProxyMiddleware(
+      { verifyBearer, verifyRequired } as unknown as JwtVerificationService,
+      { check: jest.fn() } as unknown as RateLimitService,
+      { baseUrl } as unknown as UpstreamService,
+    );
+    const app = express();
+    app.use(express.json());
+    app.use((req, res, next) => {
+      Object.assign(req, { requestId: "request-1" });
+      middleware.use(req, res, next);
+    });
+    app.use(
+      (
+        error: unknown,
+        _req: unknown,
+        res: express.Response,
+        _next: unknown,
+      ) => {
+        const status =
+          error instanceof UnauthorizedException ? error.getStatus() : 500;
+        res.status(status).json({ statusCode: status });
+      },
+    );
+
+    await request(app)
+      .post("/api/rooms/550e8400-e29b-41d4-a716-446655440000/invites/accept")
+      .send({ token: "private-invite-token" })
+      .expect(401, { statusCode: 401 });
+
+    expect(verifyRequired).toHaveBeenCalledWith(undefined);
     expect(baseUrl).not.toHaveBeenCalled();
   });
 

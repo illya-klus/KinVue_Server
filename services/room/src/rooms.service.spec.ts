@@ -286,5 +286,10 @@ describe("RoomsService", () => {
       memberId,
       "CONTROLLER",
     ]);
+
+    redis.eval.mockResolvedValueOnce(-3);
+    await expect(
+      service.changeMemberRole(roomId, memberId, "CONTROLLER", memberId),
+    ).rejects.toThrow(ForbiddenException);
   });
 });
