@@ -14,6 +14,9 @@ export default defineConfig([
       "**/coverage/**",
       "**/.turbo/**",
       "**/generated/**",
+      "doc/archive/**",
+      "**/migrations/snapshots/**",
+      "**/prisma/contract.d.ts",
     ],
   },
 
@@ -43,6 +46,19 @@ export default defineConfig([
 
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
+    },
+  },
+
+  {
+    files: ["**/*.cjs"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  {
+    files: ["**/test/**/*.ts"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
     },
   },
 ]);
