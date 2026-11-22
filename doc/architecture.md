@@ -82,3 +82,7 @@ Movie має окремий Prisma Next graph для PostgreSQL 16, admin metada
 ## Users у Sprint 2
 
 Gateway передає HTTP запити профілю, пошуку та дружби в приватний Users. Users зберігає профілі, канонічні пари дружби й події outbox у власній MongoDB. Створення та прийняття запиту пишуть подію в тій самій транзакції; воркер передає її в RabbitMQ і позначає опублікованою після підтвердження. Профільний bootstrap лишається внутрішнім. Вказівки щодо replica set, індексів і запуску: [Users Sprint 2](runbooks/users-sprint-2.md).
+
+## Rooms realtime у Sprint 4
+
+Rooms WS на 4014 /rooms перевіряє access через JWKS Auth, авторизує membership і надсилає першим state_sync. Lua у Redis атомарно перевіряє роль, змінює playback/version або chat/dedup і розсилає room events. Кожен інстанс підписаний тільки на кімнати з локальними sockets. Presence: ONLINE/DISCONNECTED/LEFT, heartbeat 30 s, stale 75 s. Chat і dedup не переживають TTL кімнати. Web керування залежить від ролі та sync, відкидає старі versions, реконект читає актуальний стан. Резервний WS із першого спринту замінено функціональним протоколом; історичний опис каркаса вище не є поточним WS станом. Див. runbooks/rooms-sprint-4.md.

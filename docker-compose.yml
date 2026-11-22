@@ -334,6 +334,9 @@ services:
       PORT: "4000"
       ORIGINS: http://localhost:3000
       AUTH_GRPC_URL: host.docker.internal:50051
+      AUTH_SERVICE_URL: ${GATEWAY_AUTH_SERVICE_URL:-http://host.docker.internal:4001}
+      JWT_ISSUER: ${JWT_ISSUER:-kinvue-auth}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-kinvue}
       ROOMS_SERVICE_URL: http://rooms:4004
       NODE_ENV: production
     ports:
@@ -366,6 +369,9 @@ services:
       ROOMS_HTTP_PORT: "4004"
       ROOMS_HTTP_HOST: 0.0.0.0
       ROOMS_WS_PORT: "4014"
+      AUTH_SERVICE_URL: ${ROOMS_AUTH_SERVICE_URL:-http://host.docker.internal:4001}
+      JWT_ISSUER: ${JWT_ISSUER:-kinvue-auth}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-kinvue}
       REDIS_URL: redis://rooms-redis:6379
       ROOMS_DATABASE_URL: postgresql://${ROOMS_POSTGRES_USER}:${ROOMS_POSTGRES_PASSWORD}@rooms-postgres:5432/${ROOMS_POSTGRES_DB}
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672

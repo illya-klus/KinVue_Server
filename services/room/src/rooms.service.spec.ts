@@ -92,8 +92,9 @@ describe("RoomsService", () => {
         visibility: "PUBLIC",
         status: "ACTIVE",
       })
+      .mockResolvedValueOnce({ departed: JSON.stringify({ presence: "LEFT" }) })
       .mockResolvedValueOnce({});
-    redis.hlen.mockResolvedValue(3);
+    redis.hlen.mockResolvedValue(4);
 
     await expect(service.listPublicRooms()).resolves.toEqual([
       {
@@ -137,7 +138,7 @@ describe("RoomsService", () => {
       currentUserRole: "OWNER",
       members: [
         { userId: ownerId, role: "OWNER", presence: "ONLINE" },
-        { userId: viewerId, role: "VIEWER", presence: "OFFLINE" },
+        { userId: viewerId, role: "VIEWER", presence: "DISCONNECTED" },
       ],
     });
     expect(redis.ttl).toHaveBeenCalledWith(
@@ -286,7 +287,6 @@ describe("RoomsService", () => {
       expect.any(Buffer),
     );
     const call = redis.eval.mock.calls[0];
-    expect(call?.[0]).toContain("redis.call('HLEN', KEYS[2])");
     expect(call?.slice(1, 4)).toEqual([
       2,
       `room:${roomId}`,

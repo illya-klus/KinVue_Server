@@ -40,14 +40,19 @@ const CLOSE_ROOM_SCRIPT = `
   redis.call('ZREM', KEYS[3], ARGV[3])
   redis.call('EXPIRE', KEYS[1], ARGV[4])
   redis.call('EXPIRE', KEYS[2], ARGV[4])
+  redis.call('EXPIRE', KEYS[1]..':messages', ARGV[4])
+  redis.call('EXPIRE', KEYS[1]..':message-ids', ARGV[4])
+  redis.call('PUBLISH', KEYS[1]..':events', cjson.encode({type='room.closed',roomId=ARGV[3]}))
   return 1
 `;
 const JOIN_ROOM_SCRIPT = `
   if redis.call('EXISTS', KEYS[1]) == 0 then return -1 end
   if redis.call('HGET', KEYS[1], 'status') ~= 'ACTIVE' then return -2 end
   local existing = redis.call('HGET', KEYS[2], ARGV[1])
-  if existing then return 1 end
-  if redis.call('HLEN', KEYS[2]) >= tonumber(ARGV[3]) then return 0 end
+  if existing and cjson.decode(existing).presence~='LEFT' then return 1 end
+  local count=0
+  for _,value in ipairs(redis.call('HVALS',KEYS[2])) do if cjson.decode(value).presence~='LEFT' then count=count+1 end end
+  if count >= tonumber(ARGV[3]) then return 0 end
   redis.call('HSET', KEYS[2], ARGV[1], ARGV[2])
   return 1
 `;
@@ -61,6 +66,7 @@ const CHANGE_ROLE_SCRIPT = `
   if decoded.role == 'OWNER' then return -4 end
   decoded.role = ARGV[3]
   redis.call('HSET', KEYS[2], ARGV[2], cjson.encode(decoded))
+  redis.call('PUBLISH', KEYS[1]..':events', cjson.encode({type='room.role_changed',roomId=redis.call('HGET',KEYS[1],'id'),userId=ARGV[2],role=ARGV[3]}))
   return 1
 `;
 const uuidPattern =
@@ -76,7 +82,7 @@ export type RoomSummary = {
 export type RoomMember = {
   userId: string;
   role: "OWNER" | "CONTROLLER" | "VIEWER";
-  presence: "ONLINE" | "OFFLINE";
+  presence: "ONLINE" | "DISCONNECTED" | "LEFT";
 };
 
 @Injectable()
@@ -181,7 +187,7 @@ export class RoomsService {
         id,
         movieId: state.movieId,
         visibility: "PUBLIC",
-        memberCount: await this.redis.hlen(this.membersKey(id)),
+        memberCount: await this.activeMemberCount(id),
       });
     }
     return rooms;
@@ -211,6 +217,7 @@ export class RoomsService {
       try {
         const membership = JSON.parse(raw) as {
           role: RoomMember["role"];
+          presence?: RoomMember["presence"];
           lastHeartbeatAt?: number;
         };
         if (!["OWNER", "CONTROLLER", "VIEWER"].includes(membership.role))
@@ -220,10 +227,12 @@ export class RoomsService {
             userId: memberId,
             role: membership.role,
             presence:
-              typeof membership.lastHeartbeatAt === "number" &&
-              Date.now() - membership.lastHeartbeatAt <= 75_000
-                ? ("ONLINE" as const)
-                : ("OFFLINE" as const),
+              membership.presence === "LEFT"
+                ? ("LEFT" as const)
+                : typeof membership.lastHeartbeatAt === "number" &&
+                    Date.now() - membership.lastHeartbeatAt <= 75_000
+                  ? ("ONLINE" as const)
+                  : ("DISCONNECTED" as const),
           },
         ];
       } catch {
@@ -231,7 +240,8 @@ export class RoomsService {
       }
     });
     const self = members.find((member) => member.userId === userId);
-    if (!self) throw new ForbiddenException("Room membership required");
+    if (!self || self.presence === "LEFT")
+      throw new ForbiddenException("Room membership required");
     return {
       roomId: id,
       movieId: state.movieId,
@@ -280,7 +290,7 @@ export class RoomsService {
     if (await this.redis.hget(this.membersKey(id), recipientId)) {
       throw new BadRequestException("User is already in the room");
     }
-    const members = await this.redis.hlen(this.membersKey(id));
+    const members = await this.activeMemberCount(id);
     if (members >= MAX_ROOM_MEMBERS) {
       throw new ConflictException("Room capacity reached");
     }
@@ -317,7 +327,7 @@ export class RoomsService {
     if (state.visibility !== "PRIVATE") {
       throw new BadRequestException("Invite links are for private rooms");
     }
-    const members = await this.redis.hlen(this.membersKey(id));
+    const members = await this.activeMemberCount(id);
     const pendingInvites = await this.invites.countPendingDirectInvites(id);
     if (members + pendingInvites >= MAX_ROOM_MEMBERS) {
       throw new ConflictException("Room capacity reached");
@@ -347,7 +357,7 @@ export class RoomsService {
     );
     let role: "VIEWER" | "CONTROLLER" = "VIEWER";
     let inviteId: string | undefined;
-    if (existing) {
+    if (existing && JSON.parse(existing).presence !== "LEFT") {
       const membership = JSON.parse(existing) as {
         role: "VIEWER" | "CONTROLLER" | "OWNER";
       };
@@ -465,6 +475,21 @@ export class RoomsService {
 
   private roomKey(id: string): string {
     return `room:${id}`;
+  }
+
+  private async activeMemberCount(id: string) {
+    const [total, rows] = await Promise.all([
+      this.redis.hlen(this.membersKey(id)),
+      this.redis.hgetall(this.membersKey(id)),
+    ]);
+    const left = Object.values(rows).filter((raw) => {
+      try {
+        return JSON.parse(raw).presence === "LEFT";
+      } catch {
+        return false;
+      }
+    }).length;
+    return Math.max(0, total - left);
   }
 
   private membersKey(id: string): string {
