@@ -23,13 +23,25 @@ Not verified in this run. Registration and account journeys, movie flows, browse
 
 ## Operational acceptance (steps 34.34–34.38)
 
-| Step  | Scenario                               | Result                                                          |
-| ----- | -------------------------------------- | --------------------------------------------------------------- |
-| 34.34 | Metrics endpoints respond              | NOT RUN against live services.                                  |
-| 34.35 | Three Grafana dashboards open          | NOT RUN; Grafana was not running.                               |
-| 34.36 | Sample service log contains request ID | NOT RUN as a runtime sample.                                    |
-| 34.37 | No committed private signing key       | NOT RECHECKED in this run.                                      |
-| 34.38 | CI passes                              | PASS for PR #44; product E2E and load checks remain unverified. |
+| Step  | Scenario                               | Result                                         |
+| ----- | -------------------------------------- | ---------------------------------------------- |
+| 34.34 | Metrics endpoints respond              | Pending current CI run for PR #59.             |
+| 34.35 | Three Grafana dashboards open          | Pending current CI run for PR #59.             |
+| 34.36 | Sample service log contains request ID | Pending current CI run for PR #59.             |
+| 34.37 | No committed private signing key       | PASS locally; CI secret scan is also required. |
+| 34.38 | CI passes                              | Pending current CI run for PR #59.             |
+
+### KIN-346 observability checklist
+
+The Integration workflow exercises the running Compose stack and records each check as a required CI result:
+
+- [ ] Fetch `/metrics` from Auth, Gateway, Users, Movie, Rooms, Notifications, and Transcode Worker; confirm Prometheus reports all seven targets as `up`.
+- [ ] Query Grafana for the provisioned `kinvue-overview`, `kinvue-rooms`, and `kinvue-media` dashboards.
+- [ ] Send a request with a stable `x-request-id`; confirm the response echoes it and the Gateway log contains it.
+- [x] Search tracked files for committed signing-key material; local scan returned no matches. CI secret scan must pass on the PR head.
+- [ ] Confirm all CI and Integration checks pass before moving KIN-346 to Done.
+
+PR: [#59 — observability acceptance](https://github.com/illya-klus/KinVue_Server/pull/59). Runtime checks have not passed yet; this checklist does not clear the release gate.
 
 ## Remaining acceptance work
 
