@@ -6,12 +6,11 @@
 
 Jira показує призначені Богдану задачі в усіх спринтах. Історичні розділи нижче описують попередню роботу, а актуальні PR та блокери наведено тут.
 
-- Server PR #40–#46 змерджені в `dev`. У PR #46 додано Gateway regression приватного входу та Rooms regression owner-only зміни ролей; цільові тести, типізація і всі чотири CI перевірки пройшли.
-- Після злиття та зелених тестів KIN-124, KIN-138, KIN-143, KIN-172, KIN-176 і KIN-179 переведено в `Verifying (by developer)`. KIN-213 лишається `In Progress`: ще немає playback-control handler із перевіркою ролі й підписаного media-access endpoint.
-- За злитими PR #29–#39 і зеленими перевірками у `Verifying (by developer)` також переведено KIN-120, 136, 139, 142, 145, 147, 195, 199, 203, 208, 217, 221, 228, 281, 324, 326, 328, 330, 332, 334, 336, 338 і 340. KIN-54 лишається в тестуванні до завершення Auth Docker image smoke.
-- KIN-213 лишається `In Progress`: немає playback-control handler з авторизацією ролі, а сервіс Movie ще не реалізує підписаний media-access token, тому відповідні відмови з опису тікета неможливо перевірити до появи цих маршрутів. Наявний KIN-290 — окремий E2E сценарій, залежний від Client.
-- KIN-342 має частковий звіт у [прийманні Sprint 7](verification/sprint-7-release-acceptance-2026-11-22.md). KIN-344 і KIN-346 залишаються `In Progress`; повний продуктово-операційний чекліст ще не пройдено. Prometheus і Grafana відповідали локально, Grafana API знайшла три dashboards; Docker Engine тепер повертає 500 на запит списку контейнерів, тож метрики Rooms не підтверджені.
-- UI та браузерні E2E KIN-141, KIN-247, KIN-248, KIN-250, KIN-251, KIN-264, KIN-268, KIN-272, KIN-275, KIN-279 і KIN-290 залежать від Client репозиторію, який користувач ще не надав для цієї робочої копії.
+- Server PR #40–#48 змерджені в `dev`; відкритих Server PR немає. У PR #46 додано Gateway regression приватного входу та Rooms regression owner-only зміни ролей; цільові тести, типізація і CI пройшли.
+- Після перевірених і злитих PR у `Done` проведено KIN-101, KIN-105, KIN-109, KIN-120, KIN-124, KIN-134, KIN-136, KIN-138, KIN-139, KIN-142, KIN-143, KIN-145, KIN-147, KIN-176, KIN-179, KIN-195, KIN-199, KIN-203, KIN-208, KIN-217, KIN-221, KIN-228, KIN-281, KIN-324, KIN-326, KIN-328, KIN-330, KIN-332, KIN-334, KIN-336, KIN-338 і KIN-340.
+- KIN-172 лишається `Verifying (by developer)`: тест перевіряє стабільний ключ і JWT після повторної ініціалізації, але не доводить повторне читання профілю через Gateway після повного перезапуску Auth. KIN-213 лишається `In Progress`: немає playback-control handler із перевіркою ролі та підписаного media-access endpoint.
+- KIN-54 лишається `In Testing (by agent)` до фактичного Auth Docker image smoke. Docker Desktop після restart лишився у `starting`, а Windows service `com.docker.service` зупинений; запуск сервісу відхилено через відсутність доступу. Раніше Grafana API повернула три dashboards, але зараз Prometheus/Grafana endpoints timeout; Rooms `/metrics` і поточну доступність dashboards не підтверджено. Деталь записана в KIN-346.
+- KIN-342, KIN-344 і KIN-346 лишаються `In Progress`; повне приймання не завершене. UI та браузерні E2E KIN-141, KIN-243, KIN-247, KIN-248, KIN-250, KIN-251, KIN-264, KIN-268, KIN-272, KIN-275, KIN-279 і KIN-290 залежать від Client репозиторію.
 - KIN-285 потребує рішення про хостинг і секрети; MVP release tag KIN-347 не створювати до успішного приймання.
 
 ## Зроблено
