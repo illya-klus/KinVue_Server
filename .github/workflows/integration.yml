@@ -23,6 +23,34 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Wait for infra health
         run: node tests/integration/wait-infra-health.mjs
+      - name: Build and smoke-test non-root Auth image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build -f services/auth/Dockerfile -t kinvue-auth-smoke .
+          docker run --rm --entrypoint node kinvue-auth-smoke -e 'if (process.getuid() === 0) process.exit(1)'
+          docker run --rm --entrypoint sh kinvue-auth-smoke -c 'test ! -e /app/.env && test ! -e /app/.env.example'
+
+          private_key="$(openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 2>/dev/null | awk '{printf "%s\\n", $0}')"
+          container_id="$(docker run -d --name kinvue-auth-image-smoke -p 127.0.0.1:4001:4001 \
+            -e DATABASE_URL=postgresql://ci:ci@127.0.0.1:5432/ci \
+            -e GOOGLE_CLIENT_ID=ci.example.invalid \
+            -e JWT_REFRESH_SECRET=ci-only-smoke-secret \
+            -e AUTH_JWT_KEY_ID=ci-smoke \
+            -e "AUTH_JWT_PRIVATE_KEY=${private_key}" \
+            kinvue-auth-smoke)"
+          trap 'docker rm -f "$container_id" >/dev/null 2>&1 || true' EXIT
+
+          healthy=0
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4001/health/live; then
+              healthy=1
+              break
+            fi
+            sleep 1
+          done
+          test "$healthy" = "1"
+          test "$(docker exec "$container_id" id -u)" = "1000"
       - name: Build shared workspace packages
         run: pnpm build:shared
       - name: Verify realtime authorization and playback regressions
