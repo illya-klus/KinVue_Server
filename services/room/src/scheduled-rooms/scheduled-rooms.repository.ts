@@ -64,7 +64,8 @@ export class ScheduledRoomsRepository {
       if (inviteeIds.length > 0) {
         await client.query(
           `INSERT INTO scheduled_room_invitees (scheduled_room_id, user_id)
-           SELECT $1, invitee_id FROM unnest($2::uuid[]) AS invitee_id
+           SELECT $1, invitees.user_id
+           FROM unnest($2::uuid[]) AS invitees(user_id)
            ON CONFLICT (scheduled_room_id, user_id) DO NOTHING`,
           [input.scheduledRoomId, inviteeIds],
         );
