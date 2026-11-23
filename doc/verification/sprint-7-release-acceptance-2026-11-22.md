@@ -55,4 +55,21 @@ The Client repository is now present beside Server. The full command `pnpm test:
 
 Additional Client checks on 2026-11-22: `pnpm lint` passed and `pnpm build` passed. Client PRs #3–#5 and Server PR #52 are merged. Their CI checks passed. This does not change the acceptance gate: live registration/profile, live room and WebSocket behavior, metrics, load checks, and product playback remain unverified.
 
-The earlier `pnpm test:e2e` row above described the pre-Client workspace state and is superseded by this update. The current result is a partial pass with 10 skipped scenarios, not a full end-to-end pass.
+The earlier `pnpm test:e2e` row above described the pre-Client workspace state and was superseded by the same-day update with 10 skipped scenarios.
+
+## Update — 2026-11-23 local verification
+
+Commands were run against KinVue_Server `origin/dev` at `4eecd063aac2f6b3ff5b9d0bb58267f64e8c370d` and the current KinVue_Client checkout. Results:
+
+| Command / check                                                     | Result             | Output / limitation                                                                                                                                                                       |
+| ------------------------------------------------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm format:check` (Server)                                        | PASS               | `All matched files use Prettier code style!`                                                                                                                                              |
+| `pnpm lint` (Server)                                                | PASS with warnings | 0 errors; 3 existing `no-explicit-any` warnings in `services/auth/src/common/interseptors/logger.interseptor.ts`.                                                                         |
+| `pnpm typecheck` (Server)                                           | PASS               | Shared packages and all service typechecks completed successfully.                                                                                                                        |
+| `pnpm test` (Server)                                                | PASS with skip     | All runnable suites passed. Docker-backed Auth registration integration was skipped with `Docker daemon is unavailable in this environment`; Rooms reported 29 passed and 3 skipped.      |
+| `pnpm test:e2e` (Client)                                            | PARTIAL PASS       | `24 passed (27.2s)`, `11 skipped`. The skipped cases include live registration/login and private-room creation; passing room UI tests use mocked Gateway/WebSocket responses.             |
+| `docker compose --env-file .env.example config --services` (Server) | PASS               | Compose resolved the service list, including `rooms`, `rooms-postgres`, and `rooms-redis`.                                                                                                |
+| Docker Engine availability                                          | BLOCKED            | `docker version --format '{{.Server.Version}}'` failed: `failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine ... The system cannot find the file specified.` |
+| `pnpm test:integration:infra` and both load smoke commands          | NOT RUN            | These require a live Docker stack and credentials; no valid runtime evidence can be collected while the Docker Engine pipe is absent.                                                     |
+
+This verification confirms local formatting, lint, type safety, unit tests, and mocked browser behavior. It does **not** pass live product acceptance, infrastructure integration, or load testing. Keep KIN-342 and KIN-344 open and keep `v0.1.0-mvp` blocked until the remaining checks run against a live stack. The Client test count here supersedes the earlier 10-skip result: the current run is 24 passed and 11 skipped.
