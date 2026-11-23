@@ -340,7 +340,10 @@ services:
       AUTH_SERVICE_URL: ${GATEWAY_AUTH_SERVICE_URL:-http://host.docker.internal:4001}
       JWT_ISSUER: ${JWT_ISSUER:-kinvue-auth}
       JWT_AUDIENCE: ${JWT_AUDIENCE:-kinvue}
+      USERS_SERVICE_URL: http://users:4002
+      MOVIE_SERVICE_URL: http://movie:4003
       ROOMS_SERVICE_URL: http://rooms:4004
+      NOTIFICATION_SERVICE_URL: http://notification:4005
       NODE_ENV: production
     ports:
       - "4000:4000"
