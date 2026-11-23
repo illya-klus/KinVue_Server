@@ -2,16 +2,15 @@
 
 Оновлюй цей файл, коли роботу завершено, покинуто або свідомо не зроблено. Журнал чатів при цьому не чисть.
 
-## Поточний зріз — 2026-11-22
+## Поточний зріз — 2026-11-23
 
 Jira показує призначені Богдану задачі в усіх спринтах. Історичні розділи нижче описують попередню роботу, а актуальні PR та блокери наведено тут.
 
-- Server PR #40–#52 змерджені в `dev`; відкритих Server PR немає. У PR #46 додано Gateway regression приватного входу та Rooms regression owner-only зміни ролей; у PR #50 — profile read із токеном, виданим до перезапуску Auth; у PR #52 — авторизований roster кімнати з ролями та присутністю. Цільові тести, типізація і CI пройшли.
-- Після перевірених і злитих PR у `Done` проведено KIN-101, KIN-105, KIN-109, KIN-120, KIN-124, KIN-134, KIN-136, KIN-138, KIN-139, KIN-142, KIN-143, KIN-145, KIN-147, KIN-172, KIN-176, KIN-179, KIN-195, KIN-199, KIN-203, KIN-208, KIN-217, KIN-221, KIN-228, KIN-281, KIN-324, KIN-326, KIN-328, KIN-330, KIN-332, KIN-334, KIN-336, KIN-338 і KIN-340.
-- KIN-213 лишається `In Progress`: немає playback-control handler із перевіркою ролі та підписаного media-access endpoint.
-- KIN-54 лишається `In Testing (by agent)` до фактичного Auth Docker image smoke. Docker Desktop після restart лишився у `starting`, а Windows service `com.docker.service` зупинений; запуск сервісу відхилено через відсутність доступу. Раніше Grafana API повернула три dashboards, але зараз Prometheus/Grafana endpoints timeout; Rooms `/metrics` і поточну доступність dashboards не підтверджено. Деталь записана в KIN-346.
-- KIN-342, KIN-344 і KIN-346 лишаються `In Progress`; повне приймання не завершене. Client PR #3 (KIN-141), #4 (KIN-248/KIN-251) і #5 (KIN-243 browser journey) змерджені в `main`; усі чотири тікети в `In Testing (by agent)` до перевірки з живим стеком. Лишаються відкритими KIN-247, KIN-250, KIN-264, KIN-268, KIN-272, KIN-275, KIN-279 і KIN-290.
-- KIN-285 потребує рішення про хостинг і секрети; MVP release tag KIN-347 не створювати до успішного приймання.
+- Server PR #65–#66 змерджені в `dev`; Client PR #13–#14 змерджені в `main`. Client PR #15 [live solo media access](https://github.com/illya-klus/KinVue_Client/pull/15) відкритий, обидва CI jobs пройшли; живий сценарій підтверджує 600-секундний підписаний HLS URL і відсутність Rooms WebSocket.
+- KIN-264 лишається `In Progress` до merge Client PR #15; реалізація та live E2E пройшли CI, фактичне відтворення HLS bytes і start/stop не перевірені.
+- KIN-285 лишається `To Do`: зовнішню базу Auth не створювали, бо для неї потрібні погоджені кошторис, вендор і менеджер секретів; платні ресурси не замовляли.
+- KIN-344 лишається `In Progress`: частина приймання підтверджена в [звіті Sprint 7](verification/sprint-7-release-acceptance-2026-11-23.md), але HLS playback, user/admin/watchlist/notifications flows, load test і приклад runtime log ще не перевірені.
+- KIN-347 лишається `To Do`: тег `v0.1.0-mvp` не створювати, доки приймання не пройдене повністю.
 
 ## Зроблено
 
