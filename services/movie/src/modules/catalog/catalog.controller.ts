@@ -16,6 +16,7 @@ import { AdminScopeGuard } from "../../common/guards/admin-scope.guard";
 import { MoviesRepository } from "../../database/movies.repository";
 import { NotFoundException } from "@nestjs/common";
 import { CatalogService } from "./catalog.service";
+import { MediaAccessService } from "./media-access.service";
 import { CreateMovieDto, ScheduleMovieDto, UpdateMovieDto } from "./movie.dto";
 import { callerId } from "./caller-id";
 const strictBody = new ValidationPipe({
@@ -65,10 +66,20 @@ export class PublicCatalogController {
   constructor(
     private readonly catalog: CatalogService,
     private readonly movies: MoviesRepository,
+    private readonly mediaAccess: MediaAccessService,
   ) {}
   @Get("movies/:movieId")
   get(@Param("movieId", ParseUUIDPipe) id: string) {
     return this.catalog.publicGet(id);
+  }
+  @Post("movies/:movieId/media-access")
+  @HttpCode(200)
+  mediaAccessForMovie(
+    @Param("movieId", ParseUUIDPipe) id: string,
+    @Headers("x-user-id") userId?: string,
+  ) {
+    callerId(userId);
+    return this.mediaAccess.createAccess(id);
   }
   @Post("movies/:movieId/watchlist")
   @HttpCode(200)

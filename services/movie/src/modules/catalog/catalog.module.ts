@@ -7,6 +7,8 @@ import {
   AdminCatalogController,
   PublicCatalogController,
 } from "./catalog.controller";
+import { DatabaseModule } from "../../database/database.module";
+import { MediaAccessService } from "./media-access.service";
 
 @Injectable()
 export class PublicationScheduler {
@@ -22,8 +24,8 @@ export class PublicationScheduler {
   }
 }
 @Module({
-  imports: [SearchModule],
+  imports: [SearchModule, DatabaseModule],
   controllers: [AdminCatalogController, PublicCatalogController],
-  providers: [CatalogService, PublicationScheduler],
+  providers: [CatalogService, PublicationScheduler, MediaAccessService],
 })
 export class CatalogModule {}
