@@ -23,6 +23,7 @@ describe("MediaAccessService", () => {
     const values: Record<string, string> = {
       S3_BUCKET: "kinvue-media",
       S3_ENDPOINT: "http://127.0.0.1:9000",
+      S3_PUBLIC_ENDPOINT: "https://media.example.test",
       S3_ACCESS_KEY: "test-access",
       S3_SECRET_KEY: "test-secret",
     };
@@ -57,6 +58,7 @@ describe("MediaAccessService", () => {
     const signedUrl = new URL(access.url);
 
     expect(movies.findById).toHaveBeenCalledWith("movie-1");
+    expect(signedUrl.origin).toBe("https://media.example.test");
     expect(signedUrl.pathname).toMatch(
       /^\/kinvue-media\/_access\/[^/]+\/master\.m3u8$/,
     );
