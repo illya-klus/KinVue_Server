@@ -185,7 +185,11 @@ services:
       - kinvue-data
       - kinvue-edge
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      test:
+        [
+          "CMD-SHELL",
+          "rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_port_listener 5672",
+        ]
       interval: 10s
       timeout: 10s
       retries: 10
