@@ -16,21 +16,20 @@ describe("MovieUploadService completeUpload", () => {
       object_key: objectKey,
       s3_upload_id: "s3-upload-1",
       status: "INITIATED",
+      part_count: 1,
     }),
+    withMovieLock: jest.fn((_id, work) => work()),
+    enqueue: jest.fn().mockResolvedValue(undefined),
     markCompleted: jest.fn().mockResolvedValue(true),
   };
   const s3 = {
     completeMultipartUpload: jest.fn().mockResolvedValue(undefined),
-  };
-  const transcode = {
-    publish: jest.fn().mockResolvedValue(undefined),
   };
 
   const service = new MovieUploadService(
     movies as never,
     uploads as never,
     s3 as never,
-    transcode as never,
   );
 
   beforeEach(() => {
@@ -41,11 +40,11 @@ describe("MovieUploadService completeUpload", () => {
       object_key: objectKey,
       s3_upload_id: "s3-upload-1",
       status: "INITIATED",
+      part_count: 1,
     });
     uploads.markCompleted.mockResolvedValue(true);
     movies.setMediaProcessing.mockResolvedValue(true);
     s3.completeMultipartUpload.mockResolvedValue(undefined);
-    transcode.publish.mockResolvedValue(undefined);
   });
 
   it("completes multipart upload and enqueues transcode job", async () => {
@@ -60,7 +59,7 @@ describe("MovieUploadService completeUpload", () => {
       [{ partNumber: 1, etag: '"etag-1"' }],
     );
     expect(movies.setMediaProcessing).toHaveBeenCalledWith(movieId, objectKey);
-    expect(transcode.publish).toHaveBeenCalledWith(
+    expect(uploads.enqueue).toHaveBeenCalledWith(
       expect.objectContaining({
         movieId,
         originalKey: objectKey,
@@ -81,6 +80,6 @@ describe("MovieUploadService completeUpload", () => {
 
     expect(s3.completeMultipartUpload).not.toHaveBeenCalled();
     expect(movies.setMediaProcessing).not.toHaveBeenCalled();
-    expect(transcode.publish).not.toHaveBeenCalled();
+    expect(uploads.enqueue).not.toHaveBeenCalled();
   });
 });

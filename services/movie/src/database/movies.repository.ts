@@ -136,7 +136,7 @@ export class MoviesRepository {
       id,
       "media_status = 'UPLOADING'",
       [],
-      "media_status IN ('NONE','UPLOAD_FAILED')",
+      "media_status IN ('NONE','UPLOAD_FAILED','ABANDONED')",
     );
   }
   async setMediaProcessing(id: string, key: string): Promise<boolean> {

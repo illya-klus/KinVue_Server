@@ -1,3 +1,8 @@
+import { UploadMaintenanceWorker } from "./upload-maintenance.worker";
+import {
+  MediaAccessController,
+  MediaAccessService,
+} from "./media-access.service";
 import { Module } from "@nestjs/common";
 import { DatabaseModule } from "../../database/database.module";
 import { AdminScopeGuard } from "../../common/guards/admin-scope.guard";
@@ -9,13 +14,15 @@ import { UploadsRepository } from "./uploads.repository";
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [AdminMovieUploadController],
+  controllers: [AdminMovieUploadController, MediaAccessController],
   providers: [
     AdminScopeGuard,
     UploadsRepository,
     S3MultipartService,
     MediaTranscodePublisher,
     MovieUploadService,
+    UploadMaintenanceWorker,
+    MediaAccessService,
   ],
 })
 export class UploadsModule {}
