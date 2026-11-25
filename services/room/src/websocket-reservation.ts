@@ -66,7 +66,9 @@ export class WebSocketReservation
     await this.redis.ping();
     this.subscriber = this.redis.client.duplicate({
       lazyConnect: true,
-      retryStrategy: () => null,
+      retryStrategy: (attempt) => Math.min(attempt * 100, 1000),
+      autoResubscribe: false,
+      enableOfflineQueue: false,
     });
     this.subscriber.on("message", (channel, data) =>
       this.broadcast(channel, data),
@@ -74,9 +76,11 @@ export class WebSocketReservation
     this.subscriber.on("error", () => {});
     this.subscriber.on("close", () => {
       if (!this.stopping)
-        for (const room of this.rooms.values())
+        for (const room of this.rooms.values()) {
+          room.subscribed = false;
           for (const session of room.clients)
             session.socket.close(1012, "Reconnect to resync");
+        }
     });
     await this.subscriber.connect();
     const server = new WebSocketServer({
@@ -172,11 +176,26 @@ export class WebSocketReservation
           session.queued--;
         });
     });
-    void this.initialize(session).catch(() => {
-      socket.close(1008, "Room access denied");
+    void this.initialize(session).catch((error: unknown) => {
+      const unavailable =
+        (error instanceof Error && error.message === "REALTIME_UNAVAILABLE") ||
+        (this.subscriber?.status !== undefined &&
+          this.subscriber.status !== "ready");
+      socket.close(
+        unavailable ? 1013 : 1008,
+        unavailable ? "Reconnect to resync" : "Room access denied",
+      );
     });
   }
   private async initialize(session: Session) {
+    await this.redis.ping().catch(() => {
+      throw new Error("REALTIME_UNAVAILABLE");
+    });
+    if (
+      this.subscriber?.status !== undefined &&
+      this.subscriber.status !== "ready"
+    )
+      throw new Error("REALTIME_UNAVAILABLE");
     await this.attach(session);
     const state = await this.store.join(session.roomId, session.userId);
     if (session.socket.readyState !== WebSocket.OPEN) return;

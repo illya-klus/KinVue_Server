@@ -108,3 +108,7 @@ Sprint 2 Users здано: [Server PR #27 у dev](https://github.com/illya-klus/
 ## Sprint 5 Анатолія: медіа, 2026-11-25
 
 Реалізовано KIN-110/113/117/303/306/310/312/315/317 в окремих Server/Client гілках. Multipart напряму до S3, decimal bounds рішення 0026, повтор тільки невдалих частин, renewal, атомарний DB outbox, cleanup і приватний HLS graph. Інтеграція враховує вже злитий Server PR #66: media-access має один маршрут у Catalog. Runbook: [media-sprint-5](runbooks/media-sprint-5.md). Приймання через PR; задачі не оголошуються Done до приймання. Sprint 4 Server #56 і Client #8 злиті, усі 14 задач цього обсягу переведені в Done.
+
+## Sprint 6: живе приймання Анатолія
+
+Джерело: стан репозиторіїв 2026-11-25. Підготовлено paired live Playwright suite для 14 задач, cleanup власних fixture, Pub/Sub fault/restart regression та worker corrections для прийнятої HLS ladder. Залежності Sprint 5 лишаються окремими PR. Приймання потребує успішного CI, не лише наявності тестів. Див. [runbook](runbooks/sprint-6-acceptance.md).

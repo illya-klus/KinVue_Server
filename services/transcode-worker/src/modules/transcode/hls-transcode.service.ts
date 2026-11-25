@@ -67,6 +67,8 @@ export class HlsTranscodeService {
         "-y",
         "-i",
         input,
+        "-filter_complex_threads",
+        "1",
         "-filter_complex",
         "[0:v]split=3[v1][v2][v3];" +
           "[v1]scale=w=1920:h=-2[v1out];" +
@@ -91,9 +93,17 @@ export class HlsTranscodeService {
         "-b:v:0",
         "5000k",
         "-b:v:1",
-        "2800k",
+        "3000k",
         "-b:v:2",
-        "1400k",
+        "1500k",
+        "-threads",
+        "2",
+        "-preset",
+        "veryfast",
+        "-pix_fmt",
+        "yuv420p",
+        "-force_key_frames",
+        "expr:gte(t,n_forced*4)",
         "-var_stream_map",
         "v:0,a:0 v:1,a:1 v:2,a:2",
         "-master_pl_name",
@@ -106,14 +116,20 @@ export class HlsTranscodeService {
         "vod",
         join(outputDir, "stream_%v.m3u8"),
       ];
-      const child = spawn("ffmpeg", args, { stdio: "pipe" });
+      const child = spawn("ffmpeg", args, {
+        stdio: ["ignore", "ignore", "pipe"],
+      });
+      let diagnostic = "";
+      child.stderr.on("data", (chunk) => {
+        diagnostic = (diagnostic + String(chunk)).slice(-2000);
+      });
       child.on("error", reject);
       child.on("close", (code) => {
         if (code === 0) {
           resolve();
           return;
         }
-        reject(new Error(`ffmpeg exited with code ${code}`));
+        reject(new Error(`ffmpeg exited with code ${code}: ${diagnostic}`));
       });
     });
   }
