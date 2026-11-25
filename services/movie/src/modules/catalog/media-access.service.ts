@@ -71,7 +71,8 @@ export class MediaAccessService {
     const resolve = async (parent: string, uri: string): Promise<string> => {
       if (
         ++references > 20_000 ||
-        /[?#:\\\x00-\x20]/.test(uri) ||
+        /[?#:\\]/.test(uri) ||
+        [...uri].some((char) => char.charCodeAt(0) <= 32) ||
         uri.startsWith("/")
       )
         throw new Error("Unsupported HLS reference");

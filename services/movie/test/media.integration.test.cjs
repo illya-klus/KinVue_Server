@@ -139,7 +139,9 @@ test(
       for (let i = 0; ; i++) {
         try {
           if ((await fetch(endpoint + "/minio/health/live")).ok) break;
-        } catch {}
+        } catch {
+          /* MinIO may still be starting. */
+        }
         if (i > 90) throw Error("MinIO unavailable");
         await delay(500);
       }

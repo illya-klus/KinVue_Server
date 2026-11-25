@@ -44,16 +44,14 @@ describe("MediaAccessService", () => {
     const before = Date.now();
     const storage = (service as unknown as { storage: { send: jest.Mock } })
       .storage;
-    storage.send = jest
-      .fn()
-      .mockImplementation(async (command) =>
-        command.constructor.name === "GetObjectCommand"
-          ? {
-              ContentLength: 8,
-              Body: { transformToString: async () => "#EXTM3U\n" },
-            }
-          : {},
-      );
+    storage.send = jest.fn().mockImplementation(async (command) =>
+      command.constructor.name === "GetObjectCommand"
+        ? {
+            ContentLength: 8,
+            Body: { transformToString: async () => "#EXTM3U\n" },
+          }
+        : {},
+    );
 
     const access = await service.createAccess("movie-1");
     const signedUrl = new URL(access.url);

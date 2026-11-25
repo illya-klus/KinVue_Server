@@ -235,7 +235,14 @@ export class MovieUploadService {
 function sanitizeFileName(fileName: string): string {
   const trimmed = fileName.trim();
   const base = basename(trimmed.replaceAll("\\", "/"));
-  if (!base || base === "." || base === ".." || /[\x00-\x1f\x7f]/.test(base)) {
+  if (
+    !base ||
+    base === "." ||
+    base === ".." ||
+    [...base].some(
+      (char) => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127,
+    )
+  ) {
     throw new AppError("VALIDATION_FAILED", "Invalid fileName");
   }
   return base;
