@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Headers,
-  HttpCode,
-  Injectable,
-  NotFoundException,
-  Param,
-  ParseUUIDPipe,
-  Post,
-} from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import {
   GetObjectCommand,
@@ -18,7 +9,6 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { randomUUID } from "node:crypto";
 import { posix } from "node:path";
 import { MoviesRepository } from "../../database/movies.repository";
-import { callerId } from "../catalog/caller-id";
 
 // S3 local delivery adapter. Only small control manifests enter this process;
 // all playlist and segment HTTP responses are served directly by private storage.
@@ -52,7 +42,7 @@ export class MediaAccessService {
     this.bucket = config.getOrThrow<string>("S3_BUCKET");
   }
 
-  async access(movieId: string) {
+  async createAccess(movieId: string) {
     const movie = await this.movies.findById(movieId);
     if (
       !movie ||
@@ -135,19 +125,5 @@ export class MediaAccessService {
       url: await manifest(movie.hls_master_key),
       expiresAt: new Date(signingDate.getTime() + 600_000).toISOString(),
     };
-  }
-}
-
-@Controller("movies")
-export class MediaAccessController {
-  constructor(private readonly media: MediaAccessService) {}
-  @Post(":movieId/media-access")
-  @HttpCode(200)
-  access(
-    @Param("movieId", ParseUUIDPipe) movieId: string,
-    @Headers("x-user-id") userId?: string,
-  ) {
-    callerId(userId);
-    return this.media.access(movieId);
   }
 }

@@ -23,6 +23,9 @@ const {
 const {
   MovieSearchIndexService,
 } = require("../dist/modules/search/movie-search-index.service");
+const {
+  MediaAccessService,
+} = require("../dist/modules/catalog/media-access.service");
 const docker = (args) =>
   spawnSync("docker", args, { encoding: "utf8", windowsHide: true });
 test(
@@ -164,6 +167,7 @@ test(
       const module = await Test.createTestingModule({
         controllers: [AdminCatalogController, PublicCatalogController],
         providers: [
+          { provide: MediaAccessService, useValue: {} },
           DatabaseService,
           MoviesRepository,
           SyncStateRepository,

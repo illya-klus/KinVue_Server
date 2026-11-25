@@ -270,6 +270,8 @@ services:
   prometheus:
     image: prom/prometheus:v2.55.1
     container_name: kinvue-prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
@@ -308,6 +310,7 @@ services:
       - "3001:3000"
     volumes:
       - grafana-data:/var/lib/grafana
+      - ./infra/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
       - ./infra/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
     networks:
       - kinvue-data
@@ -339,7 +342,10 @@ services:
       AUTH_SERVICE_URL: ${GATEWAY_AUTH_SERVICE_URL:-http://host.docker.internal:4001}
       JWT_ISSUER: ${JWT_ISSUER:-kinvue-auth}
       JWT_AUDIENCE: ${JWT_AUDIENCE:-kinvue}
+      USERS_SERVICE_URL: http://users:4002
+      MOVIE_SERVICE_URL: http://movie:4003
       ROOMS_SERVICE_URL: http://rooms:4004
+      NOTIFICATION_SERVICE_URL: http://notification:4005
       NODE_ENV: production
     ports:
       - "4000:4000"
@@ -349,10 +355,92 @@ services:
       test:
         [
           "CMD",
-          "wget",
-          "--no-verbose",
-          "--spider",
-          "http://127.0.0.1:4000/health/live",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4000/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    restart: unless-stopped
+    profiles:
+      - apps
+
+  users:
+    build:
+      context: .
+      dockerfile: docker/user/Dockerfile
+    container_name: kinvue-users
+    environment:
+      USERS_HTTP_PORT: "4002"
+      USERS_HTTP_HOST: 0.0.0.0
+      USERS_MONGO_URL: mongodb://users-mongo:27017/kinvue_users?replicaSet=kinvue-users
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672
+      NODE_ENV: production
+    ports:
+      - "4002:4002"
+    depends_on:
+      users-mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - kinvue-data
+      - kinvue-edge
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4002/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    restart: unless-stopped
+    profiles:
+      - apps
+
+  movie:
+    build:
+      context: .
+      dockerfile: docker/movie/Dockerfile
+    container_name: kinvue-movie
+    environment:
+      MOVIE_HTTP_PORT: "4003"
+      MOVIE_HTTP_HOST: 0.0.0.0
+      MOVIE_DATABASE_URL: postgresql://${MOVIE_POSTGRES_USER}:${MOVIE_POSTGRES_PASSWORD}@movie-postgres:5432/${MOVIE_POSTGRES_DB}
+      MEILISEARCH_HOST: http://meilisearch:7700
+      MEILISEARCH_MASTER_KEY: ${MEILISEARCH_MASTER_KEY}
+      MOVIE_INTERNAL_TOKEN: ${MOVIE_INTERNAL_TOKEN}
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_BUCKET: ${S3_BUCKET}
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672
+      NODE_ENV: production
+    ports:
+      - "4003:4003"
+    depends_on:
+      movie-postgres:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - kinvue-data
+      - kinvue-edge
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4003/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       interval: 10s
       timeout: 5s
@@ -459,6 +547,8 @@ services:
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       S3_BUCKET: ${S3_BUCKET}
       NODE_ENV: production
+    ports:
+      - "4016:4016"
     depends_on:
       rabbitmq:
         condition: service_healthy

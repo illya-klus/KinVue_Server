@@ -1,4 +1,5 @@
 import { NestFactory } from "@nestjs/core";
+import type { NextFunction, Request, Response } from "express";
 import { AppModule } from "./app.module";
 import { ConfigService } from "@nestjs/config";
 import { Logger, RequestMethod, ValidationPipe } from "@nestjs/common";
@@ -8,6 +9,8 @@ import { connectSwagger } from "./config/swagger";
 import { httpMetricsMiddleware, initPrometheus } from "@kinvue/http-metrics";
 import { installJsonBodyParser } from "./common/json-body-parser";
 import { configureGatewayCors } from "./cors";
+import { RequestIdMiddleware } from "./common/middleware/request-ids.middleware";
+import { RequestsLoggerMiddleware } from "./common/middleware/requests-loger.middleware";
 
 async function bootstrap() {
   initPrometheus("gateway");
@@ -17,6 +20,14 @@ async function bootstrap() {
   //add config module
   const configService = app.get(ConfigService);
   const logger = new Logger("main");
+  const requestIdMiddleware = new RequestIdMiddleware();
+  const requestsLoggerMiddleware = new RequestsLoggerMiddleware();
+  app.use((req: Request, res: Response, next: NextFunction) =>
+    requestIdMiddleware.use(req, res, next),
+  );
+  app.use((req: Request, res: Response, next: NextFunction) =>
+    requestsLoggerMiddleware.use(req, res, next),
+  );
 
   //add global prefix
   logger.log("Set global prefix: api");

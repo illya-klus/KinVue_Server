@@ -86,3 +86,7 @@ Gateway передає HTTP запити профілю, пошуку та др�
 ## Rooms realtime у Sprint 4
 
 Rooms WS на 4014 /rooms перевіряє access через JWKS Auth, авторизує membership і надсилає першим state_sync. Lua у Redis атомарно перевіряє роль, змінює playback/version або chat/dedup і розсилає room events. Кожен інстанс підписаний тільки на кімнати з локальними sockets. Presence: ONLINE/DISCONNECTED/LEFT, heartbeat 30 s, stale 75 s. Chat і dedup не переживають TTL кімнати. Web керування залежить від ролі та sync, відкидає старі versions, реконект читає актуальний стан. Резервний WS із першого спринту замінено функціональним протоколом; історичний опис каркаса вище не є поточним WS станом. Див. runbooks/rooms-sprint-4.md.
+
+## Приватне медіа у Sprint 5
+
+Джерело: стан репозиторію 2026-11-25. Movie серіалізує multipart lifecycle у власній PostgreSQL, зберігає transcode job у наявному outbox і публікує з RabbitMQ confirm. Maintenance прибирає multipart старше 24 годин. Наявний catalog media-access доповнений приватними session manifests із підписами master, variant і segment URI на 600 секунд. HTTP API повертає JSON, медіабайти віддає S3. Web зберігає завершені частини, поновлює URL і HLS access та звільняє player при виході. Див. [runbook Sprint 5](runbooks/media-sprint-5.md). Хмарний CDN і декодування FFmpeg цим етапом не підтверджені.

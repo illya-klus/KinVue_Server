@@ -1,8 +1,4 @@
 import { UploadMaintenanceWorker } from "./upload-maintenance.worker";
-import {
-  MediaAccessController,
-  MediaAccessService,
-} from "./media-access.service";
 import { Module } from "@nestjs/common";
 import { DatabaseModule } from "../../database/database.module";
 import { AdminScopeGuard } from "../../common/guards/admin-scope.guard";
@@ -14,7 +10,7 @@ import { UploadsRepository } from "./uploads.repository";
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [AdminMovieUploadController, MediaAccessController],
+  controllers: [AdminMovieUploadController],
   providers: [
     AdminScopeGuard,
     UploadsRepository,
@@ -22,7 +18,6 @@ import { UploadsRepository } from "./uploads.repository";
     MediaTranscodePublisher,
     MovieUploadService,
     UploadMaintenanceWorker,
-    MediaAccessService,
   ],
 })
 export class UploadsModule {}

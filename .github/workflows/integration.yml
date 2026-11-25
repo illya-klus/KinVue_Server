@@ -11,10 +11,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Start data plane
-        run: >-
-          docker compose --env-file .env.example --profile apps up -d --build
-          postgres movie-postgres notifications-postgres rooms-postgres
-          meilisearch rabbitmq rooms-redis rooms
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! docker compose --env-file .env.example --profile apps up -d --build \
+            --wait --wait-timeout 180 \
+            postgres movie-postgres notifications-postgres rooms-postgres \
+            users-mongo meilisearch rabbitmq rooms-redis \
+            prometheus grafana gateway users movie rooms notification transcode-worker; then
+            docker compose --env-file .env.example --profile apps ps --all
+            docker compose --env-file .env.example --profile apps logs --no-color --tail 100 gateway transcode-worker
+            exit 1
+          fi
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
@@ -23,6 +31,117 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Wait for infra health
         run: node tests/integration/wait-infra-health.mjs
+      - name: Build and smoke-test non-root Auth image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build -f services/auth/Dockerfile -t kinvue-auth-smoke .
+          docker run --rm --entrypoint node kinvue-auth-smoke -e 'if (process.getuid() === 0) process.exit(1)'
+          docker run --rm --entrypoint sh kinvue-auth-smoke -c 'test ! -e /app/.env && test ! -e /app/.env.example'
+
+          private_key="$(openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 2>/dev/null | awk '{printf "%s\\n", $0}')"
+          container_id="$(docker run -d --name kinvue-auth-image-smoke -p 4001:4001 \
+            -e DATABASE_URL=postgresql://ci:ci@127.0.0.1:5432/ci \
+            -e GOOGLE_CLIENT_ID=ci.example.invalid \
+            -e JWT_REFRESH_SECRET=ci-only-smoke-secret \
+            -e AUTH_JWT_KEY_ID=ci-smoke \
+            -e "AUTH_JWT_PRIVATE_KEY=${private_key}" \
+            kinvue-auth-smoke)"
+          healthy=0
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4001/health/live; then
+              healthy=1
+              break
+            fi
+            sleep 1
+          done
+          test "$healthy" = "1"
+          test "$(docker exec "$container_id" id -u)" = "1000"
+          curl --fail --silent http://127.0.0.1:4001/metrics | grep -q '^process_cpu_user_seconds_total'
+      - name: Verify service metrics, dashboards, and request ID log
+        shell: bash
+        run: |
+          set -euo pipefail
+          for port in 4000 4002 4003 4004 4005; do
+            echo "Checking metrics on port ${port}"
+            metrics="$(curl --fail --silent --show-error "http://127.0.0.1:${port}/metrics")"
+            grep -q '^process_cpu_user_seconds_total' <<<"$metrics"
+          done
+          worker_metrics="$(docker exec kinvue-transcode-worker node -e 'fetch("http://127.0.0.1:4016/metrics").then(async r=>{const body=await r.text();if(!r.ok)process.exit(1);process.stdout.write(body)}).catch(()=>process.exit(1))')"
+          grep -q '^process_cpu_user_seconds_total' <<<"$worker_metrics"
+
+          targets_ready=0
+          targets_json=""
+          for attempt in {1..45}; do
+            targets_json="$(curl --fail --silent http://127.0.0.1:9090/api/v1/targets)"
+            if node -e 'const targets=JSON.parse(process.argv[1]).data.activeTargets.filter(t=>t.labels.job==="kinvue-services");process.exit(targets.length===7&&targets.every(t=>t.health==="up")?0:1)' "$targets_json"; then
+              targets_ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$targets_ready" != "1" ]]; then
+            echo "$targets_json" | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>{for(const target of JSON.parse(s).data.activeTargets.filter(t=>t.labels.job==="kinvue-services")){console.log(JSON.stringify({scrapeUrl:target.scrapeUrl,health:target.health,lastError:target.lastError}))}})'
+            exit 1
+          fi
+
+          curl --fail --silent http://127.0.0.1:9090/-/ready >/dev/null
+          datasource_ready=0
+          grafana_auth="$(printf '%s:%s' admin admin | base64 --wrap=0)"
+          for attempt in {1..30}; do
+            if curl --fail --silent --header "Authorization: Basic ${grafana_auth}" \
+              http://127.0.0.1:3001/api/datasources/name/Prometheus \
+              | grep --quiet 'http://prometheus:9090'; then
+              datasource_ready=1
+              break
+            fi
+            sleep 2
+          done
+          test "$datasource_ready" = "1"
+          for uid in kinvue-overview kinvue-rooms kinvue-media; do
+            ready=0
+            for attempt in {1..30}; do
+              if curl --fail --silent --header "Authorization: Basic ${grafana_auth}" \
+                "http://127.0.0.1:3001/api/dashboards/uid/${uid}" >/dev/null; then
+                ready=1
+                break
+              fi
+              sleep 2
+            done
+            test "$ready" = "1"
+          done
+
+          request_id="ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          headers_file="$(mktemp)"
+          trap 'rm -f "$headers_file"' EXIT
+          status="$(curl --silent --show-error --dump-header "$headers_file" --output /dev/null \
+            --write-out '%{http_code}' --header "x-request-id: ${request_id}" \
+            http://127.0.0.1:4000/api/users/me)"
+          test "$status" = "401"
+          grep --ignore-case --quiet "^x-request-id: ${request_id}" "$headers_file"
+
+          log_request_id="${request_id}-log"
+          log_status="$(curl --silent --show-error --dump-header "$headers_file" --output /dev/null \
+            --write-out '%{http_code}' --header "x-request-id: ${log_request_id}" \
+            http://127.0.0.1:4000/health/live)"
+          test "$log_status" = "200"
+          grep --ignore-case --quiet "^x-request-id: ${log_request_id}" "$headers_file"
+      - name: Check committed files for private key material
+        shell: bash
+        run: |
+          set -euo pipefail
+          begin_marker='-----BEGIN'
+          private_marker='PRIVATE'
+          key_marker='KEY-----'
+          pattern="${begin_marker} (RSA |EC |OPENSSH )?${private_marker} ${key_marker}"
+          if git grep -n -E -- "$pattern" ':!doc/archive/**'; then
+            echo "Committed private key material found"
+            exit 1
+          fi
+      - name: Build shared workspace packages
+        run: pnpm build:shared
+      - name: Verify realtime authorization and playback regressions
+        run: pnpm --filter @kinvue/rooms test:realtime
       - name: Verify scheduled rooms survive Redis loss
         env:
           ROOMS_DATABASE_URL: postgresql://kinvue_rooms:kinvue_rooms@localhost:5436/kinvue_rooms
@@ -32,3 +151,6 @@ jobs:
           scheduled-rooms.repository.integration.spec.ts
       - name: Verify private media uploads and signed HLS
         run: pnpm --filter @kinvue/movie test:media
+      - name: Remove Auth smoke container
+        if: always()
+        run: docker rm -f kinvue-auth-image-smoke >/dev/null 2>&1 || true

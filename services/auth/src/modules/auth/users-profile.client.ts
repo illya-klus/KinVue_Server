@@ -20,7 +20,7 @@ export class UsersProfileClient {
     let response: Response;
     try {
       const endpoint = new URL(
-        "/internal/profiles",
+        "/internal/users/profiles",
         this.config.getOrThrow<string>("USERS_INTERNAL_URL"),
       );
       response = await fetch(endpoint, {

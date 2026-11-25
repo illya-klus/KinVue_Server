@@ -283,7 +283,7 @@ export class RoomsService {
     recipientId: unknown,
     inviterId: string | undefined,
   ) {
-    const { state, ttl } = await this.getActiveRoom(id, inviterId, true);
+    const { ttl } = await this.getActiveRoom(id, inviterId, true);
     if (typeof recipientId !== "string" || !uuidPattern.test(recipientId)) {
       throw new BadRequestException("recipientId must be a UUID");
     }
@@ -355,7 +355,7 @@ export class RoomsService {
       this.membersKey(id),
       authenticatedId,
     );
-    let role: "VIEWER" | "CONTROLLER" = "VIEWER";
+    let role: "VIEWER" | "CONTROLLER";
     let inviteId: string | undefined;
     if (existing && JSON.parse(existing).presence !== "LEFT") {
       const membership = JSON.parse(existing) as {

@@ -34,8 +34,11 @@ const {
 } = require("../dist/modules/uploads/media-transcode.publisher");
 const {
   MediaAccessService,
-  MediaAccessController,
-} = require("../dist/modules/uploads/media-access.service");
+} = require("../dist/modules/catalog/media-access.service");
+const {
+  PublicCatalogController,
+} = require("../dist/modules/catalog/catalog.controller");
+const { CatalogService } = require("../dist/modules/catalog/catalog.service");
 const docker = (args) =>
   spawnSync("docker", args, { encoding: "utf8", windowsHide: true });
 
@@ -358,16 +361,20 @@ test(
           }),
         );
       const media = new MediaAccessService(config, movies);
-      await assert.rejects(media.access(movie.id));
+      await assert.rejects(media.createAccess(movie.id));
       await movies.markMediaReady(movie.id, prefix + "master.m3u8");
       await assert.rejects(
-        media.access(movie.id),
+        media.createAccess(movie.id),
         "READY draft must remain private",
       );
       await movies.publish(movie.id);
       const module = await Test.createTestingModule({
-        controllers: [MediaAccessController],
-        providers: [{ provide: MediaAccessService, useValue: media }],
+        controllers: [PublicCatalogController],
+        providers: [
+          { provide: MediaAccessService, useValue: media },
+          { provide: MoviesRepository, useValue: movies },
+          { provide: CatalogService, useValue: {} },
+        ],
       }).compile();
       app = module.createNestApplication();
       await app.init();
@@ -444,7 +451,7 @@ test(
           Body: "#EXTM3U\n../../other/secret.ts\n",
         }),
       );
-      await assert.rejects(media.access(movie.id), /outside movie/);
+      await assert.rejects(media.createAccess(movie.id), /outside movie/);
       await channel.close();
       s3client.destroy();
     } finally {

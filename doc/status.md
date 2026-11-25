@@ -104,3 +104,7 @@ Sprint 2 Users здано: [Server PR #27 у dev](https://github.com/illya-klus/
 ## Sprint 4: realtime, 2026-11-22
 
 Реалізовано 14 задач Анатолія KIN-150/153/186/187/189/193/197/202/207/212/230/235/255/257: WS auth/access/sync, playback/version/PubSub, presence/leave, chat/dedup/reactions і web-керування. Перевірено двома інстансами з Redis 7, реальним browser WS smoke, unit/Playwright/typecheck. Це доповнює злиті HTTP Rooms/invite/schedule компоненти. Медіапайплайн не входить у доказ. Runbook: runbooks/rooms-sprint-4.md; звіт: verification/2026-11-22-sprint-4.md. Здавання йде окремими PR; Done після приймання. Sprint 3 вже зданий через merged Server #55 і Client #6, 25 задач у Done.
+
+## Sprint 5 Анатолія: медіа, 2026-11-25
+
+Реалізовано KIN-110/113/117/303/306/310/312/315/317 в окремих Server/Client гілках. Multipart напряму до S3, decimal bounds рішення 0026, повтор тільки невдалих частин, renewal, атомарний DB outbox, cleanup і приватний HLS graph. Інтеграція враховує вже злитий Server PR #66: media-access має один маршрут у Catalog. Runbook: [media-sprint-5](runbooks/media-sprint-5.md). Приймання через PR; задачі не оголошуються Done до приймання. Sprint 4 Server #56 і Client #8 злиті, усі 14 задач цього обсягу переведені в Done.
