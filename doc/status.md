@@ -2,14 +2,14 @@
 
 Оновлюй цей файл, коли роботу завершено, покинуто або свідомо не зроблено. Журнал чатів при цьому не чисть.
 
-## Поточний зріз — 2026-11-23
+## Поточний зріз — 2026-11-27
 
 Jira показує призначені Богдану задачі в усіх спринтах. Історичні розділи нижче описують попередню роботу, а актуальні PR та блокери наведено тут.
 
-- Server PR #65–#66 змерджені в `dev`; Client PR #13–#14 змерджені в `main`. Client PR #15 [live solo media access](https://github.com/illya-klus/KinVue_Client/pull/15) відкритий, обидва CI jobs пройшли; живий сценарій підтверджує 600-секундний підписаний HLS URL і відсутність Rooms WebSocket.
-- KIN-264 лишається `In Progress` до merge Client PR #15; реалізація та live E2E пройшли CI, фактичне відтворення HLS bytes і start/stop не перевірені.
+- Server PR #65–#66 змерджені в `dev`; Client PR #13–#15 змерджені в `main`. PR #15 [live solo media access](https://github.com/illya-klus/KinVue_Client/pull/15) пройшов обидва CI jobs та був злитий 2026-11-27 (merge commit `104358d4228a0736052813a8b67da1bea8778de7`). Серверний звітний PR #69 очікує перевірок.
+- KIN-264 переведений у `Done`: live E2E підтвердив підписаний 600-секундний HLS URL і відсутність Rooms WebSocket. Фактичне відтворення HLS bytes та start/stop лишаються поза перевіреним ticket scope і входять до ширшого KIN-344 acceptance.
 - KIN-285 лишається `To Do`: зовнішню базу Auth не створювали, бо для неї потрібні погоджені кошторис, вендор і менеджер секретів; платні ресурси не замовляли.
-- KIN-344 лишається `In Progress`: частина приймання підтверджена в [звіті Sprint 7](verification/sprint-7-release-acceptance-2026-11-23.md), але HLS playback, user/admin/watchlist/notifications flows, load test і приклад runtime log ще не перевірені.
+- KIN-344 лишається `In Progress`: частина приймання підтверджена в [звіті Sprint 7](verification/sprint-7-release-acceptance-2026-11-27.md), але HLS playback, user/admin/watchlist/notifications flows, load test і приклад runtime log ще не перевірені.
 - KIN-347 лишається `To Do`: тег `v0.1.0-mvp` не створювати, доки приймання не пройдене повністю.
 
 ## Зроблено
