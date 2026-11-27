@@ -6,7 +6,13 @@ async function setup(identity, passwordMatches = true) {
     import("../dist/modules/auth/auth.controller.js"),
     import("@nestjs/common"),
   ]);
-  const calls = { email: null, verify: 0, cookies: [], clearedCookies: [], tokens: 0 };
+  const calls = {
+    email: null,
+    verify: 0,
+    cookies: [],
+    clearedCookies: [],
+    tokens: 0,
+  };
   const controller = new AuthController(
     {
       async findLoginIdentityByEmail(email) {
