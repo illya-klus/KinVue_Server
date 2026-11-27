@@ -9,9 +9,9 @@ Jira показує призначені Богдану задачі в усіх
 - Server PR #65–#66 і #69 змерджені в `dev`; Client PR #13–#15 змерджені в `main`. PR #15 [live solo media access](https://github.com/illya-klus/KinVue_Client/pull/15) пройшов обидва CI jobs та був злитий 2026-11-27 (merge commit `104358d4228a0736052813a8b67da1bea8778de7`). Server PR #69 оновив Sprint 7 acceptance evidence; усі чотири CI-перевірки пройшли.
 - KIN-264 переведений у `Done`: live E2E підтвердив підписаний 600-секундний HLS URL і відсутність Rooms WebSocket. Фактичне відтворення HLS bytes та start/stop лишаються поза перевіреним ticket scope і входять до ширшого KIN-344 acceptance.
 - KIN-285 лишається `To Do`: зовнішню базу Auth не створювали, бо для неї потрібні погоджені кошторис, вендор і менеджер секретів; платні ресурси не замовляли.
-- KIN-344 лишається `In Progress`: частина приймання підтверджена в [звіті Sprint 7](verification/sprint-7-release-acceptance-2026-11-27.md), але HLS playback, user/admin/watchlist/notifications flows, load test і приклад runtime log ще не перевірені.
+- KIN-344 лишається `In Progress`: Client PR #18 і #19 змерджені; live E2E тепер підтверджує owner-close, refresh/logout, profile, users/friends, notifications і watchlist. Невирішені acceptance: admin catalog, фактичні HLS bytes/start-stop, upload/transcode, runtime доказ що застосунки не віддають медіа, load check і runtime log із request ID.
 - KIN-347 лишається `To Do`: тег `v0.1.0-mvp` не створювати, доки приймання не пройдене повністю.
-- Server PR #71 виправив scope refresh-cookie на `/api/auth` і змерджений у `dev`, але live E2E довів, що цього недостатньо: cookie доходить, а refresh повертає 401 для password identity без legacy `AuthUser`. Друге виправлення йде окремим PR з новими тестами; Client PR #19 поки не можна зливати, бо live-auth CI червоний.
+- Server PR #71 і #72 змерджені в `dev`: перший вирівняв шлях HttpOnly refresh-cookie на `/api/auth`, другий дозволив refresh для активного password `AuthIdentity` без legacy `AuthUser`. Client PR #19 змерджений у `main`; CI run 45930331064: smoke і live-auth пройшли. Refresh тести 7/7, auth HTTP 14/14, typecheck пройшов.
 
 ## Зроблено
 
