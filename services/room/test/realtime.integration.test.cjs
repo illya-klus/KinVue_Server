@@ -433,6 +433,75 @@ test(
       await until(() => a.closed);
       assert.ok((await redis.ttl(`room:${publicRoom}:messages`)) <= 900);
       assert.ok((await redis.ttl(`room:${publicRoom}:message-ids`)) <= 900);
+      // KIN-205: sever Pub/Sub only, mutate the authoritative state while disconnected,
+      // then reconnect using a fresh snapshot. Neither chat nor playback is replayed.
+      const recoveryRoom = (await rooms.createRoom("movie-1", "PUBLIC", owner))
+        .id;
+      const recovery = connect(instances[0], recoveryRoom, ownerToken);
+      await recovery.next("room.state_sync");
+      await redis.call("CLIENT", "KILL", "TYPE", "pubsub");
+      await until(() => recovery.closed);
+      assert.equal(recovery.closed.code, 1012);
+      await store.execute(recoveryRoom, owner, "room.seek", {
+        positionSeconds: 91,
+      });
+      await store.execute(recoveryRoom, owner, "chat.message", {
+        messageId: randomUUID(),
+        text: "missed during outage",
+      });
+      await until(() =>
+        instances.every((instance) => instance.subscriber.status === "ready"),
+      );
+      const afterOutage = connect(instances[0], recoveryRoom, ownerToken);
+      const recovered = await afterOutage.next("room.state_sync");
+      assert.equal(recovered.version, 1);
+      assert.equal(recovered.positionSeconds, 91);
+      await delay(100);
+      assert.equal(
+        afterOutage.messages.filter((event) =>
+          ["chat.message_created", "room.playback_state_changed"].includes(
+            event.type,
+          ),
+        ).length,
+        0,
+      );
+      command(afterOutage, "room.seek", 92, recoveryRoom);
+      await afterOutage.next(
+        "room.playback_state_changed",
+        (event) => event.version === 2,
+      );
+      // KIN-182: stop and restart the Rooms listener on its original public address.
+      const original = instances[0],
+        port = original.address().port;
+      const restartConfig = new ConfigService({
+        ROOMS_WS_PORT: port,
+        ROOMS_HTTP_HOST: "127.0.0.1",
+        AUTH_SERVICE_URL: authUrl,
+        JWT_ISSUER: "rooms-test",
+        JWT_AUDIENCE: "kinvue",
+      });
+      await original.onApplicationShutdown();
+      await until(() => afterOutage.closed);
+      const replacement = new WebSocketReservation(
+        restartConfig,
+        new RoomJwtService(restartConfig),
+        store,
+        { client: redis, ping: () => redis.ping() },
+      );
+      instances[0] = replacement;
+      await replacement.onApplicationBootstrap();
+      const afterRestart = connect(replacement, recoveryRoom, ownerToken);
+      const restarted = await afterRestart.next("room.state_sync");
+      assert.equal(restarted.version, 2);
+      assert.equal(restarted.positionSeconds, 92);
+      await delay(100);
+      assert.equal(
+        afterRestart.messages.filter(
+          (event) => event.type === "room.playback_state_changed",
+        ).length,
+        0,
+      );
+      await rooms.closeRoom(recoveryRoom, owner);
     } finally {
       for (const peer of connections) peer.ws.terminate();
       for (const instance of instances) await instance.onApplicationShutdown();
