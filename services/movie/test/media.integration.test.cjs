@@ -89,7 +89,7 @@ test(
       start(
         "s3",
         process.env.MEDIA_TEST_MINIO_IMAGE ||
-          "pgsty/minio:RELEASE.2026-08-04T00-00-00Z",
+          "pgsty/silo:RELEASE.2026-11-12T00-00-00Z",
         [
           "-e",
           "MINIO_API_CORS_ALLOW_ORIGIN=http://localhost:3000,http://127.0.0.1:3009",

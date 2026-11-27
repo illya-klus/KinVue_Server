@@ -17,7 +17,7 @@ This is an updated, partial acceptance record. The MVP release gate is **not cle
 | Client live Rooms E2E            | PASS    | Client PR #15, CI run [45186834224](https://github.com/illya-klus/KinVue_Client/actions/runs/45186834224), `live-auth` job; disposable Auth/Movie/Gateway/Rooms stack and both Playwright journeys completed successfully. PR #15 merged to `main` on 2026-11-27.                                                                                             |
 | Client live acceptance E2E       | PASS    | Client PR #19, CI run [45930331064](https://github.com/illya-klus/KinVue_Client/actions/runs/45930331064); `live-auth` and `smoke` passed. Authenticated browser journeys covered session refresh/logout, profile edit, user search/friend request and acceptance, notifications, and watchlist.                                                              |
 | Load smoke                       | NOT RUN | No bounded Gateway/search load report has been produced.                                                                                                                                                                                                                                                                                                      |
-| Local S3-compatible object store | PARTIAL | The current `pgsty/minio` image has zero-byte entrypoint/server binaries. A separate disposable `pgsty/silo:RELEASE.2026-11-12T00-00-00Z` smoke passed health (200), bucket setup using `pgsty/mc`, and private-bucket anonymous GET (403). Compose image update awaits PR; this does not verify app upload/transcode/HLS. No user data volumes were removed. |
+| Local S3-compatible object store | PARTIAL | The current Compose image `pgsty/minio` has zero-byte entrypoint/server binaries. Disposable `pgsty/silo:RELEASE.2026-11-12T00-00-00Z` health/private-bucket smoke and `pnpm --filter @kinvue/movie test:media` passed (multipart, durable enqueue, signed HLS manifest/variant/segment). The Compose image/CI update is in Server PR #74; browser video playback and real worker output are not covered here. No user data volumes were removed. |
 
 ## Product acceptance (steps 34.10–34.33)
 
@@ -35,8 +35,8 @@ This is an updated, partial acceptance record. The MVP release gate is **not cle
 | 34.21–34.25 | Roles, playback control/sync, reconnect                 | PARTIAL — owner changes VIEWER to CONTROLLER, the controller can play, the owner receives the state, and a viewer command is rejected with no version increment. Browser reconnect and all remaining playback cases were not exercised.        |
 | 34.26–34.28 | Chat delivery, duplicate message ID, reactions          | PARTIAL — covered by Rooms realtime server integration checks, not by the browser acceptance journey.                                                                                                                                          |
 | 34.29       | Notifications                                           | PASS — Client PR #19 live E2E waits for outbox delivery and verifies friend notification in the UI; CI run 45930331064.                                                                                                                        |
-| 34.30–34.32 | Multipart upload, transcode output, signed HLS playback | NOT RUN — MinIO image is broken locally and there is no media fixture for a live HLS run.                                                                                                                                                      |
-| 34.33       | Application services do not serve media bytes           | NOT RUN as a runtime acceptance check. The architecture requirement remains: video bytes come directly from private object storage/CDN; app services handle control-plane requests.                                                            |
+| 34.30–34.32 | Multipart upload, transcode output, signed HLS playback | PARTIAL — `pnpm --filter @kinvue/movie test:media` passed against disposable Silo: real S3 multipart bytes, durable transcode enqueue/maintenance, and signed master/variant/segment fetched directly from private object storage. Actual FFmpeg output and browser start/stop playback await Client PR #17 live E2E. |
+| 34.33       | Application services do not serve media bytes           | PASS — `test:media` calls the Movie media-access controller, receives a signed URL response, then fetches master/variant/segment from S3; unsigned object requests return 403. The app endpoint does not stream media bytes. |
 
 FR-09 activity is deferred by [decision 0014](../decisions/0014-defer-fr09-activity.md); it is not counted as passed.
 
@@ -52,7 +52,7 @@ FR-09 activity is deferred by [decision 0014](../decisions/0014-defer-fr09-activ
 
 ## Remaining acceptance work
 
-1. Verify private HLS delivery and actual start/stop playback with a playable fixture. The replacement Silo image passed an isolated private-bucket smoke; merge its Compose update and rerun the full live browser journey. The media-access endpoint and client signed-access/no-Rooms-socket path pass CI.
+1. Verify actual FFmpeg output and browser HLS start/stop with a playable fixture; Client PR #17 is adding the full live journey.
 2. Add live journeys for admin catalog, chat/reactions and reconnect. Profile, users/friends, watchlist, notifications and owner UI close now have live CI coverage.
-3. Run bounded load checks, all metrics endpoints, Grafana dashboards, and a runtime request-ID log sample.
+3. Run bounded load checks and capture a runtime request-ID log sample. Metrics endpoints and Grafana dashboards already pass Compose CI.
 4. Reassess the release tag only after every required checklist item has an explicit pass/fail result and no required item is unverified.
