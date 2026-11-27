@@ -76,13 +76,20 @@ export class TokensService {
     );
     if (!session) return null;
 
+    const identity = await this.prisma.db.orm.public.AuthIdentity.first({
+      userId: session.userId,
+    });
+    if (identity && identity.status !== "ACTIVE") return null;
+
     const user = await this.prisma.db.orm.public.AuthUser.first({
       id: session.userId,
     });
-    if (!user) return null;
+    // Password identities are kept separately from legacy Google AuthUser
+    // rows. Active password users without a role row remain ordinary users.
+    if (!identity && !user) return null;
 
-    const scopes = user.role === "ADMIN" ? ["admin"] : [];
-    const accessToken = await this.createAccessToken(user.id, scopes);
+    const scopes = user?.role === "ADMIN" ? ["admin"] : [];
+    const accessToken = await this.createAccessToken(session.userId, scopes);
     return { accessToken, refreshToken };
   }
 
