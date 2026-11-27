@@ -6,12 +6,13 @@
 
 Jira показує призначені Богдану задачі в усіх спринтах. Історичні розділи нижче описують попередню роботу, а актуальні PR та блокери наведено тут.
 
-- Server PR #65–#66 і #69 змерджені в `dev`; Client PR #13–#15 змерджені в `main`. PR #15 [live solo media access](https://github.com/illya-klus/KinVue_Client/pull/15) пройшов обидва CI jobs та був злитий 2026-11-27 (merge commit `104358d4228a0736052813a8b67da1bea8778de7`). Server PR #69 оновив Sprint 7 acceptance evidence; усі чотири CI-перевірки пройшли.
+- Server PR #65–#73 змерджені в `dev`; серед них #67 private multipart/HLS, #68 Rooms Pub/Sub recovery і #73 acceptance report. Server PR #74 із Silo локальним object store та Compose smoke очікує CI. Client PR #13–#16 та #18–#19 змерджені в `main`; Client PR #17 відкритий, live-auth оновлюється після двох виправлень у дружньому outbox і HLS fixture.
 - KIN-264 переведений у `Done`: live E2E підтвердив підписаний 600-секундний HLS URL і відсутність Rooms WebSocket. Фактичне відтворення HLS bytes та start/stop лишаються поза перевіреним ticket scope і входять до ширшого KIN-344 acceptance.
 - KIN-285 лишається `To Do`: зовнішню базу Auth не створювали, бо для неї потрібні погоджені кошторис, вендор і менеджер секретів; платні ресурси не замовляли.
-- KIN-344 лишається `In Progress`: Client PR #18 і #19 змерджені; live E2E тепер підтверджує owner-close, refresh/logout, profile, users/friends, notifications і watchlist. Невирішені acceptance: admin catalog, фактичні HLS bytes/start-stop, upload/transcode, runtime доказ що застосунки не віддають медіа, load check і runtime log із request ID.
+- KIN-344 лишається `In Progress`: Client PR #18 і #19 змерджені; live E2E підтверджує owner-close, refresh/logout, profile, users/friends, notifications і watchlist. `pnpm --filter @kinvue/movie test:media` пройшов із Silo: multipart upload, transcode-job enqueue, підписані manifest/variant/segment та приватна S3 доставка. Повний клієнтський upload/FFmpeg/HLS journey в PR #17 ще чекає CI. Невирішені acceptance: admin catalog, реальний FFmpeg output і browser start/stop, load check і request-ID log sample.
 - KIN-347 лишається `To Do`: тег `v0.1.0-mvp` не створювати, доки приймання не пройдене повністю.
 - Server PR #71 і #72 змерджені в `dev`: перший вирівняв шлях HttpOnly refresh-cookie на `/api/auth`, другий дозволив refresh для активного password `AuthIdentity` без legacy `AuthUser`. Client PR #19 змерджений у `main`; CI run 45930331064: smoke і live-auth пройшли. Refresh тести 7/7, auth HTTP 14/14, typecheck пройшов.
+- Локальний `pgsty/minio:RELEASE.2026-08-04T00-00-00Z` на цій машині має нульові server/entrypoint binaries та падає з `exec format error`. У гілці `fix/local-silo-object-store` замінено його на pinned `pgsty/silo`; disposable health/private-bucket smoke і `pnpm --filter @kinvue/movie test:media` пройшли. Compose update та CI перевірка очікують PR #74.
 
 ## Зроблено
 

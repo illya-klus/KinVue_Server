@@ -226,9 +226,8 @@ services:
     restart: unless-stopped
 
   minio:
-    # minio/minio and quay.io/minio are not anonymously pullable (removed / locked, 2026-09).
-    # pgsty/minio is a drop-in: same server command, health URL, and env vars.
-    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    # PGSTY Silo is the maintained MinIO-compatible fork; pin a released image.
+    image: pgsty/silo:RELEASE.2026-11-12T00-00-00Z
     container_name: kinvue-minio
     command: ["server", "/data", "--console-address", ":9001"]
     environment:
