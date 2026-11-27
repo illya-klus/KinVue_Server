@@ -11,6 +11,7 @@ Jira показує призначені Богдану задачі в усіх
 - KIN-285 лишається `To Do`: зовнішню базу Auth не створювали, бо для неї потрібні погоджені кошторис, вендор і менеджер секретів; платні ресурси не замовляли.
 - KIN-344 лишається `In Progress`: частина приймання підтверджена в [звіті Sprint 7](verification/sprint-7-release-acceptance-2026-11-27.md), але HLS playback, user/admin/watchlist/notifications flows, load test і приклад runtime log ще не перевірені.
 - KIN-347 лишається `To Do`: тег `v0.1.0-mvp` не створювати, доки приймання не пройдене повністю.
+- Client PR #19 [live acceptance journeys](https://github.com/illya-klus/KinVue_Client/pull/19) знайшов, що Auth cookie не доходить до Gateway refresh route через помилковий path. Виправлення винесене в server PR з гілки від `dev`; після його злиття live CI PR #19 треба повторити.
 
 ## Зроблено
 
