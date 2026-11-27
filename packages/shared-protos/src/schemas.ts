@@ -84,11 +84,7 @@ export const changeRoomRoleRequestSchema = z.strictObject({
 export const uploadInitRequestSchema = z.strictObject({
   fileName: z.string().min(1),
   contentType: z.enum(["video/mp4", "video/quicktime", "video/x-matroska"]),
-  fileSizeBytes: z
-    .number()
-    .int()
-    .gt(1024 * 1024)
-    .max(25 * 1024 ** 3),
+  fileSizeBytes: z.number().int().gt(1_000_000).max(25_000_000_000),
   partCount: z.number().int().positive().max(10_000),
 });
 export const uploadCompleteRequestSchema = z.strictObject({

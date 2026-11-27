@@ -149,6 +149,8 @@ jobs:
         run: >-
           pnpm --filter @kinvue/rooms test -- --runInBand
           scheduled-rooms.repository.integration.spec.ts
+      - name: Verify private media uploads and signed HLS
+        run: pnpm --filter @kinvue/movie test:media
       - name: Remove Auth smoke container
         if: always()
         run: docker rm -f kinvue-auth-image-smoke >/dev/null 2>&1 || true

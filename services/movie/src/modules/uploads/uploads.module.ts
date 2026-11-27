@@ -1,3 +1,4 @@
+import { UploadMaintenanceWorker } from "./upload-maintenance.worker";
 import { Module } from "@nestjs/common";
 import { DatabaseModule } from "../../database/database.module";
 import { AdminScopeGuard } from "../../common/guards/admin-scope.guard";
@@ -16,6 +17,7 @@ import { UploadsRepository } from "./uploads.repository";
     S3MultipartService,
     MediaTranscodePublisher,
     MovieUploadService,
+    UploadMaintenanceWorker,
   ],
 })
 export class UploadsModule {}

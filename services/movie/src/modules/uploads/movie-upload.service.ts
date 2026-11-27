@@ -5,12 +5,11 @@ import { AppError } from "@kinvue/errors";
 import { MoviesRepository } from "../../database/movies.repository";
 import type { UploadInitDto } from "./dto/upload-init.dto";
 import type { UploadCompleteDto } from "./dto/upload-complete.dto";
-import { MediaTranscodePublisher } from "./media-transcode.publisher";
 import { S3MultipartService } from "./s3-multipart.service";
 import { UploadsRepository } from "./uploads.repository";
 
-const MIN_FILE_SIZE_BYTES = 1024 * 1024;
-const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024 * 1024;
+const MIN_FILE_SIZE_BYTES = 1_000_000;
+const MAX_FILE_SIZE_BYTES = 25_000_000_000;
 
 export type UploadInitResult = {
   uploadId: string;
@@ -23,14 +22,28 @@ export class MovieUploadService {
     private readonly movies: MoviesRepository,
     private readonly uploads: UploadsRepository,
     private readonly s3: S3MultipartService,
-    private readonly transcode: MediaTranscodePublisher,
   ) {}
 
   public async initUpload(
     movieId: string,
     body: UploadInitDto,
   ): Promise<UploadInitResult> {
+    return this.uploads.withMovieLock(movieId, () =>
+      this.initLocked(movieId, body),
+    );
+  }
+
+  private async initLocked(
+    movieId: string,
+    body: UploadInitDto,
+  ): Promise<UploadInitResult> {
     this.assertFileSize(body.fileSizeBytes);
+    if (
+      !["video/mp4", "video/quicktime", "video/x-matroska"].includes(
+        body.contentType,
+      )
+    )
+      throw new AppError("VALIDATION_FAILED", "Unsupported video type");
     this.assertPartCount(body.partCount, body.fileSizeBytes);
 
     const movie = await this.movies.findById(movieId);
@@ -38,6 +51,15 @@ export class MovieUploadService {
       throw new NotFoundException("Movie not found");
     }
 
+    if (
+      !["NONE", "UPLOAD_FAILED", "ABANDONED"].includes(
+        movie.media_status ?? "NONE",
+      )
+    )
+      throw new AppError(
+        "CONFLICT",
+        "Media cannot be replaced in its current state",
+      );
     const uploadId = randomUUID();
     const fileName = sanitizeFileName(body.fileName);
     const objectKey = `movies/${movieId}/original/${uploadId}/${fileName}`;
@@ -46,25 +68,42 @@ export class MovieUploadService {
       objectKey,
       body.contentType,
     );
-    await this.uploads.insertInitiated({
-      id: uploadId,
-      movieId,
-      objectKey,
-      s3UploadId,
-      partCount: body.partCount,
-    });
-    await this.movies.setMediaUploading(movieId);
+    try {
+      await this.uploads.insertInitiated({
+        id: uploadId,
+        movieId,
+        objectKey,
+        s3UploadId,
+        partCount: body.partCount,
+      });
+      if (!(await this.movies.setMediaUploading(movieId)))
+        throw new AppError("CONFLICT", "Media state changed");
 
-    const parts = await this.s3.presignUploadParts(
-      objectKey,
-      s3UploadId,
-      body.partCount,
-    );
+      const parts = await this.s3.presignUploadParts(
+        objectKey,
+        s3UploadId,
+        body.partCount,
+      );
 
-    return { uploadId, parts };
+      return { uploadId, parts };
+    } catch (error) {
+      await this.s3
+        .abortMultipartUpload(objectKey, s3UploadId)
+        .catch(() => undefined);
+      throw error;
+    }
   }
 
   public async completeUpload(
+    movieId: string,
+    body: UploadCompleteDto,
+  ): Promise<{ ok: true; mediaStatus: "PROCESSING" }> {
+    return this.uploads.withMovieLock(movieId, () =>
+      this.completeLocked(movieId, body),
+    );
+  }
+
+  private async completeLocked(
     movieId: string,
     body: UploadCompleteDto,
   ): Promise<{ ok: true; mediaStatus: "PROCESSING" }> {
@@ -86,11 +125,30 @@ export class MovieUploadService {
       partNumbers.add(part.partNumber);
     }
 
-    const upload = await this.uploads.findInitiatedById(body.uploadId, movieId);
+    const upload = await this.uploads.findInitiatedById(
+      body.uploadId,
+      movieId,
+      true,
+    );
     if (!upload) {
       throw new NotFoundException("Upload not found");
     }
 
+    if (
+      body.parts.length !== upload.part_count ||
+      body.parts.some(
+        (p) =>
+          !Number.isInteger(p.partNumber) ||
+          p.partNumber < 1 ||
+          p.partNumber > upload.part_count,
+      )
+    )
+      throw new AppError(
+        "VALIDATION_FAILED",
+        "All expected parts are required",
+      );
+    if (upload.status === "COMPLETED")
+      return { ok: true, mediaStatus: "PROCESSING" };
     await this.s3.completeMultipartUpload(
       upload.object_key,
       upload.s3_upload_id,
@@ -110,7 +168,7 @@ export class MovieUploadService {
       throw new NotFoundException("Movie not found");
     }
 
-    await this.transcode.publish({
+    await this.uploads.enqueue({
       jobId: randomUUID(),
       movieId,
       originalKey: upload.object_key,
@@ -120,8 +178,33 @@ export class MovieUploadService {
     return { ok: true, mediaStatus: "PROCESSING" };
   }
 
+  async refreshParts(
+    movieId: string,
+    uploadId: string,
+  ): Promise<UploadInitResult> {
+    return this.uploads.withMovieLock(movieId, async () => {
+      const upload = await this.uploads.findInitiatedById(uploadId, movieId);
+      if (
+        !upload ||
+        Date.now() - new Date(upload.created_at).getTime() > 86_400_000
+      )
+        throw new NotFoundException("Active upload not found");
+      return {
+        uploadId,
+        parts: await this.s3.presignUploadParts(
+          upload.object_key,
+          upload.s3_upload_id,
+          upload.part_count,
+        ),
+      };
+    });
+  }
+
   private assertFileSize(fileSizeBytes: number): void {
-    if (fileSizeBytes <= MIN_FILE_SIZE_BYTES) {
+    if (
+      !Number.isSafeInteger(fileSizeBytes) ||
+      fileSizeBytes <= MIN_FILE_SIZE_BYTES
+    ) {
       throw new AppError(
         "VALIDATION_FAILED",
         "File size must be greater than 1 MB",
@@ -136,12 +219,12 @@ export class MovieUploadService {
   }
 
   private assertPartCount(partCount: number, fileSizeBytes: number): void {
-    if (partCount < 1) {
+    if (!Number.isInteger(partCount) || partCount < 1) {
       throw new AppError("VALIDATION_FAILED", "partCount must be at least 1");
     }
-    const maxParts = Math.max(
-      1,
-      Math.ceil(fileSizeBytes / MIN_FILE_SIZE_BYTES),
+    const maxParts = Math.min(
+      10_000,
+      Math.max(1, Math.ceil(fileSizeBytes / (5 * 1024 * 1024))),
     );
     if (partCount > maxParts) {
       throw new AppError("VALIDATION_FAILED", "partCount is too large");
@@ -152,7 +235,14 @@ export class MovieUploadService {
 function sanitizeFileName(fileName: string): string {
   const trimmed = fileName.trim();
   const base = basename(trimmed.replaceAll("\\", "/"));
-  if (!base || base === "." || base === "..") {
+  if (
+    !base ||
+    base === "." ||
+    base === ".." ||
+    [...base].some(
+      (char) => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127,
+    )
+  ) {
     throw new AppError("VALIDATION_FAILED", "Invalid fileName");
   }
   return base;

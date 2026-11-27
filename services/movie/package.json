@@ -20,7 +20,8 @@
     "migrate:deploy": "node scripts/migrate-movie.mjs",
     "contract:emit": "prisma contract emit",
     "test:integration": "pnpm build && node --test test/catalog.integration.test.cjs",
-    "test:migrations": "node --test test/migrate-movie.test.cjs"
+    "test:migrations": "node --test test/migrate-movie.test.cjs",
+    "test:media": "pnpm build && node --test test/media.integration.test.cjs"
   },
   "dependencies": {
     "@kinvue/config": "workspace:*",

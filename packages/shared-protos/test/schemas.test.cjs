@@ -107,7 +107,7 @@ test("upload rejects unsupported media, invalid part counts and byte bounds", ()
   const body = {
     fileName: "movie.mp4",
     contentType: "video/mp4",
-    fileSizeBytes: 25 * 1024 ** 3,
+    fileSizeBytes: 25_000_000_000,
     partCount: 200,
   };
   s.uploadInitRequestSchema.parse(body);
@@ -117,8 +117,8 @@ test("upload rejects unsupported media, invalid part counts and byte bounds", ()
   });
   for (const patch of [
     { contentType: "text/plain" },
-    { fileSizeBytes: 1024 ** 2 },
-    { fileSizeBytes: 25 * 1024 ** 3 + 1 },
+    { fileSizeBytes: 1_000_000 },
+    { fileSizeBytes: 25_000_000_000 + 1 },
     { partCount: 0 },
     { partCount: 1.5 },
   ])

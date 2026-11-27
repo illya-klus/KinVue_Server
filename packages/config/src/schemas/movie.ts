@@ -7,6 +7,7 @@ export const movieConfigSchema = base.extend({
   MEILISEARCH_MASTER_KEY: nonempty,
   MOVIE_INTERNAL_TOKEN: nonempty.default("local-movie-internal-token"),
   S3_ENDPOINT: http,
+  S3_PUBLIC_ENDPOINT: http.optional(),
   S3_ACCESS_KEY: nonempty,
   S3_SECRET_KEY: nonempty,
   S3_BUCKET: nonempty,

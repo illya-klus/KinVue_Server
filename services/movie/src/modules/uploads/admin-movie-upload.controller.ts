@@ -31,4 +31,11 @@ export class AdminMovieUploadController {
   ) {
     return this.uploads.completeUpload(movieId, body);
   }
+  @Post(":movieId/upload/:uploadId/parts")
+  public refreshParts(
+    @Param("movieId", ParseUUIDPipe) movieId: string,
+    @Param("uploadId", ParseUUIDPipe) uploadId: string,
+  ) {
+    return this.uploads.refreshParts(movieId, uploadId);
+  }
 }

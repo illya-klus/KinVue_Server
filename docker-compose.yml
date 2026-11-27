@@ -185,7 +185,11 @@ services:
       - kinvue-data
       - kinvue-edge
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      test:
+        [
+          "CMD-SHELL",
+          "rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_port_listener 5672",
+        ]
       interval: 10s
       timeout: 10s
       retries: 10
@@ -228,6 +232,7 @@ services:
     container_name: kinvue-minio
     command: ["server", "/data", "--console-address", ":9001"]
     environment:
+      MINIO_API_CORS_ALLOW_ORIGIN: ${WEB_ORIGIN:-http://localhost:3000}
       MINIO_ROOT_USER: ${S3_ACCESS_KEY}
       MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
     ports:
@@ -261,6 +266,7 @@ services:
         mc alias set local http://minio:9000 "$$S3_ACCESS_KEY" "$$S3_SECRET_KEY"
         mc mb --ignore-existing local/kinvue-media
         mc anonymous set none local/kinvue-media
+        mc ilm rule add --prefix "_access/" --expire-days 1 local/kinvue-media
     networks:
       - kinvue-data
     restart: "no"
@@ -415,6 +421,7 @@ services:
       MEILISEARCH_MASTER_KEY: ${MEILISEARCH_MASTER_KEY}
       MOVIE_INTERNAL_TOKEN: ${MOVIE_INTERNAL_TOKEN}
       S3_ENDPOINT: http://minio:9000
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://localhost:9000}
       S3_ACCESS_KEY: ${S3_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       S3_BUCKET: ${S3_BUCKET}
