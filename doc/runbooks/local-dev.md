@@ -10,17 +10,17 @@
 
 Контейнери одного проєкту Compose. Між собою вони бачать імена сервісів у мережі `kinvue-data`. З неї немає виходу в інтернет. Мережа `kinvue-edge` публікує порти на `localhost`.
 
-| Контейнер               | Порт на машині         | Для чого в KinVue                                                                                                                         |
-| ----------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `kinvue-postgres`       | 5432                   | База auth. Її читає сервіс auth.                                                                                                          |
-| `kinvue-movie-postgres` | 5434                   | Каталог фільмів. Окремий том, інша база, не копія auth.                                                                                   |
-| `kinvue-users-mongo`    | 27017                  | Майбутні профілі. База в URL: `kinvue_users`. Локально без логіна.                                                                        |
-| `kinvue-rooms-redis`    | 6379                   | Живий стан кімнати. Один вузол. Це не кластер і не запасний Redis для продакшену.                                                         |
-| `kinvue-rabbitmq`       | 5672, панель 15672     | Черги між сервісами. Логін зі змінних.                                                                                                    |
-| `kinvue-meilisearch`    | 7700                   | Пошук фільмів. Один вузол. Ключ лише зі змінної.                                                                                          |
-| `kinvue-minio`          | API 9000, консоль 9001 | Файли медіа. Бакет `kinvue-media` не відкритий на читання всім. Образ `pgsty/minio`, бо офіційний `minio/minio` без логіна не скачується. |
-| `kinvue-prometheus`     | 9090                   | Збір метрик. Конфіг порожній: `scrape_configs: []`.                                                                                       |
-| `kinvue-grafana`        | 3001                   | Графіки. Всередині контейнера порт 3000, назовні 3001.                                                                                    |
+| Контейнер               | Порт на машині         | Для чого в KinVue                                                                                                           |
+| ----------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `kinvue-postgres`       | 5432                   | База auth. Її читає сервіс auth.                                                                                            |
+| `kinvue-movie-postgres` | 5434                   | Каталог фільмів. Окремий том, інша база, не копія auth.                                                                     |
+| `kinvue-users-mongo`    | 27017                  | Майбутні профілі. База в URL: `kinvue_users`. Локально без логіна.                                                          |
+| `kinvue-rooms-redis`    | 6379                   | Живий стан кімнати. Один вузол. Це не кластер і не запасний Redis для продакшену.                                           |
+| `kinvue-rabbitmq`       | 5672, панель 15672     | Черги між сервісами. Логін зі змінних.                                                                                      |
+| `kinvue-meilisearch`    | 7700                   | Пошук фільмів. Один вузол. Ключ лише зі змінної.                                                                            |
+| `kinvue-minio`          | API 9000, консоль 9001 | Файли медіа. Бакет `kinvue-media` закритий для анонімного читання. Контейнер — pinned PGSTY Silo, S3/MinIO-compatible fork. |
+| `kinvue-prometheus`     | 9090                   | Збір метрик. Конфіг порожній: `scrape_configs: []`.                                                                         |
+| `kinvue-grafana`        | 3001                   | Графіки. Всередині контейнера порт 3000, назовні 3001.                                                                      |
 
 `kinvue-minio-init` один раз створює бакет і зупиняється. Це норма.
 
@@ -52,7 +52,7 @@ docker compose --env-file .env.example --profile apps up -d --build gateway noti
 - Redis: `docker exec kinvue-rooms-redis redis-cli ping` відповідає `PONG`.
 - RabbitMQ: `http://localhost:15672`. Логін — `RABBITMQ_USER` і `RABBITMQ_PASSWORD` з env-файлу.
 - Meilisearch: `http://localhost:7700/health`.
-- MinIO: API `http://localhost:9000`, консоль `http://localhost:9001`.
+- Silo (S3/MinIO-compatible): API `http://localhost:9000`, консоль `http://localhost:9001`.
 - Prometheus: `http://localhost:9090`. Targets порожні, бо збирати ще ні з кого.
 - Grafana: `http://localhost:3001`. Логін — `GRAFANA_ADMIN_USER` і `GRAFANA_ADMIN_PASSWORD` з env-файлу.
 

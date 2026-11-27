@@ -17,10 +17,10 @@ jobs:
           if ! docker compose --env-file .env.example --profile apps up -d --build \
             --wait --wait-timeout 180 \
             postgres movie-postgres notifications-postgres rooms-postgres \
-            users-mongo meilisearch rabbitmq rooms-redis \
+            users-mongo meilisearch rabbitmq rooms-redis minio \
             prometheus grafana gateway users movie rooms notification transcode-worker; then
             docker compose --env-file .env.example --profile apps ps --all
-            docker compose --env-file .env.example --profile apps logs --no-color --tail 100 gateway transcode-worker
+            docker compose --env-file .env.example --profile apps logs --no-color --tail 100 gateway transcode-worker minio
             exit 1
           fi
       - uses: pnpm/action-setup@v6
@@ -29,6 +29,16 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Verify private S3 object storage
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose --env-file .env.example run --rm minio-init
+          docker exec kinvue-minio sh -c 'mcli alias set local http://127.0.0.1:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"'
+          docker exec kinvue-minio sh -c 'printf smoke-object >/tmp/kinvue-s3-smoke.txt'
+          docker exec kinvue-minio mcli cp /tmp/kinvue-s3-smoke.txt local/kinvue-media/smoke.txt
+          status="$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:9000/kinvue-media/smoke.txt)"
+          test "$status" = "403"
       - name: Wait for infra health
         run: node tests/integration/wait-infra-health.mjs
       - name: Build and smoke-test non-root Auth image

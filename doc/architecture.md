@@ -55,7 +55,7 @@ Auth перевіряє Google ID token (`GOOGLE_CLIENT_ID`), заводить �
 
 ## Дані й перевірка
 
-Локальний стек — один файл `docker-compose.yml`, [0019](decisions/0019-one-local-compose.md). База auth у ньому — Postgres 16, сервіс `postgres`, база `kinvue`, порт 5432, [0006](decisions/0006-postgres-16.md). У тому самому файлі є Postgres каталогу на 5434, MongoDB replica set для Users, один Redis, RabbitMQ, Meilisearch, MinIO, Prometheus і Grafana. Порти стенда не є прийнятою картою портів. Як дивитись: [runbooks/local-dev.md](runbooks/local-dev.md).
+Локальний стек — один файл `docker-compose.yml`, [0019](decisions/0019-one-local-compose.md). База auth у ньому — Postgres 16, сервіс `postgres`, база `kinvue`, порт 5432, [0006](decisions/0006-postgres-16.md). У тому самому файлі є Postgres каталогу на 5434, MongoDB replica set для Users, один Redis, RabbitMQ, Meilisearch, PGSTY Silo (S3/MinIO-compatible), Prometheus і Grafana. Порти стенда не є прийнятою картою портів. Як дивитись: [runbooks/local-dev.md](runbooks/local-dev.md).
 
 CI на pull request і на push у `main` та `dev` ставить Node 24 на `ubuntu-24.04`, залежності з lockfile, ганяє `pnpm format:check`, `pnpm typecheck:contracts` і `pnpm test`. Окремого кроку `pnpm build` немає. Крок лінта закоментований: `typescript-eslint` 8.x не підтримує TypeScript 7, [0018](decisions/0018-shared-typescript-and-checks.md). Husky на коміті запускає lint-staged (Prettier для змінених JS/TS) і `pnpm typecheck`, потім commitlint. Повний тест і збірка на коміт не йдуть. Сервіси розширюють кореневий `tsconfig.base.json`.
 
