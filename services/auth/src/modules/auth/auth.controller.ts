@@ -104,7 +104,8 @@ export class AuthController {
       httpOnly: true,
       secure: process.env["NODE_ENV"] === "production",
       sameSite: "strict",
-      path: "/auth/refresh",
+      // The browser talks to Gateway, which exposes Auth under /api/auth.
+      path: "/api/auth",
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
   }
@@ -123,7 +124,7 @@ export class AuthController {
       httpOnly: true,
       secure: process.env["NODE_ENV"] === "production",
       sameSite: "strict",
-      path: "/auth/refresh",
+      path: "/api/auth",
     });
     this.logger.info("logout completed");
   }

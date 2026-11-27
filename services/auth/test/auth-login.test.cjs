@@ -6,7 +6,7 @@ async function setup(identity, passwordMatches = true) {
     import("../dist/modules/auth/auth.controller.js"),
     import("@nestjs/common"),
   ]);
-  const calls = { email: null, verify: 0, cookies: [], tokens: 0 };
+  const calls = { email: null, verify: 0, cookies: [], clearedCookies: [], tokens: 0 };
   const controller = new AuthController(
     {
       async findLoginIdentityByEmail(email) {
@@ -23,6 +23,9 @@ async function setup(identity, passwordMatches = true) {
         calls.tokenUser = { userId, role };
         return { accessToken: "access-secret", refreshToken: "refresh-secret" };
       },
+      async revokeRefreshToken(token) {
+        calls.revokedToken = token;
+      },
     },
     {
       async verifyPassword() {
@@ -34,6 +37,9 @@ async function setup(identity, passwordMatches = true) {
   const response = {
     cookie(name, value, options) {
       calls.cookies.push({ name, value, options });
+    },
+    clearCookie(name, options) {
+      calls.clearedCookies.push({ name, options });
     },
   };
   return { controller, response, calls, UnauthorizedException };
@@ -59,6 +65,19 @@ test("active identity logs in, gets access response and HttpOnly refresh cookie"
   assert.equal(setupResult.calls.cookies[0].name, "kinvue_refresh");
   assert.equal(setupResult.calls.cookies[0].value, "refresh-secret");
   assert.equal(setupResult.calls.cookies[0].options.httpOnly, true);
+  assert.equal(setupResult.calls.cookies[0].options.path, "/api/auth");
+});
+
+test("logout clears the gateway refresh cookie with the same path", async () => {
+  const result = await setup(null);
+  await result.controller.logout(
+    { headers: { cookie: "kinvue_refresh=refresh-secret" } },
+    result.response,
+  );
+
+  assert.equal(result.calls.revokedToken, "refresh-secret");
+  assert.equal(result.calls.clearedCookies[0].name, "kinvue_refresh");
+  assert.equal(result.calls.clearedCookies[0].options.path, "/api/auth");
 });
 
 test("unknown email and wrong password return the same unauthorized response", async () => {
