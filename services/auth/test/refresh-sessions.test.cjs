@@ -114,3 +114,92 @@ test("refresh verification rejects revoked and expired sessions", async () => {
   assert.equal(await service.verifyRefreshToken(token), null);
   assert.equal(tokenHash.length, 64);
 });
+
+test("refresh rotates an active password identity without a legacy AuthUser", async () => {
+  const { TokensService } =
+    await import("../dist/modules/tokens/tokens.service.js");
+  let scopes;
+  let identityLookup;
+  const prisma = {
+    db: {
+      orm: {
+        public: {
+          AuthIdentity: {
+            async first(where) {
+              identityLookup = where;
+              return { userId: "password-user", status: "ACTIVE" };
+            },
+          },
+          AuthUser: {
+            async first() {
+              return null;
+            },
+          },
+        },
+      },
+    },
+  };
+  const service = new TokensService(
+    {},
+    {
+      async signAsync(payload) {
+        scopes = payload.scopes;
+        return "new-access-token";
+      },
+    },
+    { getPrivateKey: () => "unused", getKeyId: () => "test-key" },
+    prisma,
+    {
+      async rotate() {
+        return { userId: "password-user", sessionId: "next-session" };
+      },
+      async revoke() {},
+    },
+  );
+
+  const tokens = await service.rotateRefreshToken("old-refresh-token");
+
+  assert.equal(tokens.accessToken, "new-access-token");
+  assert.match(tokens.refreshToken, /^[A-Za-z0-9_-]{43}$/);
+  assert.deepEqual(identityLookup, { userId: "password-user" });
+  assert.deepEqual(scopes, []);
+});
+
+test("refresh rejects a disabled password identity", async () => {
+  const { TokensService } =
+    await import("../dist/modules/tokens/tokens.service.js");
+  let authUserLookups = 0;
+  const service = new TokensService(
+    {},
+    {},
+    {},
+    {
+      db: {
+        orm: {
+          public: {
+            AuthIdentity: {
+              async first() {
+                return { status: "DISABLED" };
+              },
+            },
+            AuthUser: {
+              async first() {
+                authUserLookups += 1;
+                return null;
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      async rotate() {
+        return { userId: "disabled-user", sessionId: "revoked-session" };
+      },
+      async revoke() {},
+    },
+  );
+
+  assert.equal(await service.rotateRefreshToken("old-refresh-token"), null);
+  assert.equal(authUserLookups, 0);
+});
