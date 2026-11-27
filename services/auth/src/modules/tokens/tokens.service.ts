@@ -5,6 +5,7 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { RefreshSessionRepository } from "./refresh-session.repository.js";
 import { SigningKeyService } from "./signing-key.service.js";
+import { createLogger } from "@kinvue/logger";
 
 export const REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60;
 export const AUTH_ACCESS_TOKEN_ISSUER = "kinvue-auth";
@@ -13,6 +14,8 @@ export const AUTH_ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
 
 @Injectable()
 export class TokensService {
+  private readonly logger = createLogger("auth");
+
   public constructor(
     // Key material is owned and validated by SigningKeyService.
     _config: ConfigService,
@@ -74,19 +77,30 @@ export class TokensService {
       this.hashRefreshToken(token),
       this.hashRefreshToken(refreshToken),
     );
-    if (!session) return null;
+    if (!session) {
+      this.logger.warn("refresh rejected", {
+        reason: "invalid_expired_or_replayed_session",
+      });
+      return null;
+    }
 
     const identity = await this.prisma.db.orm.public.AuthIdentity.first({
       userId: session.userId,
     });
-    if (identity && identity.status !== "ACTIVE") return null;
+    if (identity && identity.status !== "ACTIVE") {
+      this.logger.warn("refresh rejected", { reason: "identity_not_active" });
+      return null;
+    }
 
     const user = await this.prisma.db.orm.public.AuthUser.first({
       id: session.userId,
     });
     // Password identities are kept separately from legacy Google AuthUser
     // rows. Active password users without a role row remain ordinary users.
-    if (!identity && !user) return null;
+    if (!identity && !user) {
+      this.logger.warn("refresh rejected", { reason: "identity_not_found" });
+      return null;
+    }
 
     const scopes = user?.role === "ADMIN" ? ["admin"] : [];
     const accessToken = await this.createAccessToken(session.userId, scopes);
